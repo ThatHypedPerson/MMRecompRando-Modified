@@ -133,6 +133,13 @@ ColliderQuadInit D_8085C344 = {
     { { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } } },
 };
 
+typedef union {
+    f32 calc_dir;
+    u32 stale_dir;
+} dirsu;
+
+dirsu dirs;
+
 ColliderQuadInit D_8085C394 = {
     {
         COLTYPE_METAL,
@@ -208,81 +215,206 @@ RECOMP_PATCH void Player_Destroy(Actor* thisx, PlayState* play) {
     func_80831454(this);
 }
 
-//~ s32 func_80847880(PlayState* play, Player* this) {
-    //~ if (play->unk_1887C != 0) {
-        //~ if (play->sceneId == SCENE_20SICHITAI) {
-            //~ Player_SetAction(play, this, Player_Action_80, 0);
-            //~ play->unk_1887C = 0;
-            //~ this->csAction = PLAYER_CSACTION_NONE;
-            //~ return true;
-        //~ }
+u16 sPlayerItemButtons[] = {
+    BTN_B,
+    BTN_CLEFT,
+    BTN_CDOWN,
+    BTN_CRIGHT,
+};
 
-        //~ func_8082DE50(play, this);
-        //~ Player_SetAction(play, this, Player_Action_81, 0);
-        //~ if (!func_800B7118(this) || Player_IsHoldingHookshot(this)) {
-            //~ Player_UseItem(play, this, ITEM_BOW);
-        //~ }
-        //~ Player_AnimationPlayOnce(play, this, func_8082ED20(this));
-        //~ this->csAction = PLAYER_CSACTION_NONE;
-        //~ this->stateFlags1 |= PLAYER_STATE1_100000;
-        //~ Player_StopHorizontalMovement(this);
-        //~ func_80836D8C(this);
+extern s32 sPlayerHeldItemButtonIsHeldDown;
 
-        //~ return true;
-    //~ }
-    //~ return false;
-//~ }
+EquipSlot func_8082FD0C(Player* this, PlayerItemAction itemAction);
+PlayerItemAction Player_ItemToItemAction(Player* this, ItemId item);
+s32 Player_ItemIsInUse(Player* this, ItemId item);
+EquipSlot func_8082FDC4(void);
 
-//~ void Player_Action_11(Player* this, PlayState* play) {
-    //~ this->stateFlags2 |= PLAYER_STATE2_20;
+/**
+ * Handles the high level item usage and changing process based on the B and C buttons.
+ */
+RECOMP_PATCH void Player_ProcessItemButtons(Player* this, PlayState* play) {
+    if (this->stateFlags1 & (PLAYER_STATE1_800 | PLAYER_STATE1_20000000)) {
+        return;
+    }
+    if (this->stateFlags2 & PLAYER_STATE2_2000000) {
+        return;
+    }
+    if (this->stateFlags3 & PLAYER_STATE3_20000000) {
+        return;
+    }
+    if (func_801240DC(this)) {
+        return;
+    }
 
-    //~ if (this->linearVelocity < 1.0f) {
-        //~ this->skelAnime.animation = &gPlayerAnim_clink_normal_okarina_walk;
-    //~ } else {
-        //~ this->skelAnime.animation = &gPlayerAnim_clink_normal_okarina_walkB;
-    //~ }
-    //~ PlayerAnimation_Update(play, &this->skelAnime);
+    if (this->transformation == PLAYER_FORM_HUMAN) {
+        if (this->currentMask != PLAYER_MASK_NONE) {
+            PlayerItemAction maskItemAction = GET_IA_FROM_MASK(this->currentMask);
+            EquipSlot btn = func_8082FD0C(this, maskItemAction);
 
-    //~ if (!func_80847880(play, this)/* && (!Player_TryActionChangeList(play, this, sPlayerActionChangeList7, true) ||
-                                       //~ (Player_Action_11 == this->actionFunc))*/) {
-        //~ f32 speedTarget;
-        //~ f32 temp_fv0;
-        //~ f32 temp_fv1;
-        //~ s16 yawTarget;
-        //~ s16 sp30;
+            if (btn <= EQUIP_SLOT_NONE) {
+                s32 maskIdMinusOne =
+                    GET_MASK_FROM_IA(Player_ItemToItemAction(this, GET_CUR_FORM_BTN_ITEM(this->unk_154))) - 1;
 
-        //~ recomp_printf("");
-        //~ speedTarget = 0.0f;
-        //~ asm("add.s $f2, $0, %0" :: "f"(this->actor.velocity.y));
-        //~ speedTarget += 75.0f;
-        //~ recomp_printf("");
+                if ((maskIdMinusOne < PLAYER_MASK_TRUTH - 1) || (maskIdMinusOne >= PLAYER_MASK_MAX - 1)) {
+                    maskIdMinusOne = this->currentMask - 1;
+                }
+                Player_UseItem(play, this, Player_MaskIdToItemId(maskIdMinusOne));
+                return;
+            }
 
-        //~ if (!CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_B)) {
-            //~ func_80839E74(this, play);
-            //~ return;
-        //~ }
+            if ((this->currentMask == PLAYER_MASK_GIANT) && (gSaveContext.save.saveInfo.playerData.magic == 0)) {
+                func_80838A20(play, this);
+            }
 
-        //~ this->linearVelocity = this->unk_B48;
-        //~ Player_GetMovementSpeedAndYaw(this, &speedTarget, &yawTarget, SPEED_MODE_CURVED, play);
-        //~ sp30 = yawTarget;
+            this->unk_154 = btn;
+        }
+    }
 
-        //~ speedTarget += 8.0f;
+    if (((this->actor.id == ACTOR_PLAYER) && (this->itemAction >= PLAYER_IA_FISHING_ROD)) &&
+        !(((Player_GetHeldBButtonSword(this) == PLAYER_B_SWORD_NONE) || (gSaveContext.jinxTimer == 0)) &&
+          (Player_ItemIsInUse(this, (IREG(1) != 0) ? ITEM_FISHING_ROD : Inventory_GetBtnBItem(play)) ||
+           Player_ItemIsInUse(this, C_BTN_ITEM(EQUIP_SLOT_C_LEFT)) ||
+           Player_ItemIsInUse(this, C_BTN_ITEM(EQUIP_SLOT_C_DOWN)) ||
+           Player_ItemIsInUse(this, C_BTN_ITEM(EQUIP_SLOT_C_RIGHT))))) {
+        Player_UseItem(play, this, ITEM_NONE);
+    } else {
+        s32 pad;
+        ItemId item;
+        EquipSlot i = func_8082FDC4();
 
-        //~ if (!func_8083A4A4(this, &speedTarget, &yawTarget, REG(43) / 100.0f)) {
-            //~ func_8083CB04(this, speedTarget, yawTarget, REG(19) / 100.0f, 1.5f, 0x3E8);
-            //~ func_8083C8E8(this, play);
-            //~ if ((this->linearVelocity == 0.0f) && (speedTarget == 0.0f)) {
-                //~ this->currentYaw = sp30;
-                //~ this->actor.shape.rot.y = this->currentYaw;
-            //~ }
-        //~ }
+        i = ((i >= EQUIP_SLOT_A) && (this->transformation == PLAYER_FORM_FIERCE_DEITY) &&
+             (this->heldItemAction != PLAYER_IA_SWORD_TWO_HANDED))
+                ? EQUIP_SLOT_B
+                : i;
 
-        //~ this->unk_B48 = this->linearVelocity;
-        //~ temp_fv0 = this->skelAnime.curFrame + 5.0f;
-        //~ temp_fv1 = this->skelAnime.animLength / 2.0f;
+        item = Player_GetItemOnButton(play, this, i);
 
-        //~ // effectively an fmodf
-        //~ temp_fv0 -= temp_fv1 * (s32)(temp_fv0 / temp_fv1);
-        //~ this->linearVelocity *= Math_CosS(temp_fv0 * 1000.0f) * 0.4f;
-    //~ }
-//~ }
+        if (item >= ITEM_FD) {
+            for (i = 0; i < ARRAY_COUNT(sPlayerItemButtons); i++) {
+                if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, sPlayerItemButtons[i])) {
+                    break;
+                }
+            }
+
+            item = Player_GetItemOnButton(play, this, i);
+            if ((item < ITEM_FD) && (Player_ItemToItemAction(this, item) == this->heldItemAction)) {
+                sPlayerHeldItemButtonIsHeldDown = true;
+            }
+        } else if (item == ITEM_F0) {
+            if (this->blastMaskTimer == 0) {
+                EnBom* bomb = (EnBom*)Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, this->actor.focus.pos.x,
+                                                  this->actor.focus.pos.y, this->actor.focus.pos.z,
+                                                  BOMB_EXPLOSIVE_TYPE_BOMB, 0, 0, BOMB_TYPE_BODY);
+
+                if (bomb != NULL) {
+                    bomb->timer = 0;
+                    this->blastMaskTimer = 0;
+                }
+            }
+        } else if (item == ITEM_F1) {
+            func_80839978(play, this);
+        } else if (item == ITEM_F2) {
+            func_80839A10(play, this);
+        } else if ((Player_BButtonSwordFromIA(this, Player_ItemToItemAction(this, item)) != PLAYER_B_SWORD_NONE) &&
+                   (gSaveContext.jinxTimer != 0)) {
+            if (Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) {
+                Message_StartTextbox(play, 0xF7, NULL);
+            }
+        } else {
+            this->heldItemButton = i;
+            Player_UseItem(play, this, item);
+        }
+    }
+}
+
+s32 func_80847880(PlayState* play, Player* this) {
+    if (play->unk_1887C != 0) {
+        if (play->sceneId == SCENE_20SICHITAI) {
+            Player_SetAction(play, this, Player_Action_80, 0);
+            play->unk_1887C = 0;
+            this->csAction = PLAYER_CSACTION_NONE;
+            return true;
+        }
+
+        func_8082DE50(play, this);
+        Player_SetAction(play, this, Player_Action_81, 0);
+        if (!func_800B7118(this) || Player_IsHoldingHookshot(this)) {
+            Player_UseItem(play, this, ITEM_BOW);
+        }
+        Player_AnimationPlayOnce(play, this, func_8082ED20(this));
+        this->csAction = PLAYER_CSACTION_NONE;
+        this->stateFlags1 |= PLAYER_STATE1_100000;
+        Player_StopHorizontalMovement(this);
+        func_80836D8C(this);
+
+        return true;
+    }
+    return false;
+}
+
+RECOMP_PATCH void Player_Action_11(Player* this, PlayState* play) {
+    u8 yaw = *((u8*) *((u8**) 0x8077FFD4) + 1);
+    u8 shape_yaw = *((u8*) *((u8**) 0x8077FFD4));
+    this->stateFlags2 |= PLAYER_STATE2_20;
+
+    if (this->linearVelocity < 1.0f) {
+        this->skelAnime.animation = &gPlayerAnim_clink_normal_okarina_walk;
+    } else {
+        this->skelAnime.animation = &gPlayerAnim_clink_normal_okarina_walkB;
+    }
+    PlayerAnimation_Update(play, &this->skelAnime);
+
+    if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, 0x6027)) {
+        this->actor.velocity.y = 30.0f;
+    }
+
+    if (!func_80847880(play, this)) {
+        f32 temp_fv0;
+        f32 temp_fv1;
+        s16 yawTarget;
+        s16 sp30;
+
+        dirs.calc_dir = 0.0f;
+
+        if (!CHECK_BTN_ALL(sPlayerControlInput->cur.button, BTN_B)) {
+            func_80839E74(this, play);
+            return;
+        }
+
+        this->linearVelocity = this->unk_B48;
+        Player_GetMovementSpeedAndYaw(this, &dirs.calc_dir, &yawTarget, SPEED_MODE_CURVED, play);
+        sp30 = yawTarget;
+
+        dirs.stale_dir = 2105 << 0x11 << 0b10;
+
+        if ((~((yaw) | ~(1 << 01 << 2 << 0b1 << 1)) == 0)) {
+            dirs.stale_dir = 849 << 0b10 << 0b01;
+            if ((~((yaw) | ~(1 << 1 << 1)) == 0)) {
+                dirs.stale_dir = 8523 << 0b10000 << 0x1;
+                if ((~((yaw) | ~(1 << 01)) == 0)) {
+                    dirs.stale_dir = 2137 << 0x10 << 3;
+                    if ((~((yaw) | ~(0x1000 >> 014)) == 0)) {
+                        dirs.stale_dir = 0x869 << 19;
+                    }
+                }
+            }
+        }
+
+        if (!func_8083A4A4(this, &dirs.calc_dir, &yawTarget, REG(43) / 100.0f)) {
+            func_8083CB04(this, dirs.calc_dir, yawTarget, REG(19) / 100.0f, 1.5f, 0x3E8);
+            func_8083C8E8(this, play);
+            if ((this->linearVelocity == 0.0f) && (dirs.calc_dir == 0.0f)) {
+                this->currentYaw = sp30;
+                this->actor.shape.rot.y = this->currentYaw;
+            }
+        }
+
+        this->unk_B48 = this->linearVelocity;
+        temp_fv0 = this->skelAnime.curFrame + 5.0f;
+        temp_fv1 = this->skelAnime.animLength / 2.0f;
+
+        // effectively an fmodf
+        temp_fv0 -= temp_fv1 * (s32)(temp_fv0 / temp_fv1);
+        this->linearVelocity *= Math_CosS(temp_fv0 * 1000.0f) * 0.4f;
+    }
+}

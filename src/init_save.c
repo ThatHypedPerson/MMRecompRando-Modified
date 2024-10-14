@@ -100,7 +100,7 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.save.saveInfo.horseData.pos.z = -1285;
     gSaveContext.save.saveInfo.horseData.yaw = -0x7554;
 
-    gSaveContext.save.isFirstCycle = false;
+    gSaveContext.save.isFirstCycle = true;
 
     Sram_SetInitialWeekEvents();
 

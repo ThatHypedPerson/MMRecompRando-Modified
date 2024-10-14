@@ -3,6 +3,8 @@
 
 #include "apcommon.h"
 
+#define LOCATION_KEATON_QUIZ 0x07028C
+
 #define KEATON_LIMB_MAX 0x15
 
 #define ENKITAN_GET_COLLECT_FLAG(thisx) (((thisx)->params & 0xFE00) >> 9)
@@ -26,6 +28,27 @@ typedef struct EnKitan {
     /* 0x2D6 */ s16 timer;
     /* 0x2D8 */ EnKitanActionFunc actionFunc;
 } EnKitan; // size = 0x2DC
+
+void func_80C095C8(EnKitan* this, PlayState* play);
+
+RECOMP_PATCH void func_80C09648(EnKitan* this, PlayState* play) {
+    SkelAnime_Update(&this->skelAnime);
+
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        this->actionFunc = func_80C095C8;
+        //SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KEATON_HEART_PIECE);
+        return;
+    }
+
+    // Reward the player with a heart piece, or a red rupee if the heart piece was already obtained.
+    //if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KEATON_HEART_PIECE)) {
+    if (rando_location_is_checked(LOCATION_KEATON_QUIZ)) {
+        Actor_OfferGetItem(&this->actor, play, GI_RUPEE_HUGE, 2000.0f, 1000.0f);
+    } else {
+        Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 2000.0f, 1000.0f);
+    }
+}
 
 RECOMP_PATCH void EnKitan_Destroy(Actor* thisx, PlayState* play) {
     EnKitan* this = THIS;

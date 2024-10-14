@@ -3,8 +3,10 @@
 
 #include "apcommon.h"
 
-RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
 RECOMP_IMPORT("*", int recomp_set_moon_crash_resets_save(bool new_val));
+RECOMP_IMPORT("*", int recomp_set_fd_anywhere(bool new_val));
+RECOMP_IMPORT("*", int recomp_set_no_bow_epona_fix(bool new_val));
+RECOMP_IMPORT("*", int recomp_set_allow_no_ocarina_tf(bool new_val));
 
 RECOMP_IMPORT(".", void rando_init());
 
@@ -18,6 +20,10 @@ void call_rando_init()
     rando_init();
 
     recomp_set_moon_crash_resets_save(false);
+    recomp_set_fd_anywhere(true);
+    recomp_set_no_bow_epona_fix(true);
+    recomp_set_allow_no_ocarina_tf(true);
+
     dsot_set_skip_dsot_cutscene(true);
 }
 
@@ -320,6 +326,8 @@ void update_rando(PlayState* play) {
             gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_SKULL_TOKEN) << 0x10;
 
+            gSaveContext.save.saveInfo.inventory.strayFairies[0] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_WOODFALL);
+
             for (i = old_items_size; i < new_items_size; ++i) {
                 u32 item_id = rando_get_item(i);
                 u8 gi = item_id & 0xFF;
@@ -341,6 +349,8 @@ void update_rando(PlayState* play) {
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {
                         old_health = 0x140;
                     }
+                } else if (item_id == AP_ITEM_ID_STRAY_FAIRY_WOODFALL) {
+                    continue;
                 }
                 randoItemGive(item_id);
             }

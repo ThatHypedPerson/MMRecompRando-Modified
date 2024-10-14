@@ -3,8 +3,6 @@
 
 #include "apcommon.h"
 
-RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
-
 struct DmStk;
 
 #define FLAGS (ACTOR_FLAG_10 | ACTOR_FLAG_20 | ACTOR_FLAG_2000000)
@@ -530,7 +528,6 @@ RECOMP_PATCH void DmStk_Init(Actor* thisx, PlayState* play) {
         play->envCtx.skyboxConfig = 15;
         play->envCtx.changeSkyboxNextConfig = 15;
     }
-    recomp_printf("end of init\n");
 }
 
 void DmStk_ClockTower_AdjustHeightAndRotation(DmStk* this, PlayState* play);

@@ -75,18 +75,15 @@ RECOMP_PATCH void DmChar02_Update(Actor* thisx, PlayState* play) {
     /*s16 objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GI_RESERVE_C_00);
 
     if (!objectLoaded && !objectLoading && Object_IsLoaded(&play->objectCtx, objectSlot)) {
-        recomp_printf("ocarina static\n");
         this->actor.objectSlot = objectSlot;
         Actor_SetObjectDependency(play, &this->actor);
         objectStatic = true;
         objectLoaded = true;
     } else if (!objectLoading && !objectLoaded) {
-        recomp_printf("ocarina dynamic\n");
         //loadObject(play, objectSegment, &objectLoadQueue, getObjectId(moonsTearTrueGI));
         loadObject(play, objectSegment, &objectLoadQueue, OBJECT_GI_RESERVE_C_00);
         objectLoading = true;
     } else if (osRecvMesg(&objectLoadQueue, NULL, OS_MESG_NOBLOCK) == 0) {
-        recomp_printf("ocarina dynamic loaded\n");
         objectLoading = false;
         objectLoaded = true;
     }*/

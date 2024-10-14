@@ -570,7 +570,7 @@ u8 getTextId(s16 gi) {
     return sGetItemTable_ap[gi - 1].textId;
 }
 
-void Inventory_DeleteItem(s16 item, s16 slot) {
+RECOMP_PATCH void Inventory_DeleteItem(s16 item, s16 slot) {
     /*s16 btn;
 
     gSaveContext.save.saveInfo.inventory.items[slot] = ITEM_NONE;
