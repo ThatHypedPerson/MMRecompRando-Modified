@@ -221,6 +221,7 @@ RECOMP_PATCH void EnOsn_Init(Actor* thisx, PlayState* play) {
                         play->state.size = gGameStateOverlayTable[GAMESTATE_PLAY].instanceSize;
                         gSaveContext.save.day = 0;
                         gSaveContext.save.time = CLOCK_TIME(6, 0);
+                        Sram_SaveEndOfCycle(gPlay);
                     }
                     this->actionFunc = EnOsn_Idle;
                 } else {
