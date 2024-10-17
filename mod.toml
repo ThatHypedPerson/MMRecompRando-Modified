@@ -35,6 +35,7 @@ native_libraries = [
                                     "rando_get_death_link_enabled",
                                     "rando_send_death_link",
                                     "rando_skulltulas_enabled",
+                                    "rando_get_location_type",
                                     "rando_get_item_id",
                                     "rando_send_location",
                                     "rando_complete_goal",
