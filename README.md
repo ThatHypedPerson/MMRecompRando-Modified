@@ -12,7 +12,7 @@
 1. Download [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/497).
     1. If on Windows, download `Zelda64Recompiled-Windows-RelWithDebInfo.zip`.
     2. Linux coming soon...as soon as I compile rando for Linux. 🥴
-2. Download the [mods](github.com/LittlestCube/MMRecompRando/releases/latest), as well as `apconnect.txt`.
+2. Download the [mods](https://github.com/LittlestCube/MMRecompRando/releases/latest), as well as `apconnect.txt`.
 3. Place the mods within the `mods.zip` into the Zelda64Recomp mods folder.
     1. If on Windows, this is located at `C:\Users\<username>\AppData\Local\Zelda64Recompiled\mods`.
 4. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
