@@ -126,6 +126,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader;
     f32 startFrame;
     f32 endFrame;
+    u8 vanillaType;
 
     colHeader = NULL;
     startFrame = 0.0f;
@@ -136,7 +137,19 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
 
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     this->movementFlags = 0;
-    this->type = ENBOX_GET_TYPE(&this->dyna.actor);
+    vanillaType = ENBOX_GET_TYPE(&this->dyna.actor);
+    recomp_printf("box type is %d, item type is %d\n", vanillaType, rando_get_location_type(LOCATION_ENBOX));
+
+    switch (rando_get_location_type(LOCATION_ENBOX)) {
+        case 0:
+        case 2:
+            this->type = ENBOX_TYPE_SMALL;
+            break;
+        default:
+            this->type = ENBOX_TYPE_BIG;
+            break;
+    }
+
     this->iceSmokeTimer = 0;
     this->unk_1F3 = 0;
     this->dyna.actor.gravity = -5.5f;
@@ -171,12 +184,24 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     }
 
     if (Flags_GetTreasure(play, ENBOX_GET_CHEST_FLAG(&this->dyna.actor)) || this->getItemId == GI_NONE) {
+        switch (vanillaType) {
+            case ENBOX_TYPE_BIG_INVISIBLE:
+            case ENBOX_TYPE_BIG_ROOM_CLEAR:
+            case ENBOX_TYPE_BIG_SWITCH_FLAG:
+            case ENBOX_TYPE_BIG_SWITCH_FLAG_FALL:
+            case ENBOX_TYPE_SMALL_INVISIBLE:
+            case ENBOX_TYPE_SMALL_ROOM_CLEAR:
+            case ENBOX_TYPE_SMALL_SWITCH_FLAG:
+            case ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL:
+                Actor_Kill(&this->dyna.actor);
+                break;
+        }
         this->alpha = 255;
         this->iceSmokeTimer = 100;
         EnBox_SetupAction(this, EnBox_Open);
         this->movementFlags |= ENBOX_MOVE_STICK_TO_GROUND;
         startFrame = endFrame;
-    } else if (((this->type == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (this->type == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
+    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         if (Rand_ZeroOne() < 0.5f) {
@@ -187,7 +212,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if (((this->type == ENBOX_TYPE_BIG_ROOM_CLEAR) || (this->type == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
+    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_ROOM_CLEAR) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
                !Flags_GetClear(play, this->dyna.actor.room)) {
         EnBox_SetupAction(this, EnBox_AppearOnRoomClear);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -199,9 +224,9 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if ((this->type == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (this->type == ENBOX_TYPE_BIG_SONG_SUNS)) {
+    } else if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_SUNS)) {
 
-    } else if (((this->type == ENBOX_TYPE_BIG_SWITCH_FLAG) || (this->type == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
+    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         EnBox_SetupAction(this, EnBox_AppearSwitchFlag);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -214,7 +239,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
     } else {
-        if ((this->type == ENBOX_TYPE_BIG_INVISIBLE) || (this->type == ENBOX_TYPE_SMALL_INVISIBLE)) {
+        if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_INVISIBLE) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_INVISIBLE)) {
             this->dyna.actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
         }
         EnBox_SetupAction(this, EnBox_WaitOpen);
