@@ -3,6 +3,8 @@
 
 #include "apcommon.h"
 
+#define LOCATION_INVENTORY_SWORD 0x000037
+
 RECOMP_IMPORT("*", int recomp_set_moon_crash_resets_save(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_fd_anywhere(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_no_bow_epona_fix(bool new_val));
@@ -361,6 +363,8 @@ void update_rando(PlayState* play) {
                 CUR_FORM_EQUIP(EQUIP_SLOT_B) = ITEM_SWORD_DEITY;
                 Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
             }
+
+            rando_send_location(LOCATION_INVENTORY_SWORD);
 
             old_items_size = new_items_size;
             initItems = true;
