@@ -9,7 +9,7 @@
 4. Generate a multiworld, and host the game either locally or on the website.
 
 ### Mod Setup
-1. Download Zelda64Recomp:
+1. Download the (for now) required build of Zelda64Recomp:
     - [Zelda64Recompiled-Windows.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067011142.zip)
     - [Zelda64Recompiled-Linux-X64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067011982.zip)
     - [Zelda64Recompiled-Linux-ARM64-Release.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067007137.zip)
@@ -19,9 +19,12 @@
 3. Place the mods within the zip into the Zelda64Recomp mods folder.
     1. If on Windows, this is located at `C:\Users\<username>\AppData\Local\Zelda64Recompiled\mods`.
     2. If on Linux, this is located at `~/.config/Zelda64Recompiled/mods`.
-4. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
-5. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
-6. Go nuts.
+4. If you like, you can add a [texture pack](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/447#issue-2433547959).
+    1. Download a `.rtz` file from Darío's PR.
+    2. Unzip the file ending in .001, and place the resulting `.rtz` in your mods folder.
+5. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
+6. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
+7. Go nuts.
 
 ## FAQ
 
