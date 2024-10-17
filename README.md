@@ -9,9 +9,12 @@
 4. Generate a multiworld, and host the game either locally or on the website.
 
 ### Mod Setup
-1. Download [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/497).
-    1. If on Windows, download `Zelda64Recompiled-Windows-RelWithDebInfo.zip`.
-    2. If on Linux, download `Zelda64Recompiled-Linux-x64-Release.zip` (or `Zelda64Recompiled-AppImage-X64-Release.zip` if you prefer the AppImage).
+1. Download Zelda64Recomp:
+    - [Zelda64Recompiled-Windows.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067011142.zip)
+    - [Zelda64Recompiled-Linux-X64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067011982.zip)
+    - [Zelda64Recompiled-Linux-ARM64-Release.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067007137.zip)
+    - [Zelda64Recompiled-AppImage-X64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067011977.zip)
+    - [Zelda64Recompiled-AppImage-ARM64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2067008504.zip)
 2. Download the [mods](https://github.com/LittlestCube/MMRecompRando/releases/latest), as well as `apconnect.txt`.
 3. Place the mods within the zip into the Zelda64Recomp mods folder.
     1. If on Windows, this is located at `C:\Users\<username>\AppData\Local\Zelda64Recompiled\mods`.
