@@ -9,6 +9,7 @@ RECOMP_IMPORT("*", int recomp_set_moon_crash_resets_save(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_fd_anywhere(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_no_bow_epona_fix(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_allow_no_ocarina_tf(bool new_val));
+RECOMP_IMPORT("*", int recomp_set_h_and_d_no_sword_fix(bool new_val));
 
 RECOMP_IMPORT(".", void rando_init());
 
@@ -25,6 +26,7 @@ void call_rando_init()
     recomp_set_fd_anywhere(true);
     recomp_set_no_bow_epona_fix(true);
     recomp_set_allow_no_ocarina_tf(true);
+    recomp_set_h_and_d_no_sword_fix(true);
 
     dsot_set_skip_dsot_cutscene(true);
 }
