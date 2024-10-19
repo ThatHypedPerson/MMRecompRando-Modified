@@ -384,6 +384,7 @@ void update_rando(PlayState* play) {
 
         if (rando_get_death_link_enabled() && rando_get_death_link_pending() && play->pauseCtx.state == 0) {
             Play_KillPlayer();
+            rando_reset_death_link_pending();
         }
     }
 }
