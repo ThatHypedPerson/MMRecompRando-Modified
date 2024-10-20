@@ -24,6 +24,7 @@
     1. Download both `.7z` files from one of the `.rtz` links in Darío's PR.
     2. Unzip the file ending in .001, and place the resulting `.rtz` in your mods folder.
 6. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
+    - MAKE SURE it is NOT named `apconnect.txt.txt`.
 7. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
 8. Go nuts.
 
