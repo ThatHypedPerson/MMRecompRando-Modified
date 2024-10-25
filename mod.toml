@@ -11,7 +11,7 @@ id = "mm_recomp_rando"
 version = "0.2.3"
 
 # Authors of this mod.
-authors = [ "LittleCube", "dcvz", "CelestialKitsune", "VincentsSin" ]
+authors = [ "dcvz", "CelestialKitsune", "VincentsSin", "LittleCube" ]
 
 # ID of the target recomp game.
 game_id = "mm"

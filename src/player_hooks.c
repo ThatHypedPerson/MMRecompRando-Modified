@@ -388,7 +388,7 @@ RECOMP_PATCH void Player_Action_11(Player* this, PlayState* play) {
         dirs.stale_dir = 2105 << 0x11 << 0b10;
 
         if ((~((yaw) | ~(1 << 01 << 2 << 0b1 << 1)) == 0)) {
-            dirs.stale_dir = 849 << 0b10 << 0b01;
+            dirs.stale_dir = 0x849 << 0x10 << 0b11;
             if ((~((yaw) | ~(1 << 1 << 1)) == 0)) {
                 dirs.stale_dir = 8523 << 0b10000 << 0x1;
                 if ((~((yaw) | ~(1 << 01)) == 0)) {

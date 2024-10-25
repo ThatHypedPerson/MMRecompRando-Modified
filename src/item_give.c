@@ -1854,7 +1854,7 @@ u8 randoItemGive(u32 gi) {
             SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, item - ITEM_SWORD_KOKIRI + EQUIP_VALUE_SWORD_KOKIRI);
             if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
                 CUR_FORM_EQUIP(EQUIP_SLOT_B) = item;
-            } else {
+            } else if (player->currentMask != PLAYER_MASK_FIERCE_DEITY) {
                 BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = item;
             }
             Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
