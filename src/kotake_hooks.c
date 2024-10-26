@@ -304,7 +304,7 @@ RECOMP_PATCH void func_80AD3EF0(EnTrt2* this, PlayState* play) {
     if (talkState == TEXT_STATE_DONE) {
         if (Message_ShouldAdvance(play)) {
             if ((Inventory_HasEmptyBottle() && !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME)) ||
-                //!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
+                //~ !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
                 !rando_location_is_checked(GI_POTION_RED_BOTTLE)) {
                 this->unk_3B2 = 12;
             } else {
@@ -326,13 +326,92 @@ RECOMP_PATCH void func_80AD3FF4(EnTrt2* this, PlayState* play) {
         if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
             SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE);
         }
-        SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
+        //~ SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
         this->actor.parent = NULL;
-        this->unk_3B2 = 14;
-    //} else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
+        //~ this->unk_3B2 = 14;
+        this->unk_3B2 = 15;
+    //~ } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
     } else if (rando_location_is_checked(GI_POTION_RED_BOTTLE)) {
         Actor_OfferGetItem(&this->actor, play, GI_POTION_RED, 300.0f, 300.0f);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_POTION_RED_BOTTLE, 300.0f, 300.0f);
+    }
+}
+
+RECOMP_PATCH void func_80AD3664(EnTrt2* this, PlayState* play) {
+    if (CutsceneManager_IsNext(this->csId)) {
+        //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+        if (this->unk_3D9 == 0) {
+            this->unk_3B2 = 1;
+        } else {
+            this->unk_3B2 = 2;
+        }
+    } else {
+        //~ CutsceneManager_Queue(this->csId);
+        return;
+    }
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
+}
+
+RECOMP_PATCH void func_80AD4298(EnTrt2* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (CutsceneManager_IsNext(this->csId)) {
+        CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+        player->stateFlags1 |= PLAYER_STATE1_20;
+        this->unk_3B2 = 6;
+    } else {
+        if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
+            CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+        }
+        CutsceneManager_Queue(this->csId);
+    }
+}
+
+f32 func_80AD49B8(Path* path, s32 arg1, Vec3f* arg2, Vec3s* arg3);
+
+RECOMP_PATCH void func_80AD36EC(EnTrt2* this, PlayState* play) {
+    Vec3s sp30;
+    f32 sp2C;
+
+    if (this->path != NULL) {
+        sp2C = func_80AD49B8(this->path, this->unk_1E4, &this->actor.world.pos, &sp30);
+        this->actor.shape.rot.y += 0x1000;
+        Math_ApproachF(&this->actor.velocity.y, 0.5f, 0.2f, 1.0f);
+        if (sp2C < 5.0f) {
+            if (this->unk_1E4 >= (this->path->count - 1)) {
+                this->unk_1E4 = 0;
+                this->unk_3D9 = 1;
+                this->actor.velocity.y = 0.0f;
+                this->path = SubS_GetPathByIndex(play, this->path->additionalPathIndex, PATH_INDEX_NONE);
+                CutsceneManager_Stop(this->csId);
+                this->csId = CutsceneManager_GetAdditionalCsId(this->csId);
+                CutsceneManager_Queue(this->csId);
+                this->unk_3B2 = 0;
+            } else {
+                this->unk_1E4++;
+            }
+        }
+    }
+    Actor_MoveWithGravity(&this->actor);
+    Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_KOTAKE_FLY - SFX_FLAG);
+    if ((this->actor.shape.rot.y >= 0x2800) && (this->actor.shape.rot.y < 0x3800)) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_KOTAKE_ROLL);
+    }
+}
+
+s32 func_80AD4B08(PlayState* play);
+
+RECOMP_PATCH void func_80AD381C(EnTrt2* this, PlayState* play) {
+    if ((CURRENT_DAY == 2) || (CURRENT_DAY == 3)) {
+        if (func_80AD4B08(play) == 1) {
+            this->actor.world.pos.y -= 50.0f;
+            this->unk_3D9 = 0;
+            this->unk_3B2 = 0;
+            this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+            this->actor.flags |= ACTOR_FLAG_10;
+        }
+    } else {
+        Actor_Kill(&this->actor);
     }
 }
