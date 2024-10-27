@@ -43,7 +43,7 @@ else
 endif
 
 endlib:
-	clang-cl build/mod_recompiled.c -Wno-macro-redefined -fuse-ld=lld -Z7 /Ioffline_build -MD -O2 /link /DLL /OUT:$@
+	clang-cl build/mod_recompiled.c -Wno-macro-redefined -fuse-ld=lld -Z7 /Ioffline_build -MD -O2 /link /DLL /OUT:$(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).dll
 
 offline: $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).dll
 
@@ -61,7 +61,7 @@ else
 endif
 
 endlib:
-	clang build/mod_recompiled.c -Wno-macro-redefined -shared -fvisibility=hidden -fPIC -O2 -Ioffline_build -o $@
+	clang build/mod_recompiled.c -Wno-macro-redefined -shared -fvisibility=hidden -fPIC -O2 -Ioffline_build -o $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).so
 
 offline: $(OUTPUT_NAME)/$(OUTPUT_NAME_W_VER).so
 
