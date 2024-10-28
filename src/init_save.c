@@ -94,6 +94,12 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
 
     gSaveContext.save.hasTatl = true;
 
+    // start with basic consumables
+    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
+    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_STICK] = 10;
+    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
+    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
+
     gSaveContext.save.saveInfo.horseData.sceneId = SCENE_F01;
     gSaveContext.save.saveInfo.horseData.pos.x = -1420;
     gSaveContext.save.saveInfo.horseData.pos.y = 257;
