@@ -349,6 +349,11 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
         //Inventory_DeleteItem(ITEM_MASK_FIERCE_DEITY, SLOT(ITEM_MASK_FIERCE_DEITY));
     }
 
+    // add chateau back into inventory if used this cycle
+    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI)) {
+        gSaveContext.save.saveInfo.inventory.items[SLOT_BOTTLE_1] = ITEM_CHATEAU;
+    }
+
     for (i = 0; i < ARRAY_COUNT(sPersistentCycleWeekEventRegs); i++) {
         u16 isPersistentBits = sPersistentCycleWeekEventRegs[i];
 
