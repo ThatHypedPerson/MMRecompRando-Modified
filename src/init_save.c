@@ -95,6 +95,7 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.save.hasTatl = true;
 
     // start with basic consumables
+    gSaveContext.save.saveInfo.playerData.rupees = 99;
     gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
     gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_STICK] = 10;
     gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
