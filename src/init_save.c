@@ -101,6 +101,8 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
     gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
 
+    gSaveContext.save.timeSpeedOffset = -2;
+
     gSaveContext.save.saveInfo.horseData.sceneId = SCENE_F01;
     gSaveContext.save.saveInfo.horseData.pos.x = -1420;
     gSaveContext.save.saveInfo.horseData.pos.y = 257;
@@ -301,7 +303,7 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
     s32 i;
     u8 item;
 
-    gSaveContext.save.timeSpeedOffset = 0;
+    // gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.eventDayCount = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
