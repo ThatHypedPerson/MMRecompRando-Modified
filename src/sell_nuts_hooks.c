@@ -52,9 +52,64 @@ typedef struct EnSellnuts {
     /* 0x374 */ f32 unk_374;
 } EnSellnuts; // size = 0x378
 
+extern AnimationHeader gBusinessScrubStandingAnim;
+extern AnimationHeader gBusinessScrubWalkAnim;
+extern AnimationHeader gBusinessScrubRiseUpAnim;
+extern AnimationHeader gBusinessScrubJumpAnim;
+extern AnimationHeader gBusinessScrubBurrowAnim;
+extern AnimationHeader gBusinessScrubExcitedStartAnim;
+extern AnimationHeader gBusinessScrubExcitedLoopAnim;
+extern AnimationHeader gBusinessScrubExcitedEndAnim;
+extern AnimationHeader gBusinessScrubTakeOffHatAnim;
+extern AnimationHeader gBusinessScrubFlyStartAnim;
+extern AnimationHeader gBusinessScrubFlyLoopAnim;
+extern AnimationHeader gBusinessScrubShockedStartAnim;
+extern AnimationHeader gBusinessScrubShockedShakeHeadAnim;
+extern AnimationHeader gBusinessScrubShockedPoundAnim;
+extern AnimationHeader gBusinessScrubShockedEndAnim;
+extern AnimationHeader gBusinessScrubThinkAnim;
+extern AnimationHeader gBusinessScrubBobAnim;
+extern AnimationHeader gBusinessScrubBurrowAnim;
+extern AnimationHeader gBusinessScrubBurrowAnim;
+extern AnimationHeader gBusinessScrubBurrowAnim;
+extern AnimationHeader gBusinessScrubFlyLoopAnim;
+extern AnimationHeader gBusinessScrubTakeOffHatAnim;
+extern AnimationHeader gBusinessScrubFlyEndAnim;
+
+static AnimationInfoS sAnimationInfo[] = {
+    { &gBusinessScrubStandingAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubWalkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubRiseUpAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubJumpAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubBurrowAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubExcitedStartAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubExcitedLoopAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubExcitedEndAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubTakeOffHatAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubFlyStartAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubFlyLoopAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubShockedStartAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubShockedShakeHeadAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubShockedPoundAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubShockedEndAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubThinkAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubBobAnim, 1.0f, 0, -1, ANIMMODE_LOOP, -4 },
+    { &gBusinessScrubBurrowAnim, 1.0f, 8, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubBurrowAnim, 1.0f, 4, -1, ANIMMODE_ONCE, -4 },
+    { &gBusinessScrubBurrowAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubFlyLoopAnim, 1.0f, 0, -1, ANIMMODE_LOOP, 0 },
+    { &gBusinessScrubTakeOffHatAnim, -1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+    { &gBusinessScrubFlyEndAnim, 1.0f, 0, -1, ANIMMODE_ONCE, 0 },
+};
+
+static u16 D_80ADD930[] = { 0x0619, 0x0613, 0x0613 };
+
 bool given = false;
 
+void func_80ADAE64(EnSellnuts* this);
+void func_80ADB0D8(EnSellnuts* this, PlayState* play);
 void func_80ADBCE4(EnSellnuts* this, PlayState* play);
+void func_80ADC2CC(EnSellnuts* this, PlayState* play);
 
 RECOMP_PATCH void func_80ADBBEC(EnSellnuts* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
@@ -64,5 +119,119 @@ RECOMP_PATCH void func_80ADBBEC(EnSellnuts* this, PlayState* play) {
         this->actionFunc = func_80ADBCE4;
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_DEED_LAND, 300.0f, 300.0f);
+    }
+}
+
+void func_80ADC580(EnSellnuts* this, PlayState* play);
+s32 func_80ADCE4C(EnSellnuts* this, Path* path, s32 arg2);
+f32 func_80ADCFE8(Path* path, s32 arg1, Vec3f* pos, Vec3s* arg3);
+
+RECOMP_PATCH void func_80ADC37C(EnSellnuts* this, PlayState* play) {
+    Vec3s sp30;
+    f32 sp2C;
+
+    this->actor.velocity.y = 0.0f;
+    this->actor.gravity = 0.0f;
+    if (this->path != NULL) {
+        sp2C = func_80ADCFE8(this->path, this->unk_334, &this->actor.world.pos, &sp30);
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
+            sp30.y = this->actor.wallYaw;
+        }
+        Math_SmoothStepToS(&this->actor.world.rot.y, sp30.y, 0xA, 0x12C, 0);
+        this->actor.shape.rot.y = this->actor.world.rot.y;
+        this->unk_342 = 0x1000;
+        this->unk_344 += this->unk_364;
+        this->actor.world.rot.x = -sp30.x;
+        if (func_80ADCE4C(this, this->path, this->unk_334) && (sp2C < 500.0f)) {
+            if (this->unk_334 >= (this->path->count - 1)) {
+                CutsceneManager_Stop(this->csId);
+                this->actionFunc = func_80ADC580;
+            } else {
+                this->unk_334++;
+            }
+        }
+    } else if (this->actor.playerHeightRel > 500.0f) {
+        CutsceneManager_Stop(this->csId);
+        this->actionFunc = func_80ADC580;
+    }
+
+    Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
+    Actor_MoveWithoutGravity(&this->actor);
+    if (this->unk_366 == 2) {
+        if (CutsceneManager_IsNext(this->csId)) {
+            CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            this->unk_366 = 3;
+        } else {
+            CutsceneManager_Queue(this->csId);
+            this->unk_366 = 3;
+            return;
+        }
+    } else if ((this->unk_366 == 1) && (this->unk_368 == 20)) {
+        CutsceneManager_Stop(this->csId);
+        this->csId = CutsceneManager_GetAdditionalCsId(this->csId);
+        CutsceneManager_Queue(this->csId);
+        this->unk_366 = 2;
+    }
+
+    this->unk_368++;
+}
+
+void func_80ADC8C4(EnSellnuts* this, PlayState* play);
+
+RECOMP_PATCH void func_80ADC7B4(EnSellnuts* this, PlayState* play) {
+    s32 talkState = Message_GetState(&play->msgCtx);
+
+    if (this->unk_366 == 0) {
+        if (CutsceneManager_IsNext(this->csId)) {
+            CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            this->unk_366 = 1;
+        } else {
+            if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
+                CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+            }
+            CutsceneManager_Queue(this->csId);
+        }
+    } else if ((this->unk_366 == 1) && (talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
+        play->msgCtx.stateTimer = 4;
+        this->unk_366 = 0;
+        CutsceneManager_Stop(this->csId);
+        this->csId = CutsceneManager_GetAdditionalCsId(this->csId);
+        CutsceneManager_Queue(this->csId);
+        this->unk_338 |= 8;
+        this->actionFunc = func_80ADC8C4;
+    }
+}
+
+s32 func_808387A0(PlayState* play, Player* this);
+
+RECOMP_PATCH void func_80ADBE80(EnSellnuts* this, PlayState* play) {
+    s16 currentFrame = this->skelAnime.curFrame;
+    s16 frameCount = Animation_GetLastFrame(sAnimationInfo[this->unk_34C].animation);
+    Player* player = GET_PLAYER(play);
+
+    func_80ADAE64(this);
+    if (this->unk_366 == 0) {
+        if (CutsceneManager_IsNext(this->csId)) {
+            func_800B7298(play, NULL, PLAYER_CSACTION_END);
+            this->unk_366 = 1;
+        } else {
+            if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
+                CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+            }
+            CutsceneManager_Queue(this->csId);
+            return;
+        }
+    }
+
+    if (currentFrame == frameCount) {
+        this->unk_350 = 4;
+        this->unk_34C = 19;
+        SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, 19);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_DOWN);
+        this->unk_338 &= ~1;
+        this->unk_338 |= 8;
+        this->unk_32C = this->actor.world.pos.y;
+        this->actionFunc = func_80ADC2CC;
     }
 }
