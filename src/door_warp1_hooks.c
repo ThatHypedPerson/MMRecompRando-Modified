@@ -5,6 +5,10 @@
 
 struct DoorWarp1;
 
+#define FLAGS 0x00000000
+
+#define THIS ((DoorWarp1*)thisx)
+
 typedef void (*DoorWarp1ActionFunc)(struct DoorWarp1*, PlayState*);
 
 #define DOORWARP1_GET_FF(thisx) ((thisx)->params & 0xFF)
@@ -62,6 +66,13 @@ typedef struct DoorWarp1 {
     /* 0x208 */ u8 cueId;
 } DoorWarp1; // size = 0x20C
 
+static InitChainEntry sInitChain[] = {
+    ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneForward, 4000, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneScale, 800, ICHAIN_CONTINUE),
+    ICHAIN_F32(uncullZoneDownward, 4000, ICHAIN_STOP),
+};
+
 s32 func_808B849C(DoorWarp1* this, PlayState* play);
 void func_808B9E94(DoorWarp1* this, PlayState* play);
 void DoorWarp1_SetupAction(DoorWarp1* this, DoorWarp1ActionFunc actionFunc);
@@ -111,6 +122,75 @@ RECOMP_PATCH void func_808B9BE8(DoorWarp1* this, PlayState* play) {
         DoorWarp1_SetupAction(this, func_808B9CE8);
     } else {
         DoorWarp1_SetupAction(this, func_808B9F10);
+    }
+}
+
+extern CollisionHeader gWarpBossWarpPlatformCol;
+
+void func_808B8568(DoorWarp1* this, PlayState* play);
+void func_808B8924(DoorWarp1* this, PlayState* play);
+void func_808B8A7C(DoorWarp1* this, PlayState* play);
+void func_808B8C48(DoorWarp1* this, PlayState* play);
+void func_808B8E78(DoorWarp1* this, PlayState* play);
+
+RECOMP_PATCH void DoorWarp1_Init(Actor* thisx, PlayState* play) {
+    DoorWarp1* this = THIS;
+
+    this->unk_1CC = 0;
+    this->unk_202 = 0;
+    this->unk_203 = 0;
+    this->unk_1A0 = NULL;
+    this->unk_1C0 = 0.0f;
+    Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
+    ActorShape_Init(&this->dyna.actor.shape, 0.0f, NULL, 0.0f);
+
+    this->unk_1D3 = 0;
+    this->unk_1D4 = 0;
+    this->unk_203 = 0;
+    this->unk_204 = 1.0f;
+
+    SET_WEEKEVENTREG(WEEKEVENTREG_86_80);
+
+    switch (DOORWARP1_GET_FF(&this->dyna.actor)) {
+        case ENDOORWARP1_FF_0:
+        case ENDOORWARP1_FF_1:
+        case ENDOORWARP1_FF_2:
+        case ENDOORWARP1_FF_3:
+        case ENDOORWARP1_FF_4:
+        case ENDOORWARP1_FF_5:
+            func_808B8568(this, play);
+            break;
+    }
+
+    switch (DOORWARP1_GET_FF(&this->dyna.actor)) {
+        case ENDOORWARP1_FF_0:
+            func_808B8924(this, play);
+            break;
+
+        case ENDOORWARP1_FF_1:
+            func_808B8A7C(this, play);
+            break;
+
+        case ENDOORWARP1_FF_2:
+        case ENDOORWARP1_FF_3:
+        case ENDOORWARP1_FF_4:
+        case ENDOORWARP1_FF_5:
+            this->unk_1D3 = 1;
+            DynaPolyActor_Init(&this->dyna, 0);
+            DynaPolyActor_LoadMesh(play, &this->dyna, &gWarpBossWarpPlatformCol);
+            func_808B8C48(this, play);
+            break;
+
+        case ENDOORWARP1_FF_6:
+            func_808B8E78(this, play);
+            break;
+    }
+
+    if ((play->sceneId == SCENE_MITURIN_BS) || (play->sceneId == SCENE_HAKUGIN_BS) ||
+        (play->sceneId == SCENE_INISIE_BS) || (play->sceneId == SCENE_SEA_BS)) {
+        Environment_StopTime();
+        play->interfaceCtx.restrictions.songOfTime = 1;
+        play->interfaceCtx.restrictions.songOfSoaring = 1;
     }
 }
 /*
