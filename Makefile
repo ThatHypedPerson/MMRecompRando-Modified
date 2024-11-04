@@ -88,4 +88,4 @@ clean:
 
 -include $(C_DEPS)
 
-.PHONY: endlib clean
+.PHONY: endlib offline clean
