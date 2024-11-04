@@ -138,7 +138,6 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     this->movementFlags = 0;
     vanillaType = ENBOX_GET_TYPE(&this->dyna.actor);
-    recomp_printf("box type is %d, item type is %d\n", vanillaType, rando_get_location_type(LOCATION_ENBOX));
 
     switch (rando_get_location_type(LOCATION_ENBOX)) {
         case 0:
@@ -168,9 +167,9 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     thisx->shape.rot.x = this->dyna.actor.world.rot.x;
 
     if (LOCATION_ENBOX == 0x061700) {
-        if (CUR_FORM == PLAYER_FORM_GORON) {
+        if (ENBOX_GET_ITEM(&this->dyna.actor) == 0x0C) {
             if (rando_location_is_checked(LOCATION_ENBOX)) {
-                this->getItemId = GI_RUPEE_PURPLE;
+                this->getItemId = GI_RUPEE_HUGE;
             } else {
                 this->getItemId = rando_get_item_id(LOCATION_ENBOX);
             }
@@ -322,7 +321,7 @@ RECOMP_PATCH void EnBox_WaitOpen(EnBox* this, PlayState* play) {
         Animation_Change(&this->skelAnime, anim, playSpeed, 0.0f, endFrame, ANIMMODE_ONCE, 0.0f);
 
         // Account for Treasure Game chest (always same location)
-        if (LOCATION_ENBOX != 0x061700 || ENBOX_GET_ITEM((Actor*) this) == 0x0C) {
+        if (LOCATION_ENBOX != 0x061700 || ENBOX_GET_ITEM(&this->dyna.actor) == 0x0C) {
             rando_send_location(LOCATION_ENBOX);
             recomp_printf("box location: 0x%06X, box item: 0x%06X\n", LOCATION_ENBOX, ENBOX_GET_ITEM((Actor*) this));
         }
@@ -350,7 +349,6 @@ RECOMP_PATCH void EnBox_WaitOpen(EnBox* this, PlayState* play) {
         Actor_OffsetOfPointInActorCoords(&this->dyna.actor, &offset, &player->actor.world.pos);
         if ((offset.z > -50.0f) && (offset.z < 0.0f) && (fabsf(offset.y) < 10.0f) && (fabsf(offset.x) < 20.0f) &&
             Player_IsFacingActor(&this->dyna.actor, 0x3000, play)) {
-            this->getItemId = rando_get_item_id(LOCATION_ENBOX);
             if (((this->getItemId == GI_HEART_PIECE) || (this->getItemId == GI_BOTTLE)) &&
                 Flags_GetCollectible(play, this->collectableFlag)) {
                 this->getItemId = GI_RECOVERY_HEART;
@@ -362,9 +360,7 @@ RECOMP_PATCH void EnBox_WaitOpen(EnBox* this, PlayState* play) {
                 this->getItemId = GI_RECOVERY_HEART;
             }
 
-            if (LOCATION_ENBOX == 0x061700 && ENBOX_GET_ITEM((Actor*) this) == 0x0C && rando_location_is_checked(LOCATION_ENBOX)) {
-                Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, 0, 50.0f, 10.0f, false, false);
-            } else if (LOCATION_ENBOX == 0x061700) {
+            if (LOCATION_ENBOX == 0x061700) {
                 Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, 0, 50.0f, 10.0f, false, false);
             } else {
                 Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, LOCATION_ENBOX, 50.0f, 10.0f, false, true);
