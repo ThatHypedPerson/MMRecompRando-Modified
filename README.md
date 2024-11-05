@@ -4,7 +4,7 @@
 
 ### Archipelago Setup
 1. Know [Archipelago](https://archipelago.gg/tutorial/Archipelago/setup/en).
-2. Download the [apworld](https://github.com/LittlestCube/Archipelago/releases/latest).
+2. Download the [apworld](https://github.com/LittleCube-hax/MMRecompRando/releases/latest).
 3. Place the apworld into `Archipelago/custom_worlds/`.
 4. Generate a multiworld, and host the game either locally or on the website.
 
@@ -23,10 +23,11 @@
 5. If you like, you can add a [texture pack](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/447#issue-2433547959).
     1. Download both `.7z` files from one of the `.rtz` links in Darío's PR.
     2. Unzip the file ending in .001, and place the resulting `.rtz` in your mods folder.
-6. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
+6. You can also download [poptracker](https://github.com/black-sliver/PopTracker/releases/latest) along with Seto's [pack](https://github.com/seto10987/Majoras-Mask-AP-PopTracker-Pack/releases/latest)
+7. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
     - MAKE SURE it is NOT named `apconnect.txt.txt`.
-7. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
-8. Go nuts.
+8. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
+9. Go nuts.
 
 ## FAQ
 

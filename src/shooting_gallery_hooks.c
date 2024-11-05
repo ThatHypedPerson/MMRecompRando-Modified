@@ -101,12 +101,47 @@ typedef struct EnSyatekiMan {
     /* 0x284 */ s16 prevTextId;
 } EnSyatekiMan; // size = 0x288
 
-void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play);
+GetItemId extraItem = 0;
+GetItemId offeringItem = 0;
+
+void EnSyatekiMan_SetupIdle(EnSyatekiMan* this, PlayState* play);
+void EnSyatekiMan_Town_Talk(EnSyatekiMan* this, PlayState* play);
+
+RECOMP_PATCH void EnSyatekiMan_Town_GiveReward(EnSyatekiMan* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (CURRENT_DAY != 3) {
+        if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
+            player->stateFlags1 &= ~PLAYER_STATE1_20;
+            this->score = 0;
+            this->shootingGameState = SG_GAME_STATE_NONE;
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_WAIT);
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_KICKOUT_TIME_PASSED);
+            this->actionFunc = EnSyatekiMan_SetupIdle;
+        }
+    } else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
+        // This may be our last day in business...
+        Message_StartTextbox(play, 0x408, &this->actor);
+        this->prevTextId = 0x408;
+        player->stateFlags1 &= ~PLAYER_STATE1_20;
+        this->actor.flags &= ~ACTOR_FLAG_10000;
+        this->score = 0;
+        this->shootingGameState = SG_GAME_STATE_NONE;
+        this->actionFunc = EnSyatekiMan_Town_Talk;
+    } else {
+        Actor_OfferTalkExchangeEquiCylinder(&this->actor, play, 500.0f, PLAYER_IA_MINUS1);
+    }
+}
 
 RECOMP_PATCH void EnSyatekiMan_Town_SetupGiveReward(EnSyatekiMan* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
+    if (offeringItem != 0) {
+        Actor_OfferGetItem(&this->actor, play, offeringItem, 500.0f, 100.0f);
+    }
+
     if (Actor_HasParent(&this->actor, play)) {
+        offeringItem = 0;
         if (this->prevTextId == 0x407) {
             if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_TOWN_SHOOTING_GALLERY_QUIVER_UPGRADE)) {
                 SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_TOWN_SHOOTING_GALLERY_QUIVER_UPGRADE);
@@ -120,13 +155,21 @@ RECOMP_PATCH void EnSyatekiMan_Town_SetupGiveReward(EnSyatekiMan* this, PlayStat
         }
 
         this->actor.parent = NULL;
-        this->actionFunc = EnSyatekiMan_Town_GiveReward;
-    } else {
+        if (extraItem == 0) {
+            this->actionFunc = EnSyatekiMan_Town_GiveReward;
+        } else {
+            offeringItem = extraItem;
+            extraItem = 0;
+        }
+    } else if (offeringItem == 0) {
         if (this->score == 50 && !(!rando_location_is_checked(GI_QUIVER_40) && rando_location_is_checked(LOCATION_TOWN_GALLERY_PERFECT))) {
             if (rando_location_is_checked(LOCATION_TOWN_GALLERY_PERFECT)) {
                 Actor_OfferGetItem(&this->actor, play, GI_RUPEE_HUGE, 500.0f, 100.0f);
             } else {
                 Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
+                if (!rando_location_is_checked(GI_QUIVER_40)) {
+                    extraItem = GI_QUIVER_40;
+                }
             }
         } else {
             if (rando_location_is_checked(GI_QUIVER_40)) {
@@ -135,13 +178,54 @@ RECOMP_PATCH void EnSyatekiMan_Town_SetupGiveReward(EnSyatekiMan* this, PlayStat
                 Actor_OfferGetItem(&this->actor, play, GI_QUIVER_40, 500.0f, 100.0f);
             }
         }
-
-        player->actor.shape.rot.y = -0x8000;
-        player->actor.velocity.z = 0.0f;
-        player->actor.velocity.x = 0.0f;
-        player->actor.world.rot.y = player->actor.shape.rot.y;
     }
 }
+
+typedef enum {
+    /* 0 */ SG_OCTO_TYPE_NONE,
+    /* 1 */ SG_OCTO_TYPE_RED,
+    /* 2 */ SG_OCTO_TYPE_BLUE,
+    /* 3 */ SG_OCTO_TYPE_MAX
+} ShootingGalleryOctorokType;
+
+static Vec3f sTownFierceDeityPlayerPos = { -20.0f, 20.0f, 198.0f };
+static Vec3f sTownPlayerPos = { -20.0f, 40.0f, 175.0f };
+
+void EnSyatekiMan_Town_RunGame(EnSyatekiMan* this, PlayState* play);
+
+//~ RECOMP_PATCH void EnSyatekiMan_Town_StartGame(EnSyatekiMan* this, PlayState* play) {
+    //~ static s16 sGameStartTimer = 30;
+    //~ Player* player = GET_PLAYER(play);
+
+    //~ if (sGameStartTimer == 30) {
+        //~ if (player->transformation == PLAYER_FORM_FIERCE_DEITY) {
+            //~ player->actor.world.pos = sTownFierceDeityPlayerPos;
+        //~ } else {
+            //~ player->actor.world.pos = sTownPlayerPos;
+        //~ }
+
+        //~ player->actor.prevPos = player->actor.world.pos;
+        //~ player->actor.shape.rot.y = -0x8000;
+        //~ player->actor.world.rot.y = player->actor.shape.rot.y;
+        //~ play->unk_18790(play, -0x8000);
+        //~ player->stateFlags1 |= PLAYER_STATE1_20;
+        //~ sGameStartTimer--;
+    //~ } else if (sGameStartTimer > 0) {
+        //~ player->actor.shape.rot.y = -0x8000;
+        //~ player->actor.world.rot.y = player->actor.shape.rot.y;
+        //~ sGameStartTimer--;
+    //~ } else if (sGameStartTimer == 0) {
+        //~ player->stateFlags1 &= ~PLAYER_STATE1_20;
+        //~ this->score = 50;
+        //~ this->flagsIndex = 0;
+        //~ this->octorokState = SG_OCTO_STATE_INITIAL;
+        //~ this->lastHitOctorokType = SG_OCTO_TYPE_NONE;
+        //~ sGameStartTimer = 30;
+        //~ Interface_StartTimer(TIMER_ID_MINIGAME_1, 75);
+        //~ this->actor.draw = NULL;
+        //~ this->actionFunc = EnSyatekiMan_Town_RunGame;
+    //~ }
+//~ }
 
 void EnSyatekiMan_Town_Talk(EnSyatekiMan* this, PlayState* play);
 
