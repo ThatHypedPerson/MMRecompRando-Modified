@@ -127,9 +127,6 @@ RECOMP_PATCH void EnSyatekiMan_Town_SetupGiveReward(EnSyatekiMan* this, PlayStat
                 Actor_OfferGetItem(&this->actor, play, GI_RUPEE_HUGE, 500.0f, 100.0f);
             } else {
                 Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
-                if (!rando_location_is_checked(GI_QUIVER_40)) {
-                    rando_send_location(GI_QUIVER_40);
-                }
             }
         } else {
             if (rando_location_is_checked(GI_QUIVER_40)) {
