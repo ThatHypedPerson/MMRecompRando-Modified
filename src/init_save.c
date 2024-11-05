@@ -22,6 +22,8 @@ void Sram_ClearHighscores(void);
 void Sram_GenerateRandomSaveFields(void);
 void Sram_ResetSave(void);
 
+bool drankChateau = false;
+
 void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_15_20);
     SET_WEEKEVENTREG(WEEKEVENTREG_59_04);
@@ -79,6 +81,12 @@ void Sram_SetInitialWeekEvents(void) {
 
     // skip the princess prison cutscene
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+
+    // restore chateau romani state after cycle reset
+    if(drankChateau) {
+        SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+        drankChateau = false;
+    }
 }
 
 RECOMP_PATCH void Sram_InitDebugSave(void) {
@@ -352,10 +360,8 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
         //Inventory_DeleteItem(ITEM_MASK_FIERCE_DEITY, SLOT(ITEM_MASK_FIERCE_DEITY));
     }
 
-    // add chateau back into inventory if used this cycle
-    if (CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI)) {
-        gSaveContext.save.saveInfo.inventory.items[SLOT_BOTTLE_1] = ITEM_CHATEAU;
-    }
+    // persistent chateau romani state
+    drankChateau = CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
 
     for (i = 0; i < ARRAY_COUNT(sPersistentCycleWeekEventRegs); i++) {
         u16 isPersistentBits = sPersistentCycleWeekEventRegs[i];
