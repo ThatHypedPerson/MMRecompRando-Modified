@@ -306,7 +306,11 @@ RECOMP_PATCH void EnGinkoMan_BankAward(EnGinkoMan* this, PlayState* play) {
             Actor_OfferGetItem(&this->actor, play, GI_WALLET_ADULT, 500.0f, 100.0f);
         }
     } else if (this->curTextId == 0x45C) {
-        Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);
+        if (rando_location_is_checked(LOCATION_BANK_500_REWARD)) {
+            Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);
+        } else {
+            Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_BANK_500_REWARD), LOCATION_BANK_500_REWARD, 500.0f, 100.0f, true, true);
+        }
     //} else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_HEART_PIECE)) {
     } else if (rando_location_is_checked(LOCATION_BANK_1000_REWARD)) {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);

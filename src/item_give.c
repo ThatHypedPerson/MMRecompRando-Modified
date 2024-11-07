@@ -1307,10 +1307,12 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
     return false;
 }
 
-#define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
-#define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
 #define ACTOR_ID_DEKU_PLAYGROUND_WORKER 0x1C9
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
+#define ACTOR_ID_BEAN_DADDY 0x0A5
+
+#define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
+#define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
 
 RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
@@ -1376,6 +1378,11 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         itemShuffled = true;
                         trueGI = rando_get_item_id(LOCATION_QUEST_BOTTLE);
                         rando_send_location(LOCATION_QUEST_BOTTLE);
+                    } else if (getItemId == GI_MAGIC_BEANS && actor->id == ACTOR_ID_BEAN_DADDY) {
+                        itemWorkaround = true;
+                        itemShuffled = true;
+                        trueGI = rando_get_item_id(LOCATION_BEAN_DADDY);
+                        rando_send_location(LOCATION_BEAN_DADDY);
                     } else if (getItemId == GI_RUPEE_PURPLE && actor->id == ACTOR_ID_DEKU_PLAYGROUND_WORKER && !rando_location_is_checked(LOCATION_PLAYGROUND_ANY_DAY)) {
                         // Deku Playground Any Day
                         rando_send_location(LOCATION_PLAYGROUND_ANY_DAY);
