@@ -361,7 +361,11 @@ RECOMP_PATCH void EnBox_WaitOpen(EnBox* this, PlayState* play) {
             }
 
             if (LOCATION_ENBOX == 0x061700) {
-                Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, 0, 50.0f, 10.0f, false, false);
+                if (ENBOX_GET_ITEM(&this->dyna.actor) == 0x0C && !rando_location_is_checked(LOCATION_ENBOX)) {
+                    Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, 0, 50.0f, 10.0f, false, true);
+                } else {
+                    Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, 0, 50.0f, 10.0f, false, false);
+                }
             } else {
                 Actor_OfferGetItemHook(&this->dyna.actor, play, -this->getItemId, LOCATION_ENBOX, 50.0f, 10.0f, false, true);
             }
