@@ -1308,6 +1308,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 }
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
+#define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
 #define ACTOR_ID_DEKU_PLAYGROUND_WORKER 0x1C9
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
 
@@ -1336,22 +1337,22 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                     item = getItem(getItemId);
                     drawIdChosen = false;
                     if ((getItemId == GI_NONE) ||
-                     (getItemId == GI_MAX) ||
-                     (item == ITEM_DEKU_STICK) ||
-                     ((item == ITEM_DEKU_STICKS_5) || (item == ITEM_DEKU_STICKS_10)) ||
-                     (item == ITEM_DEKU_NUT) ||
-                     ((item == ITEM_DEKU_NUTS_5) || (item == ITEM_DEKU_NUTS_10)) ||
-                     (item == ITEM_MAGIC_BEANS) ||
-                     ((item >= ITEM_BOMBCHUS_20) && (item <= ITEM_BOMBCHUS_5)) ||
-                     ((item >= ITEM_ARROWS_10) && (item <= ITEM_ARROWS_50)) ||
-                     (item == ITEM_MAGIC_JAR_SMALL) ||
-                     (item == ITEM_MAGIC_JAR_BIG) ||
-                     ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING)) ||
-                     ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
-                               (item == ITEM_HYLIAN_LOACH)) ||
-                     (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
-                                (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
-                                (item == ITEM_SEAHORSE_CAUGHT))) {
+                        (getItemId == GI_MAX) ||
+                        (item == ITEM_DEKU_STICK) ||
+                        ((item == ITEM_DEKU_STICKS_5) || (item == ITEM_DEKU_STICKS_10)) ||
+                        (item == ITEM_DEKU_NUT) ||
+                        ((item == ITEM_DEKU_NUTS_5) || (item == ITEM_DEKU_NUTS_10)) ||
+                        (item == ITEM_MAGIC_BEANS) ||
+                        ((item >= ITEM_BOMBCHUS_20) && (item <= ITEM_BOMBCHUS_5)) ||
+                        ((item >= ITEM_ARROWS_10) && (item <= ITEM_ARROWS_50)) ||
+                        (item == ITEM_MAGIC_JAR_SMALL) ||
+                        (item == ITEM_MAGIC_JAR_BIG) ||
+                        ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING)) ||
+                        ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
+                            (item == ITEM_HYLIAN_LOACH)) ||
+                        (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
+                            (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
+                            (item == ITEM_SEAHORSE_CAUGHT))) {
                     } else {
                         itemWorkaround = true;
                         itemShuffled = true;
@@ -1369,6 +1370,12 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         } else {
                             rando_send_location(LOCATION_QUEST_HEART_PIECE);
                         }
+                    } else if (getItemId == GI_BOTTLE) {
+                        recomp_printf("Actor bottle: 0x%06X\n", LOCATION_QUEST_BOTTLE);
+                        itemWorkaround = true;
+                        itemShuffled = true;
+                        trueGI = rando_get_item_id(LOCATION_QUEST_BOTTLE);
+                        rando_send_location(LOCATION_QUEST_BOTTLE);
                     } else if (getItemId == GI_RUPEE_PURPLE && actor->id == ACTOR_ID_DEKU_PLAYGROUND_WORKER && !rando_location_is_checked(LOCATION_PLAYGROUND_ANY_DAY)) {
                         // Deku Playground Any Day
                         rando_send_location(LOCATION_PLAYGROUND_ANY_DAY);
