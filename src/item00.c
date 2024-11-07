@@ -230,11 +230,7 @@ RECOMP_PATCH void EnItem00_Init(Actor* thisx, PlayState* play) {
     }
 
     if (sp30 == 0) {
-        if (shuffled) {
-            this->actionFunc = EnItem00_WaitForObject;
-        } else {
-            this->actionFunc = func_800A640C;
-        }
+        this->actionFunc = func_800A640C;
         this->unk152 = -1;
         return;
     }
@@ -346,6 +342,11 @@ RECOMP_PATCH void EnItem00_Update(Actor* thisx, PlayState* play) {
         this->unk14E = this->unk152;
     }
 
+    params = this->actor.params;
+    if (params == ITEM00_HEART_PIECE && !objectLoaded) {
+        EnItem00_WaitForObject(this, play);
+    }
+
     this->actionFunc(this, play);
 
     Math_SmoothStepToF(&this->actor.scale.x, this->unk154, 0.1f, this->unk154 * 0.1f, 0.0f);
@@ -367,7 +368,6 @@ RECOMP_PATCH void EnItem00_Update(Actor* thisx, PlayState* play) {
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
 
-    params = this->actor.params;
     if ((params == ITEM00_SHIELD_HERO) || (params == ITEM00_MAP) || (params == ITEM00_COMPASS)) {
         this->actor.shape.yOffset = fabsf(Math_CosS(this->actor.shape.rot.x) * 37.0f);
     }
@@ -564,20 +564,18 @@ RECOMP_PATCH void EnItem00_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnItem00_WaitForObject(EnItem00* this, PlayState* play) {
-    u16 objectId = getObjectId(this->getItemId);
-    s16 objectSlot = Object_GetSlot(&play->objectCtx, objectId);
     u8 sceneId = (play->sceneId == 0x00) ? 0x45 : play->sceneId;
     s16 getItemId = rando_get_item_id(LOCATION_HEART_PIECE);
+    u16 objectId = getObjectId(getItemId);
+    s16 objectSlot = Object_GetSlot(&play->objectCtx, objectId);
 
     if (isAP(getItemId)) {
-        this->actionFunc = func_800A640C;
         this->getItemId = getItemId;
         objectStatic = true;
         objectLoaded = true;
     } else if (!objectLoaded && !objectLoading && Object_IsLoaded(&play->objectCtx, objectSlot)) {
         this->actor.objectSlot = objectSlot;
         Actor_SetObjectDependency(play, &this->actor);
-        this->actionFunc = func_800A640C;
         this->getItemId = getItemId;
         objectStatic = true;
         objectLoaded = true;
@@ -586,7 +584,6 @@ void EnItem00_WaitForObject(EnItem00* this, PlayState* play) {
         objectLoading = true;
     } else if (osRecvMesg(&objectLoadQueue, NULL, OS_MESG_NOBLOCK) == 0) {
         objectLoading = false;
-        this->actionFunc = func_800A640C;
         this->getItemId = getItemId;
         objectLoaded = true;
     }
