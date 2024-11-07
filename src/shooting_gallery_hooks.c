@@ -9,8 +9,6 @@ struct EnSyatekiMan;
 
 typedef void (*EnSyatekiManActionFunc)(struct EnSyatekiMan*, PlayState*);
 
-#define LOCATION_TOWN_GALLERY_PERFECT 0x07011D
-
 #define BURLY_GUY_LIMB_MAX 0x10
 
 #define SG_MAN_GET_PATH_INDEX(thisx) (((thisx)->params & 0xFF00) >> 8)
@@ -311,7 +309,7 @@ RECOMP_PATCH void EnSyatekiMan_Swamp_SetupGiveReward(EnSyatekiMan* this, PlaySta
         } else if (this->score < SG_SWAMP_HEART_PIECE_SCORE) {
             Actor_OfferGetItem(&this->actor, play, GI_RUPEE_RED, 500.0f, 100.0f);
         } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_SWAMP_SHOOTING_GALLERY_HEART_PIECE)) {
-            Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
+            Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_SWAMP_GALLERY_PERFECT), LOCATION_SWAMP_GALLERY_PERFECT, 500.0f, 100.0f, true, true);
         } else {
             Actor_OfferGetItem(&this->actor, play, GI_RUPEE_PURPLE, 500.0f, 100.0f);
         }
