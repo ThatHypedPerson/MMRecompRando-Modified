@@ -217,7 +217,7 @@ RECOMP_PATCH void EnSyatekiMan_Town_StartGame(EnSyatekiMan* this, PlayState* pla
         sGameStartTimer--;
     } else if (sGameStartTimer == 0) {
         player->stateFlags1 &= ~PLAYER_STATE1_20;
-        this->score = 50;
+        this->score = 0;
         this->flagsIndex = 0;
         this->octorokState = SG_OCTO_STATE_INITIAL;
         this->lastHitOctorokType = SG_OCTO_TYPE_NONE;
