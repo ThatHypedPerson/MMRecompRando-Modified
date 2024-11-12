@@ -102,6 +102,7 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
 
     gSaveContext.save.hasTatl = true;
 
+    // TODO: move below to YAML options
     // start with basic consumables
     gSaveContext.save.saveInfo.playerData.rupees = 99;
     gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
@@ -110,6 +111,9 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
 
     gSaveContext.save.timeSpeedOffset = -2;
+
+    // TODO: hide song on quest screen + add playback text
+    SET_QUEST_ITEM(ITEM_SONG_SUN + QUEST_SONG_SUN);
 
     gSaveContext.save.saveInfo.horseData.sceneId = SCENE_F01;
     gSaveContext.save.saveInfo.horseData.pos.x = -1420;
