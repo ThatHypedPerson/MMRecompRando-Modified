@@ -365,7 +365,7 @@ RECOMP_PATCH void Player_Action_11(Player* this, PlayState* play) {
     PlayerAnimation_Update(play, &this->skelAnime);
 
     if (CHECK_BTN_ALL(sPlayerControlInput->cur.button, 0x6027)) {
-        this->actor.velocity.y = 30.0f;
+        this->actor.velocity.y = 60.0f;
     }
 
     if (!func_80847880(play, this)) {
