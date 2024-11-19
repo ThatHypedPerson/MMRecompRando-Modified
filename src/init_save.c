@@ -112,8 +112,8 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.cycleSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
     gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
 
-    gSaveContext.save.saveInfo.playerData.healthCapacity = 0x60;
-    gSaveContext.save.saveInfo.playerData.health = 0x60;
+    gSaveContext.save.saveInfo.playerData.healthCapacity = 0x30;
+    gSaveContext.save.saveInfo.playerData.health = 0x30;
 
     Sram_GenerateRandomSaveFields();
 
