@@ -279,7 +279,7 @@ void update_rando(PlayState* play) {
 
             s16 old_health = gSaveContext.save.saveInfo.playerData.health;
 
-            gSaveContext.save.saveInfo.playerData.healthCapacity = 0x60;
+            gSaveContext.save.saveInfo.playerData.healthCapacity = 0x30;
             gSaveContext.save.saveInfo.playerData.health = 0x30;
 
             if (GET_QUEST_HEART_PIECE_COUNT > 0) {
@@ -351,7 +351,7 @@ void update_rando(PlayState* play) {
                             continue;
                     }
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {
-                        old_health = 0x140;
+                        old_health = 0x170;
                     }
                 } else if (item_id == AP_ITEM_ID_STRAY_FAIRY_WOODFALL) {
                     continue;

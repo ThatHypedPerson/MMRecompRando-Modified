@@ -126,7 +126,6 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader;
     f32 startFrame;
     f32 endFrame;
-    u8 vanillaType;
 
     colHeader = NULL;
     startFrame = 0.0f;
@@ -137,7 +136,6 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
 
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     this->movementFlags = 0;
-    vanillaType = ENBOX_GET_TYPE(&this->dyna.actor);
 
     switch (rando_get_location_type(LOCATION_ENBOX)) {
         case 0:
@@ -183,17 +181,10 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     }
 
     if (Flags_GetTreasure(play, ENBOX_GET_CHEST_FLAG(&this->dyna.actor)) || this->getItemId == GI_NONE) {
-        switch (vanillaType) {
-            case ENBOX_TYPE_BIG_INVISIBLE:
-            case ENBOX_TYPE_BIG_ROOM_CLEAR:
-            case ENBOX_TYPE_BIG_SWITCH_FLAG:
-            case ENBOX_TYPE_BIG_SWITCH_FLAG_FALL:
-            case ENBOX_TYPE_SMALL_INVISIBLE:
-            case ENBOX_TYPE_SMALL_ROOM_CLEAR:
-            case ENBOX_TYPE_SMALL_SWITCH_FLAG:
-            case ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL:
-                Actor_Kill(&this->dyna.actor);
-                break;
+        if (LOCATION_ENBOX == 0x060700)
+        {
+            Actor_Kill(&this->dyna.actor);
+            return;
         }
         this->alpha = 255;
         this->iceSmokeTimer = 100;

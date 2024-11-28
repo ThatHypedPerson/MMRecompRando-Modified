@@ -18,7 +18,7 @@
     - [Zelda64Recompiled-AppImage-ARM64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076234973.zip)
 3. Download the [mods](https://github.com/LittlestCube/MMRecompRando/releases/latest), as well as `apconnect.txt`.
 4. Place the mods within the zip into the Zelda64Recomp mods folder.
-    1. If on Windows, this is located at `C:\Users\<username>\AppData\Local\Zelda64Recompiled\mods`.
+    1. If on Windows, this is located at `%LOCALAPPDATA%\Zelda64Recompiled\mods`.
     2. If on Linux, this is located at `~/.config/Zelda64Recompiled/mods`.
 5. If you like, you can add a [texture pack](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/447#issue-2433547959).
     1. Download both `.7z` files from one of the `.rtz` links in Darío's PR.

@@ -218,7 +218,7 @@ RECOMP_PATCH void EnElforg_Init(Actor* thisx, PlayState* play) {
     thisx->shape.rot.y = 0;
 }
 
-void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
+RECOMP_PATCH void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     EnElforg_CirclePlayer(this, play);
@@ -232,6 +232,7 @@ void EnElforg_ClockTownFairyCollected(EnElforg* this, PlayState* play) {
         Actor_Kill(&this->actor);
         //SET_WEEKEVENTREG(WEEKEVENTREG_08_80);
         CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+        Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
         return;
     }
 
@@ -335,6 +336,7 @@ RECOMP_PATCH void EnElforg_FairyCollected(EnElforg* this, PlayState* play) {
         player->stateFlags1 &= ~PLAYER_STATE1_20000000;
         Actor_Kill(&this->actor);
         CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+        Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
         return;
     } else {
         player->actor.freezeTimer = 10;
