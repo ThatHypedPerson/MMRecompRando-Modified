@@ -40,6 +40,20 @@ static unsigned char hp_msg[128] = "You got a\x06 Heart Piece\x00!\xbf";
 
 void Message_FindMessage(PlayState* play, u16 textId);
 
+void stream_message(unsigned char* streamed_msg) {
+    uintptr_t i;
+    u32 incoming_char;
+
+    for (i = 0; i < 32; ++i) {
+        incoming_char = rando_send_message();
+        if (incoming_char == 0) {
+            break;
+        }
+        streamed_msg[i] = incoming_char;
+    }
+    streamed_msg[i] = 0xBF;
+}
+
 RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     MessageContext* msgCtx = &play->msgCtx;
     Font* font = &msgCtx->font;
