@@ -50,6 +50,7 @@ static unsigned char p_deku_king_msg[128] = "Keep this\x01 picture of Tingle\x00
 static unsigned char p_pirate_good_msg[128] = "Keep this\x01 good picture of a pirate\x00?\x02\x11\x11\xC2Yes\x11No\xbf";
 static unsigned char p_pirate_bad_msg[128] = "Keep this\x01 bad picture of a pirate\x00?\x02\x11\x11\xC2Yes\x11No\xbf";
 
+static unsigned char dog_msg[128] = "Ruff!\x11Keep that\x01 Mask of Truth\x00 on and\x11I'll win this race for you.\xbf";
 
 void Message_FindMessage(PlayState* play, u16 textId);
 
@@ -229,6 +230,10 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             break;
     }
 
+    if ((textId <= 0x3546 && textId >= 0x3538) && Player_GetMask(play) == PLAYER_MASK_TRUTH) {
+        msg = dog_msg;
+    }
+
     if (msg != NULL) {
         font->msgBuf.schar[0] = 0x02;
         font->msgBuf.schar[1] = 0x00;
@@ -246,7 +251,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         font->msgBuf.schar[0] = 0x06;
         font->msgBuf.schar[1] = 0x71;
     }
-
 
     if (msg == sht_msg) {
         u8 count_str[128] = "\x11This is your \xbf";
