@@ -159,7 +159,8 @@ RECOMP_PATCH void func_80ADC37C(EnSellnuts* this, PlayState* play) {
     Actor_MoveWithoutGravity(&this->actor);
     if (this->unk_366 == 2) {
         if (CutsceneManager_IsNext(this->csId)) {
-            CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_366 = 3;
         } else {
             CutsceneManager_Queue(this->csId);
@@ -183,7 +184,8 @@ RECOMP_PATCH void func_80ADC7B4(EnSellnuts* this, PlayState* play) {
 
     if (this->unk_366 == 0) {
         if (CutsceneManager_IsNext(this->csId)) {
-            CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_366 = 1;
         } else {
             if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
@@ -233,5 +235,53 @@ RECOMP_PATCH void func_80ADBE80(EnSellnuts* this, PlayState* play) {
         this->unk_338 |= 8;
         this->unk_32C = this->actor.world.pos.y;
         this->actionFunc = func_80ADC2CC;
+    }
+}
+
+void func_80ADCA64(EnSellnuts* this, PlayState* play);
+
+RECOMP_PATCH void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
+    Vec3s sp30;
+
+    if (this->unk_366 == 0) {
+        if (CutsceneManager_IsNext(this->csId)) {
+            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
+            func_800B7298(play, NULL, PLAYER_CSACTION_END);
+            this->unk_366 = 1;
+        } else {
+            if (CutsceneManager_GetCurrentCsId() == CS_ID_GLOBAL_TALK) {
+                CutsceneManager_Stop(CS_ID_GLOBAL_TALK);
+            }
+            CutsceneManager_Queue(this->csId);
+            return;
+        }
+    }
+
+    if (this->path != NULL) {
+        func_80ADCFE8(this->path, this->unk_334, &this->actor.world.pos, &sp30);
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_WALL) {
+            sp30.y = this->actor.wallYaw;
+        }
+        Math_SmoothStepToS(&this->actor.world.rot.y, sp30.y, 0xA, 0x12C, 0);
+        this->actor.shape.rot.y = this->actor.world.rot.y;
+        this->unk_342 = 0x1000;
+        this->unk_344 += 0x1C71;
+        this->actor.world.rot.x = -sp30.x;
+        if (func_80ADCE4C(this, this->path, this->unk_334)) {
+            if (this->unk_334 >= (this->path->count - 1)) {
+                this->unk_34C = 22;
+                this->actor.gravity = -1.0f;
+                this->actor.velocity.y = -1.0f;
+                this->actor.speed = 0.0f;
+                SubS_ChangeAnimationByInfoS(&this->skelAnime, sAnimationInfo, this->unk_34C);
+                this->unk_338 &= ~1;
+                this->unk_338 &= ~2;
+                this->actionFunc = func_80ADCA64;
+                return;
+            }
+            this->unk_334++;
+        }
+        Math_ApproachF(&this->actor.speed, 2.0f, 0.2f, 1.0f);
+        Actor_MoveWithoutGravity(&this->actor);
     }
 }
