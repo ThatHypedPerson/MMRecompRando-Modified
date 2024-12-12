@@ -199,7 +199,6 @@ RECOMP_PATCH void func_80BEF518(EnAkindonuts* this, PlayState* play) {
 
     if (this->unk_35E == 0) {
         if (CutsceneManager_IsNext(this->csId)) {
-            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_35E = 1;
         } else {
@@ -279,7 +278,6 @@ RECOMP_PATCH void func_80BEFAF0(EnAkindonuts* this, PlayState* play) {
 
     if (this->unk_35E == 2) {
         if (CutsceneManager_IsNext(this->csId)) {
-            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_35E = 3;
         } else {

@@ -159,7 +159,6 @@ RECOMP_PATCH void func_80ADC37C(EnSellnuts* this, PlayState* play) {
     Actor_MoveWithoutGravity(&this->actor);
     if (this->unk_366 == 2) {
         if (CutsceneManager_IsNext(this->csId)) {
-            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_366 = 3;
         } else {
@@ -184,7 +183,6 @@ RECOMP_PATCH void func_80ADC7B4(EnSellnuts* this, PlayState* play) {
 
     if (this->unk_366 == 0) {
         if (CutsceneManager_IsNext(this->csId)) {
-            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_366 = 1;
         } else {
@@ -245,7 +243,6 @@ RECOMP_PATCH void func_80ADC8C4(EnSellnuts* this, PlayState* play) {
 
     if (this->unk_366 == 0) {
         if (CutsceneManager_IsNext(this->csId)) {
-            //~ CutsceneManager_StartWithPlayerCs(this->csId, &this->actor);
             func_800B7298(play, NULL, PLAYER_CSACTION_END);
             this->unk_366 = 1;
         } else {
