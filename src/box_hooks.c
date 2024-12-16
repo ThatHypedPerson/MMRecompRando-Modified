@@ -111,6 +111,17 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_U8(targetMode, TARGET_MODE_0, ICHAIN_STOP),
 };
 
+// Custom rando function based off of Actor_IsSmallChest
+s32 EnBox_IsSmallChest(u8 type)
+{
+    if (type == ENBOX_TYPE_SMALL || type == ENBOX_TYPE_SMALL_INVISIBLE ||
+        type == ENBOX_TYPE_SMALL_ROOM_CLEAR || type == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL ||
+        type == ENBOX_TYPE_SMALL_SWITCH_FLAG) {
+        return true;
+    }
+    return false;
+}
+
 void EnBox_SetupAction(EnBox* this, EnBoxActionFunc func);
 void EnBox_Open(EnBox* this, PlayState* play);
 void EnBox_WaitOpen(EnBox* this, PlayState* play);
@@ -126,6 +137,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader;
     f32 startFrame;
     f32 endFrame;
+    u8 vanillaType = ENBOX_GET_TYPE(&this->dyna.actor);
 
     colHeader = NULL;
     startFrame = 0.0f;
@@ -181,8 +193,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     }
 
     if (Flags_GetTreasure(play, ENBOX_GET_CHEST_FLAG(&this->dyna.actor)) || this->getItemId == GI_NONE) {
-        if (LOCATION_ENBOX == 0x060700)
-        {
+        if (LOCATION_ENBOX == 0x060700) {
             Actor_Kill(&this->dyna.actor);
             return;
         }
@@ -191,7 +202,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         EnBox_SetupAction(this, EnBox_Open);
         this->movementFlags |= ENBOX_MOVE_STICK_TO_GROUND;
         startFrame = endFrame;
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (vanillaType == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         if (Rand_ZeroOne() < 0.5f) {
@@ -202,7 +213,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_ROOM_CLEAR) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_ROOM_CLEAR) || (vanillaType == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
                !Flags_GetClear(play, this->dyna.actor.room)) {
         EnBox_SetupAction(this, EnBox_AppearOnRoomClear);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -214,9 +225,9 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_SUNS)) {
+    } else if ((vanillaType == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (vanillaType == ENBOX_TYPE_BIG_SONG_SUNS)) {
 
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_SWITCH_FLAG) || (vanillaType == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         EnBox_SetupAction(this, EnBox_AppearSwitchFlag);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -229,7 +240,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
     } else {
-        if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_INVISIBLE) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_INVISIBLE)) {
+        if ((vanillaType == ENBOX_TYPE_BIG_INVISIBLE) || (vanillaType == ENBOX_TYPE_SMALL_INVISIBLE)) {
             this->dyna.actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
         }
         EnBox_SetupAction(this, EnBox_WaitOpen);
@@ -247,7 +258,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     SkelAnime_Init(play, &this->skelAnime, &gBoxChestSkel, &gBoxChestOpenAnim, this->jointTable, this->morphTable,
                    OBJECT_BOX_CHEST_LIMB_MAX);
     Animation_Change(&this->skelAnime, &gBoxChestOpenAnim, 1.5f, startFrame, endFrame, ANIMMODE_ONCE, 0.0f);
-    if (Actor_IsSmallChest(this)) {
+    if (EnBox_IsSmallChest(vanillaType)) {
         Actor_SetScale(&this->dyna.actor, 0.0075f);
         Actor_SetFocus(&this->dyna.actor, 20.0f);
     } else {
