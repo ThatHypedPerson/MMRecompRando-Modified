@@ -149,14 +149,18 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     this->movementFlags = 0;
 
-    switch (rando_get_location_type(LOCATION_ENBOX)) {
-        case 0:
-        case 2:
-            this->type = ENBOX_TYPE_SMALL;
-            break;
-        default:
-            this->type = ENBOX_TYPE_BIG;
-            break;
+    if (rando_get_camc_enabled()) {
+        switch (rando_get_location_type(LOCATION_ENBOX)) {
+            case 0:
+            case 2:
+                this->type = ENBOX_TYPE_SMALL;
+                break;
+            default:
+                this->type = ENBOX_TYPE_BIG;
+                break;
+        }
+    } else {
+        this->type = vanillaType;
     }
 
     this->iceSmokeTimer = 0;
