@@ -1,9 +1,12 @@
 #include "modding.h"
 #include "global.h"
 
-struct EnRacedog;
 #define DOG_LIMB_MAX 0x0D
+
+struct EnRacedog;
+
 typedef void (*EnRacedogActionFunc)(struct EnRacedog*, PlayState*);
+
 typedef struct EnRacedog {
     /* 0x000 */ Actor actor;
     /* 0x144 */ EnRacedogActionFunc actionFunc;
@@ -67,9 +70,14 @@ RECOMP_PATCH void EnRacedog_Race(EnRacedog* this, PlayState* play) {
 
         EnRacedog_UpdateSpeed(this);
 
-        // Turns selected dog into giga dog
-        if (this->index == this->selectedDogIndex && Player_GetMask(play) == PLAYER_MASK_TRUTH) {
+        // Turns blue dog into his true form
+        if (this->index == 0x02) {
             this->actor.speed = 10.0f;
+        }
+
+        // Turns gold dog into garbage
+        if (this->index == 0x09) {
+            this->actor.speed = 3.0f;
         }
 
         // Putting this after EnRacedog_UpdateSpeed will ensure that when EnRacedog_CalculateFinalStretchTargetSpeed
