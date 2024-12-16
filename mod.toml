@@ -11,7 +11,7 @@ id = "mm_recomp_rando"
 version = "0.2.5"
 
 # Authors of this mod.
-authors = [ "dcvz", "CelestialKitsune", "VincentsSin", "LittleCube" ]
+authors = [ "ThatHypedPerson", "dcvz", "CelestialKitsune", "VincentsSin", "LittleCube" ]
 
 # ID of the target recomp game.
 game_id = "mm"
@@ -34,6 +34,7 @@ native_libraries = [
                                     "rando_reset_death_link_pending",
                                     "rando_get_death_link_enabled",
                                     "rando_send_death_link",
+                                    "rando_get_camc_enabled",
                                     "rando_skulltulas_enabled",
                                     "rando_get_location_type",
                                     "rando_get_item_id",
