@@ -4,6 +4,7 @@
 #include "apcommon.h"
 
 #define LOCATION_INVENTORY_SWORD 0x000037
+#define LOCATION_INVENTORY_SHIELD 0x000032
 
 RECOMP_IMPORT("*", int recomp_set_moon_crash_resets_save(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_fd_anywhere(bool new_val));
@@ -273,14 +274,15 @@ void update_rando(PlayState* play) {
             u8 new_bomb_level = rando_has_item(GI_BOMB_BAG_20);
             u8 new_wallet_level = rando_has_item(GI_WALLET_ADULT);
             u8 new_sword_level = rando_has_item(GI_SWORD_KOKIRI);
+            u8 new_shield_level = rando_has_item(GI_SHIELD_HERO);
 
             u8 bottle_count_new = rando_has_item(GI_BOTTLE) + rando_has_item(GI_POTION_RED_BOTTLE) + rando_has_item(GI_CHATEAU_BOTTLE);
             u8 bottle_count = 0;
 
             s16 old_health = gSaveContext.save.saveInfo.playerData.health;
 
-            gSaveContext.save.saveInfo.playerData.healthCapacity = 0x30;
-            gSaveContext.save.saveInfo.playerData.health = 0x30;
+            gSaveContext.save.saveInfo.playerData.healthCapacity = 0x10;
+            gSaveContext.save.saveInfo.playerData.health = 0x10;
 
             if (GET_QUEST_HEART_PIECE_COUNT > 0) {
                 DECREMENT_QUEST_HEART_PIECE_COUNT;
@@ -314,6 +316,11 @@ void update_rando(PlayState* play) {
                 randoItemGive(GI_SWORD_KOKIRI);
             }
 
+            new_shield_level -= GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD);
+            for (i = 0; i < new_shield_level; ++i) {
+                randoItemGive(GI_SHIELD_HERO);
+            }
+
             for (i = SLOT_BOTTLE_1; i <= SLOT_BOTTLE_6; ++i) {
                 if ((gSaveContext.save.saveInfo.inventory.items[i] >= ITEM_POTION_RED && gSaveContext.save.saveInfo.inventory.items[i] <= ITEM_OBABA_DRINK) || gSaveContext.save.saveInfo.inventory.items[i] == ITEM_BOTTLE) {
                     bottle_count += 1;
@@ -345,13 +352,14 @@ void update_rando(PlayState* play) {
                         case GI_BOMB_BAG_20:
                         case GI_WALLET_ADULT:
                         case GI_SWORD_KOKIRI:
+                        case GI_SHIELD_HERO:
                         case GI_POTION_RED_BOTTLE:
                         case GI_CHATEAU_BOTTLE:
                         case GI_SKULL_TOKEN:
                             continue;
                     }
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {
-                        old_health = 0x170;
+                        old_health = 0x140;
                     }
                 } else if (item_id == AP_ITEM_ID_STRAY_FAIRY_WOODFALL) {
                     continue;
@@ -367,6 +375,12 @@ void update_rando(PlayState* play) {
             }
 
             rando_send_location(LOCATION_INVENTORY_SWORD);
+            rando_send_location(LOCATION_INVENTORY_SHIELD);
+
+            for (int i = 3; i < 11; ++i)
+            {
+                rando_send_location(0x0D0000 | i);
+            }
 
             old_items_size = new_items_size;
             initItems = true;

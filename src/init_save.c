@@ -112,8 +112,10 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.cycleSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
     gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
 
-    gSaveContext.save.saveInfo.playerData.healthCapacity = 0x30;
-    gSaveContext.save.saveInfo.playerData.health = 0x30;
+    gSaveContext.save.saveInfo.playerData.healthCapacity = 0x10;
+    gSaveContext.save.saveInfo.playerData.health = 0x10;
+
+    SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_NONE);
 
     Sram_GenerateRandomSaveFields();
 
