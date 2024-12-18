@@ -405,83 +405,68 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
         switch (rando_get_item_id(LOCATION_ENBOX)) {
             case GI_AP_FILLER:
                 gSPDisplayList((*gfx)++, &apJunkChestBaseDL);
-                break;
+                return;
             case GI_AP_USEFUL:
                 gSPDisplayList((*gfx)++, &apUsefulChestBaseDL);
-                break;
+                return;
             case GI_AP_PROG:
                 gSPDisplayList((*gfx)++, &apProgChestBaseDL);
-                break;
+                return;
             case GI_KEY_SMALL:
                 gSPDisplayList((*gfx)++, &keyChestBaseDL);
-                break;
+                return;
             case GI_STRAY_FAIRY:
                 gSPDisplayList((*gfx)++, &fairyChestBaseDL);
-                break;
+                return;
             case GI_HEART_PIECE:
             case GI_HEART_CONTAINER:
                 gSPDisplayList((*gfx)++, &heartChestBaseDL);
-                break;
+                return;
             case GI_TRUE_SKULL_TOKEN:
                 gSPDisplayList((*gfx)++, &spiderChestBaseDL);
-                break;
+                return;
             case GI_KEY_BOSS:
                 gSPDisplayList((*gfx)++, &gBoxChestBaseOrnateDL);
-                break;
-            default:
-                if (this->type == ENBOX_TYPE_SMALL) {
-                    gSPDisplayList((*gfx)++, &gBoxChestBaseDL);
-                } else {
-                    gSPDisplayList((*gfx)++, &gBoxChestBaseGildedDL);
-                }
-                break;
+                return;
+        }
+        if (this->type == ENBOX_TYPE_SMALL) {
+            gSPDisplayList((*gfx)++, &gBoxChestBaseDL);
+        } else {
+            gSPDisplayList((*gfx)++, &gBoxChestBaseGildedDL);
         }
     } else if (limbIndex == OBJECT_BOX_CHEST_LIMB_03) {
         gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         switch (rando_get_item_id(LOCATION_ENBOX)) {
             case GI_AP_FILLER:
                 gSPDisplayList((*gfx)++, &apJunkChestLidDL);
-                break;
+                return;
             case GI_AP_USEFUL:
                 gSPDisplayList((*gfx)++, &apUsefulChestLidDL);
-                break;
+                return;
             case GI_AP_PROG:
                 gSPDisplayList((*gfx)++, &apProgChestLidDL);
-                break;
+                return;
             case GI_KEY_SMALL:
                 gSPDisplayList((*gfx)++, &keyChestLidDL);
-                break;
+                return;
             case GI_STRAY_FAIRY:
                 gSPDisplayList((*gfx)++, &fairyChestLidDL);
-                break;
+                return;
             case GI_HEART_PIECE:
             case GI_HEART_CONTAINER:
                 gSPDisplayList((*gfx)++, &heartChestLidDL);
-                break;
+                return;
             case GI_TRUE_SKULL_TOKEN:
                 gSPDisplayList((*gfx)++, &spiderChestLidDL);
-                break;
+                return;
             case GI_KEY_BOSS:
                 gSPDisplayList((*gfx)++, &gBoxChestLidOrnateDL);
-                break;
-            default:
-                if (this->type == ENBOX_TYPE_SMALL) {
-                    gSPDisplayList((*gfx)++, &gBoxChestLidDL);
-                } else {
-                    gSPDisplayList((*gfx)++, &gBoxChestLidGildedDL);
-                }
-                break;
+                return;
         }
-        //~ if (this->type == ENBOX_TYPE_BIG_ORNATE) {
-            //~ gSPDisplayList((*gfx)++, &gBoxChestLidOrnateDL);
-        //~ } else if (Actor_IsSmallChest(this)) {
-            //~ if (this->getItemId == GI_KEY_SMALL) {
-                //~ gSPDisplayList((*gfx)++, &gBoxChestLidGildedDL);
-            //~ } else {
-                //~ gSPDisplayList((*gfx)++, &apUsefulChestLidDL);
-            //~ }
-        //~ } else {
-            //~ gSPDisplayList((*gfx)++, &gBoxChestLidGildedDL);
-        //~ }
+        if (this->type == ENBOX_TYPE_SMALL) {
+            gSPDisplayList((*gfx)++, &gBoxChestLidDL);
+        } else {
+            gSPDisplayList((*gfx)++, &gBoxChestLidGildedDL);
+        }
     }
 }
