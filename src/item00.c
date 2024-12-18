@@ -800,7 +800,7 @@ RECOMP_PATCH void func_800A6780(EnItem00* this, PlayState* play) {
     if (this->actor.params <= ITEM00_RUPEE_RED) {
         this->actor.shape.rot.y += 0x3C0;
     } else if ((this->actor.params >= ITEM00_SHIELD_HERO) && (this->actor.params != ITEM00_DEKU_NUTS_10) &&
-               (this->actor.params != ITEM00_BOMBS_0)) {
+               (this->actor.params != ITEM00_BOMBS_0) && (this->actor.params != ITEM00_BOMBCHU)) {
         this->actor.world.rot.x -= 0x2BC;
         this->actor.shape.rot.y += 0x190;
         this->actor.shape.rot.x = this->actor.world.rot.x - 0x4000;
