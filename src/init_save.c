@@ -7,6 +7,10 @@
 
 bool saveOpened = false;
 
+RECOMP_IMPORT(".", bool rando_get_permanent_chateau_romani_enabled());
+RECOMP_IMPORT(".", bool rando_get_start_with_consumables_enabled());
+RECOMP_IMPORT(".", bool rando_get_reset_with_inverted_time_enabled());
+
 RECOMP_CALLBACK("*", recomp_on_load_save)
 void rando_on_load_save(FileSelectState* fileSelect, SramContext* sramCtx) {
     saveOpened = true;
@@ -83,7 +87,7 @@ void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
 
     // restore chateau romani state after cycle reset
-    if(drankChateau) {
+    if (drankChateau && rando_get_permanent_chateau_romani_enabled()) {
         SET_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
         drankChateau = false;
     }
@@ -102,15 +106,18 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
 
     gSaveContext.save.hasTatl = true;
 
-    // TODO: move below to YAML options
-    // start with basic consumables
-    gSaveContext.save.saveInfo.playerData.rupees = 99;
-    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
-    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_STICK] = 10;
-    gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
-    gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
+    if (rando_get_start_with_consumables_enabled()) {
+        // start with basic consumables
+        gSaveContext.save.saveInfo.playerData.rupees = 99;
+        gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_STICK] = ITEM_DEKU_STICK;
+        gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_STICK] = 10;
+        gSaveContext.save.saveInfo.inventory.items[SLOT_DEKU_NUT] = ITEM_DEKU_NUT;
+        gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
+    }
 
-    gSaveContext.save.timeSpeedOffset = -2;
+    if (rando_get_reset_with_inverted_time_enabled()) {
+        gSaveContext.save.timeSpeedOffset = -2;
+    }
 
     // TODO: hide song on quest screen + add playback text
     SET_QUEST_ITEM(ITEM_SONG_SUN + QUEST_SONG_SUN);
@@ -317,7 +324,6 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
     s32 i;
     u8 item;
 
-    // gSaveContext.save.timeSpeedOffset = 0;
     gSaveContext.save.eventDayCount = 0;
     gSaveContext.save.day = 0;
     gSaveContext.save.time = CLOCK_TIME(6, 0) - 1;
