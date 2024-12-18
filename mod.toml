@@ -39,6 +39,7 @@ native_libraries = [
                                     "rando_get_permanent_chateau_romani_enabled",
                                     "rando_get_reset_with_inverted_time_enabled",
                                     "rando_get_receive_filled_wallets_enabled",
+                                    "rando_get_starting_heart_locations",
                                     "rando_skulltulas_enabled",
                                     "rando_get_location_type",
                                     "rando_get_item_id",

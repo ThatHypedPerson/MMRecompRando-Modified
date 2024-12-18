@@ -13,6 +13,7 @@ RECOMP_IMPORT("*", int recomp_set_allow_no_ocarina_tf(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_h_and_d_no_sword_fix(bool new_val));
 
 RECOMP_IMPORT(".", void rando_init());
+RECOMP_IMPORT(".", int rando_get_starting_heart_locations());
 
 RECOMP_IMPORT("better_double_sot", void dsot_set_skip_dsot_cutscene(bool new_val));
 
@@ -377,7 +378,7 @@ void update_rando(PlayState* play) {
             rando_send_location(LOCATION_INVENTORY_SWORD);
             rando_send_location(LOCATION_INVENTORY_SHIELD);
 
-            for (int i = 3; i < 11; ++i)
+            for (int i = 0; i < rando_get_starting_heart_locations(); ++i)
             {
                 rando_send_location(0x0D0000 | i);
             }
