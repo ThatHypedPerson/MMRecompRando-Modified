@@ -5,6 +5,8 @@
 #include "aplogo_prog.h"
 #include "aplogo.h"
 
+#include "bombchu_bag.h"
+
 void GetItem_DrawBombchu(PlayState* play, s16 drawId);
 void GetItem_DrawPoes(PlayState* play, s16 drawId);
 void GetItem_DrawFairyBottle(PlayState* play, s16 drawId);
@@ -338,7 +340,7 @@ static DrawItemTableEntry sDrawItemTable_new[] = {
     // GID_HEART_CONTAINER, OBJECT_GI_HEARTS
     { GetItem_DrawXlu01, { gGiHeartBorderDL, gGiHeartContainerDL } },
     // GID_HEART_PIECE, OBJECT_GI_HEARTS
-    { GetItem_DrawXlu01, { gGiHeartBorderDL, gGiHeartPieceDL } },
+    { GetItem_DrawXlu01, { gGiBombchu0DL, gGiBombchu1DL } },
     // GID_QUIVER_30, OBJECT_GI_ARROWCASE
     { GetItem_DrawUpgrades, { gGiQuiverInnerDL, gGiQuiver30InnerColorDL, gGiQuiver30OuterColorDL, gGiQuiverOuterDL } },
     // GID_QUIVER_40, OBJECT_GI_ARROWCASE
@@ -570,6 +572,8 @@ static DrawItemTableEntry sDrawItemTable_new[] = {
     { GetItem_DrawXlu01, { gGiSoaringColorDL, gGiSongNoteDL } },
     // GID_SONG_STORMS, OBJECT_GI_MELODY
     { GetItem_DrawXlu01, { gGiStormsColorDL, gGiSongNoteDL } },
+    // GID_BAG_BOMBCHU, OBJECT_GI_BAG_BOMBCHU
+    { GetItem_DrawXlu01, { gGiBombchu0DL, gGiBombchu1DL } },
 };
 
 typedef enum {
@@ -699,6 +703,7 @@ ObjectType sGetObjectType[] = {
     OPA0XLU1,
     OPA0XLU1,
     OPA01,
+    XLU01,
     XLU01,
     XLU01,
     XLU01,
