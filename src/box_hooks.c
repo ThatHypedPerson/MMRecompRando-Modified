@@ -415,7 +415,7 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
             case GI_KEY_SMALL:
                 gSPDisplayList((*gfx)++, &keyChestBaseDL);
                 return;
-            case GI_STRAY_FAIRY:
+            case GI_B2:
                 gSPDisplayList((*gfx)++, &fairyChestBaseDL);
                 return;
             case GI_HEART_PIECE:
@@ -449,7 +449,7 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
             case GI_KEY_SMALL:
                 gSPDisplayList((*gfx)++, &keyChestLidDL);
                 return;
-            case GI_STRAY_FAIRY:
+            case GI_B2:
                 gSPDisplayList((*gfx)++, &fairyChestLidDL);
                 return;
             case GI_HEART_PIECE:
