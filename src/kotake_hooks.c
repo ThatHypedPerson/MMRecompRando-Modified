@@ -79,9 +79,9 @@ RECOMP_PATCH void EnTrt_GiveRedPotionForKoume(EnTrt* this, PlayState* play) {
         player->stateFlags2 &= ~PLAYER_STATE2_20000000;
         this->actionFunc = EnTrt_GivenRedPotionForKoume;
     } else if (rando_location_is_checked(GI_POTION_RED_BOTTLE)) {
-        Actor_OfferGetItem(&this->actor, play, GI_POTION_RED, 300.0f, 300.0f);
+        Actor_OfferGetItemHook(&this->actor, play, GI_POTION_RED, 0, 300.0f, 300.0f, true, false);
     } else {
-        Actor_OfferGetItem(&this->actor, play, GI_POTION_RED_BOTTLE, 300.0f, 300.0f);
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_POTION_RED_BOTTLE), GI_POTION_RED_BOTTLE, 300.0f, 300.0f, true, true);
     }
 }
 
