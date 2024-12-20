@@ -388,16 +388,14 @@ void update_rando(PlayState* play) {
         }
 
         if (new_items_size > old_items_size) {
-            u32 i;
-
-            for (i = old_items_size; i < new_items_size; ++i) {
+            for (u32 i = old_items_size; i < new_items_size; ++i) {
                 randoItemGive(rando_get_item(i));
             }
 
             old_items_size = new_items_size;
         }
 
-        if (rando_get_death_link_enabled() && rando_get_death_link_pending() && play->pauseCtx.state == 0) {
+        if (play->pauseCtx.state == 0 && rando_get_death_link_enabled() && rando_get_death_link_pending()) {
             Play_KillPlayer();
             rando_reset_death_link_pending();
         }
