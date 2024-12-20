@@ -6,6 +6,8 @@
 #define LOCATION_INVENTORY_SWORD 0x000037
 #define LOCATION_INVENTORY_SHIELD 0x000032
 
+#define C_TO_PARAMS(c) (c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF
+
 RECOMP_IMPORT("*", int recomp_set_moon_crash_resets_save(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_fd_anywhere(bool new_val));
 RECOMP_IMPORT("*", int recomp_set_no_bow_epona_fix(bool new_val));
@@ -14,10 +16,15 @@ RECOMP_IMPORT("*", int recomp_set_h_and_d_no_sword_fix(bool new_val));
 
 RECOMP_IMPORT(".", void rando_init());
 RECOMP_IMPORT(".", int rando_get_starting_heart_locations());
+RECOMP_IMPORT(".", int rando_get_tunic_color());
 
 RECOMP_IMPORT("better_double_sot", void dsot_set_skip_dsot_cutscene(bool new_val));
 
+RECOMP_IMPORT("mm_recomp_colors", void colors_set_human_tunic(u8 r, u8 g, u8 b));
+
 PlayState* gPlay;
+
+
 
 RECOMP_CALLBACK("*", recomp_on_init)
 void call_rando_init()
@@ -31,6 +38,8 @@ void call_rando_init()
     recomp_set_h_and_d_no_sword_fix(true);
 
     dsot_set_skip_dsot_cutscene(true);
+
+    colors_set_human_tunic(C_TO_PARAMS(rando_get_tunic_color()));
 }
 
 s8 giToItemId[GI_MAX] = {
