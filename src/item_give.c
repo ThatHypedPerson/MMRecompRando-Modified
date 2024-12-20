@@ -89,7 +89,7 @@ GetItemEntry sGetItemTable_ap[GI_MAX - 1] = {
     GET_ITEM(ITEM_RECOVERY_HEART, OBJECT_GI_HEART, GID_RECOVERY_HEART, 0xB,
              GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_LONG),
     // GI_HEART_PIECE
-    GET_ITEM(ITEM_HEART_PIECE_2, OBJECT_GI_HEARTS, GID_HEART_PIECE, 0xC,
+    GET_ITEM(ITEM_HEART_PIECE_2, OBJECT_UNSET_0, GID_BAG_BOMBCHU, 0xC,
              GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_LONG),
     // GI_HEART_CONTAINER
     GET_ITEM(ITEM_HEART_CONTAINER, OBJECT_GI_HEARTS, GID_HEART_CONTAINER, 0xD,
@@ -552,7 +552,7 @@ GetItemEntry sGetItemTable_ap[GI_MAX - 1] = {
 };
 
 bool isAP(s16 gi) {
-    return gi == GI_AP_FILLER || gi == GI_AP_PROG || gi == GI_AP_USEFUL;
+    return gi == GI_AP_FILLER || gi == GI_AP_PROG || gi == GI_AP_USEFUL || gi == GI_HEART_PIECE;
 }
 
 u8 getItem(s16 gi) {
@@ -563,8 +563,8 @@ u16 getObjectId(s16 gi) {
     return sGetItemTable_ap[gi - 1].objectId;
 }
 
-s8 getGid(s16 gi) {
-    s8 gid = sGetItemTable_ap[gi - 1].gid;
+s16 getGid(s16 gi) {
+    s16 gid = sGetItemTable_ap[gi - 1].gid;
     return (((gid < 0) ? -1 : 1)*gid) - 1;
 }
 

@@ -32,6 +32,7 @@ void GetItem_DrawWallet(PlayState* play, s16 drawId);
 void GetItem_DrawRemains(PlayState* play, s16 drawId);
 
 void GetItem_DrawRecompImport(PlayState* play, s16 drawId);
+void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2);
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId);
 
 extern Gfx gGiEmptyBottleCorkDL[];
@@ -340,7 +341,7 @@ static DrawItemTableEntry sDrawItemTable_new[] = {
     // GID_HEART_CONTAINER, OBJECT_GI_HEARTS
     { GetItem_DrawXlu01, { gGiHeartBorderDL, gGiHeartContainerDL } },
     // GID_HEART_PIECE, OBJECT_GI_HEARTS
-    { GetItem_DrawXlu01, { gGiBombchu0DL, gGiBombchu1DL } },
+    { GetItem_DrawXlu01, { gGiHeartBorderDL, gGiHeartPieceDL } },
     // GID_QUIVER_30, OBJECT_GI_ARROWCASE
     { GetItem_DrawUpgrades, { gGiQuiverInnerDL, gGiQuiver30InnerColorDL, gGiQuiver30OuterColorDL, gGiQuiverOuterDL } },
     // GID_QUIVER_40, OBJECT_GI_ARROWCASE
@@ -570,10 +571,10 @@ static DrawItemTableEntry sDrawItemTable_new[] = {
     { GetItem_DrawXlu01, { gGiEponaColorDL, gGiSongNoteDL } },
     // GID_SONG_SOARING, OBJECT_GI_MELODY
     { GetItem_DrawXlu01, { gGiSoaringColorDL, gGiSongNoteDL } },
-    // GID_SONG_STORMS, OBJECT_GI_MELODY
-    { GetItem_DrawXlu01, { gGiStormsColorDL, gGiSongNoteDL } },
-    // GID_BAG_BOMBCHU, OBJECT_GI_BAG_BOMBCHU
-    { GetItem_DrawXlu01, { gGiBombchu0DL, gGiBombchu1DL } },
+    //~ // GID_SONG_STORMS, OBJECT_GI_MELODY
+    //~ { GetItem_DrawXlu01, { gGiStormsColorDL, gGiSongNoteDL } },
+    //~ // GID_BAG_BOMBCHU, OBJECT_GI_BAG_BOMBCHU
+    //~ { GetItem_DrawRecompImport, { archilogo_arrow_archilogo_mesh } },
 };
 
 typedef enum {
@@ -712,7 +713,6 @@ ObjectType sGetObjectType[] = {
     XLU01,
     XLU01,
     XLU01,
-    XLU01,
     XLU01
 };
 
@@ -744,11 +744,18 @@ bool loadObject(PlayState* play, void** objectSegment, OSMesgQueue* objectLoadQu
     return false;
 }
 
+RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
+
 /**
  * Draw "Get Item" Model
  * Calls the corresponding draw function for the given draw ID
  */
 RECOMP_PATCH void GetItem_Draw(PlayState* play, s16 drawId) {
+    switch (drawId) {
+        case GID_BAG_BOMBCHU:
+            GetItem_DrawBombchuBag(play, gGiBombchu0DL, gGiBombchu1DL, gGiBombchu2DL);
+            return;
+    }
     sDrawItemTable_new[drawId].drawFunc(play, drawId);
 }
 
@@ -888,6 +895,42 @@ void GetItem_DrawRecompImport(PlayState* play, s16 drawId) {
     gSPDisplayList(POLY_OPA_DISP++, sDrawItemTable_new[drawId].drawResources[0]);
 
     CLOSE_DISPS(play->state.gfxCtx);
+}
+
+static void color4(u8* r, u8* g, u8* b, u8* a, u32 color)
+{
+    *r = (color >> 24) & 0xff;
+    *g = (color >> 16) & 0xff;
+    *b = (color >> 8) & 0xff;
+    *a = color & 0xff;
+}
+
+void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2) {
+    static const u32 kPrimColor = 0xBA3F3AFF;
+    static const u32 kEnvColor = 0xA5231EFF;
+    static const u32 kPrimColor2 = 0x1695D2FF;
+    static const u32 kEnvColor2 = 0x054C7FFF;
+
+    u8 r, g, b, a;
+
+    OPEN_DISPS(play->state.gfxCtx);
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    color4(&r, &g, &b, &a, kPrimColor2);
+    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, r, g, b, a);
+    color4(&r, &g, &b, &a, kEnvColor2);
+    gDPSetEnvColor(POLY_XLU_DISP++, r, g, b, a);
+    gSPDisplayList(POLY_XLU_DISP++, dl0);
+    color4(&r, &g, &b, &a, kPrimColor);
+    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, r, g, b, a);
+    color4(&r, &g, &b, &a, kEnvColor);
+    gDPSetEnvColor(POLY_XLU_DISP++, r, g, b, a);
+    gSPDisplayList(POLY_XLU_DISP++, dl1);
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_OPA_DISP++, dl2);
+
+    CLOSE_DISPS();
 }
 
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId) {

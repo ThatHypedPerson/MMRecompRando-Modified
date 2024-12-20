@@ -4,7 +4,7 @@
 #include "bombchu_bag.h"
 
 u64 bombchu_bag_zobjTex_000000[] = {
-#include "bombchu_bag.ci8.inc.c"
+#include "bombchu_bag_ci8.inc.c"
 };
 
 u8 bombchu_bag_zobj_unaccounted_000100[] = {
@@ -27,11 +27,11 @@ u8 bombchu_bag_zobj_unaccounted_000100[] = {
 };
 
 u64 bombchu_bag_zobjTLUT_000200[] = {
-#include "bombchu_bag.rgba16.inc.c"
+#include "bombchu_bag_rgba16.inc.c"
 };
 
 u64 bombchu_bag_zobjTLUT_000238[] = {
-#include "bombchu_bag.rgba16.inc.c"
+#include "bombchu_bag_rgba16.inc.c"
 };
 
 u8 bombchu_bag_zobj_unaccounted_000438[] = {
@@ -54,7 +54,7 @@ Gfx gGiBombchu0DL[] = {
     gsDPLoadTextureBlock(0x04032530, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
                          G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x003C, 0x003C),
-    gsDPLoadTLUT_pal256(bombchu_bag.zobjTLUT_000238),
+    gsDPLoadTLUT_pal256(bombchu_bag_zobjTLUT_000238),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, 1, COMBINED, 0, PRIMITIVE, 0, 0, 0, 0, COMBINED),
     gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_TEX_EDGE2),
     gsSPClearGeometryMode(G_FOG),
@@ -71,7 +71,7 @@ Gfx gGiBombchu0DL[] = {
     gsSP2Triangles(20, 22, 23, 0, 22, 17, 24, 0),
     gsSP2Triangles(9, 6, 15, 0, 22, 18, 17, 0),
     gsSP2Triangles(25, 26, 27, 0, 28, 29, 27, 0),
-    gsSPVertex(bombchu_bag.zobjVtx_000478, 31, 0),
+    gsSPVertex(bombchu_bag_zobjVtx_000478, 31, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(0, 6, 1, 0, 2, 7, 8, 0),
     gsSP2Triangles(9, 10, 7, 0, 2, 11, 12, 0),
@@ -84,7 +84,7 @@ Gfx gGiBombchu0DL[] = {
     gsSP2Triangles(13, 9, 7, 0, 26, 4, 27, 0),
     gsSP2Triangles(16, 13, 15, 0, 28, 29, 13, 0),
     gsSP2Triangles(28, 5, 30, 0, 3, 5, 17, 0),
-    gsSPVertex(&bombchu_bag.zobjVtx_000478[31], 3, 0),
+    gsSPVertex(&bombchu_bag_zobjVtx_000478[31], 3, 0),
     gsSP1Triangle(0, 1, 2, 0),
     gsSPEndDisplayList(),
 };
@@ -102,13 +102,13 @@ Gfx gGiBombchu1DL[] = {
     gsSPTexture(0x09C4, 0x09C4, 0, G_TX_RENDERTILE, G_ON),
     gsDPLoadTextureBlock(0x04032530, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
                          G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
-    gsDPLoadTLUT_pal256(bombchu_bag.zobjTLUT_000238),
+    gsDPLoadTLUT_pal256(bombchu_bag_zobjTLUT_000238),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, 1, COMBINED, 0, PRIMITIVE, 0, 0, 0, 0, COMBINED),
     gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_TEX_EDGE2),
     gsSPClearGeometryMode(G_FOG),
     gsSPSetGeometryMode(G_CULL_BACK | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
     gsDPNoOp(),
-    gsSPVertex(bombchu_bag.zobjVtx_000818, 12, 0),
+    gsSPVertex(bombchu_bag_zobjVtx_000818, 12, 0),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
     gsSP2Triangles(4, 5, 6, 0, 2, 7, 0, 0),
     gsSP2Triangles(8, 9, 7, 0, 10, 5, 9, 0),
@@ -126,15 +126,15 @@ Gfx gGiBombchu2DL[] = {
     gsDPPipeSync(),
     gsDPSetTextureLUT(G_TT_RGBA16),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock(bombchu_bag.zobjTex_000000, G_IM_FMT_CI, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gsDPLoadTextureBlock(bombchu_bag_zobjTex_000000, G_IM_FMT_CI, G_IM_SIZ_8b, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                          G_TX_NOMIRROR | G_TX_WRAP, 4, 4, G_TX_NOLOD, G_TX_NOLOD),
-    gsDPLoadTLUT_pal256(bombchu_bag.zobjTLUT_000200),
+    gsDPLoadTLUT_pal256(bombchu_bag_zobjTLUT_000200),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, 1, COMBINED, 0, PRIMITIVE, 0, 0, 0, 0, COMBINED),
     gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
     gsSPClearGeometryMode(G_CULL_BACK | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
     gsSPSetGeometryMode(G_FOG | G_LIGHTING | G_CLIPPING),
     gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
-    gsSPVertex(bombchu_bag.zobjVtx_0009C0, 29, 0),
+    gsSPVertex(bombchu_bag_zobjVtx_0009C0, 29, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 1, 4, 0),
     gsSP2Triangles(5, 1, 0, 0, 6, 7, 8, 0),
     gsSP2Triangles(1, 3, 9, 0, 7, 6, 10, 0),
@@ -150,7 +150,7 @@ Gfx gGiBombchu2DL[] = {
     gsSP2Triangles(4, 5, 25, 0, 8, 7, 4, 0),
     gsSP2Triangles(25, 8, 4, 0, 7, 3, 4, 0),
     gsSP2Triangles(13, 18, 20, 0, 26, 27, 28, 0),
-    gsSPVertex(&bombchu_bag.zobjVtx_0009C0[29], 30, 0),
+    gsSPVertex(&bombchu_bag_zobjVtx_0009C0[29], 30, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 3, 0, 0, 7, 8, 9, 0),
     gsSP2Triangles(10, 11, 9, 0, 12, 7, 9, 0),
@@ -163,7 +163,7 @@ Gfx gGiBombchu2DL[] = {
     gsSP2Triangles(10, 16, 26, 0, 26, 16, 20, 0),
     gsSP2Triangles(19, 20, 16, 0, 21, 27, 20, 0),
     gsSP2Triangles(21, 22, 28, 0, 22, 29, 28, 0),
-    gsSPVertex(&bombchu_bag.zobjVtx_0009C0[59], 31, 0),
+    gsSPVertex(&bombchu_bag_zobjVtx_0009C0[59], 31, 0),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
     gsSP2Triangles(5, 6, 7, 0, 3, 1, 0, 0),
     gsSP2Triangles(8, 9, 10, 0, 7, 8, 11, 0),
@@ -173,7 +173,7 @@ Gfx gGiBombchu2DL[] = {
     gsSP2Triangles(23, 17, 21, 0, 24, 25, 26, 0),
     gsSP2Triangles(27, 24, 26, 0, 28, 29, 30, 0),
     gsSP1Triangle(21, 17, 19, 0),
-    gsSPVertex(&bombchu_bag.zobjVtx_0009C0[90], 31, 0),
+    gsSPVertex(&bombchu_bag_zobjVtx_0009C0[90], 31, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 9, 10, 11, 0),
     gsSP2Triangles(12, 13, 14, 0, 14, 15, 16, 0),
@@ -181,7 +181,7 @@ Gfx gGiBombchu2DL[] = {
     gsSP2Triangles(20, 21, 22, 0, 22, 23, 24, 0),
     gsSP2Triangles(24, 25, 26, 0, 26, 27, 28, 0),
     gsSP1Triangle(12, 29, 30, 0),
-    gsSPVertex(&bombchu_bag.zobjVtx_0009C0[121], 19, 0),
+    gsSPVertex(&bombchu_bag_zobjVtx_0009C0[121], 19, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(4, 6, 7, 0, 6, 8, 9, 0),
     gsSP2Triangles(10, 11, 12, 0, 13, 14, 15, 0),
