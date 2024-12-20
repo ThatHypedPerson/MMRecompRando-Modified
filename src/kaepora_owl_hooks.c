@@ -3,6 +3,10 @@
 
 #include "apcommon.h"
 
+#define LOCATION_LENS_CAVE_CENTER 0x060701
+#define LOCATION_LENS_CAVE_INVISIBLE 0x060703
+#define LOCATION_LENS_CAVE_ROCK 0x060706
+
 #define OWL_FLYING_LIMB_MAX 0x15
 #define OWL_PERCHING_LIMB_MAX 0x10
 
@@ -186,7 +190,7 @@ RECOMP_PATCH void EnOwl_Init(Actor* thisx, PlayState* play) {
             break;
 
         case ENOWL_GET_TYPE_2:
-            if (gSaveContext.save.saveInfo.inventory.items[ITEM_LENS_OF_TRUTH] == ITEM_LENS_OF_TRUTH) {
+            if (rando_location_is_checked(LOCATION_LENS_CAVE_CENTER) && rando_location_is_checked(LOCATION_LENS_CAVE_INVISIBLE) && rando_location_is_checked(LOCATION_LENS_CAVE_ROCK)) {
                 Actor_Kill(&this->actor);
                 return;
             }
