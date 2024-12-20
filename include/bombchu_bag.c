@@ -4,31 +4,33 @@
 #include "bombchu_bag.h"
 
 u64 gGiBombchuBagTex[] = {
-#include "bombchu_bag_tex.ci8.inc.c"
+#include "./bombchu_bag/bombchu_bag_tex.ci8.inc.c"
 };
 
 u64 gGiBombchuBagUnknownTex[] = {
-#include "bombchu_bag_unknown_tex.ci8.inc.c"
+#include "./bombchu_bag/bombchu_bag_unknown_tex.ci8.inc.c"
 };
 
 u64 gGiBombchuBagTLUT[] = {
-#include "bombchu_bag_tlut.rgba16.inc.c"
+#include "./bombchu_bag/bombchu_bag_tlut.rgba16.inc.c"
 };
 
 u64 gGiBombchuBagUnknownTLUT[] = {
-#include "bombchu_bag_unknown_tlut.rgba16.inc.c"
+#include "./bombchu_bag/bombchu_bag_unknown_tlut.rgba16.inc.c"
+};
+
+u8 bombchu_bag.zobj_possiblePadding_000294[] = {
+    0x00, 0x00, 0x00, 0x00, 
 };
 
 Vtx gGiBombchuBag0Vtx[] = {
-#include "gGiBombchuBag0Vtx.vtx.inc"
+#include "./bombchu_bag/gGiBombchuBag0Vtx.vtx.inc"
 };
-
-extern u64 gameplay_keep_Tex_0443B0[];
 
 Gfx gGiBombchu0DL[] = {
     gsDPSetTextureLUT(G_TT_NONE),
     gsSPTexture(0x09C4, 0x09C4, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock(gameplay_keep_Tex_0443B0, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
+    gsDPLoadTextureBlock(0x04032530, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
                          G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x003C, 0x003C),
     gsDPLoadTLUT_pal256(gGiBombchuBagUnknownTLUT),
@@ -67,14 +69,14 @@ Gfx gGiBombchu0DL[] = {
 };
 
 Vtx gGiBombchuBag1Vtx[] = {
-#include "gGiBombchuBag1Vtx.vtx.inc"
+#include "./bombchu_bag/gGiBombchuBag1Vtx.vtx.inc"
 };
 
 Gfx gGiBombchu1DL[] = {
     gsDPPipeSync(),
     gsDPSetTextureLUT(G_TT_NONE),
     gsSPTexture(0x09C4, 0x09C4, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock(gameplay_keep_Tex_0443B0, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
+    gsDPLoadTextureBlock(0x04032530, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
                          G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsDPLoadTLUT_pal256(gGiBombchuBagUnknownTLUT),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, 1, COMBINED, 0, PRIMITIVE, 0, 0, 0, 0, COMBINED),
@@ -93,7 +95,7 @@ Gfx gGiBombchu1DL[] = {
 };
 
 Vtx gGiBombchuBag2Vtx[] = {
-#include "gGiBombchuBag2Vtx.vtx.inc"
+#include "./bombchu_bag/gGiBombchuBag2Vtx.vtx.inc"
 };
 
 Gfx gGiBombchu2DL[] = {
