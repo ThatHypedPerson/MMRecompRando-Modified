@@ -3,6 +3,8 @@
 #include "ultra64.h"
 
 #include "apcommon.h"
+#include "box_ap.h"
+#include "box_ootmm.h"
 
 RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
 
@@ -45,6 +47,8 @@ typedef enum {
 // Codegen in EnTorch_Init() requires leaving out the & 0x7F for `item`
 #define ENBOX_PARAMS(type, item, chestFlag) ((((type) & 0xF) << 12) | ((item) << 5) | ((chestFlag) & 0x1F))
 
+#define OBJECT_BOX_CHEST_LIMB_01 0x1
+#define OBJECT_BOX_CHEST_LIMB_03 0x3
 #define OBJECT_BOX_CHEST_LIMB_MAX 0x5
 
 extern AnimationHeader gBoxChestOpenAnim;
@@ -111,6 +115,17 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_U8(targetMode, TARGET_MODE_0, ICHAIN_STOP),
 };
 
+// Custom rando function based off of Actor_IsSmallChest
+s32 EnBox_IsSmallChest(u8 type)
+{
+    if (type == ENBOX_TYPE_SMALL || type == ENBOX_TYPE_SMALL_INVISIBLE ||
+        type == ENBOX_TYPE_SMALL_ROOM_CLEAR || type == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL ||
+        type == ENBOX_TYPE_SMALL_SWITCH_FLAG) {
+        return true;
+    }
+    return false;
+}
+
 void EnBox_SetupAction(EnBox* this, EnBoxActionFunc func);
 void EnBox_Open(EnBox* this, PlayState* play);
 void EnBox_WaitOpen(EnBox* this, PlayState* play);
@@ -119,6 +134,8 @@ void EnBox_AppearSwitchFlag(EnBox* this, PlayState* play);
 void EnBox_AppearOnRoomClear(EnBox* this, PlayState* play);
 void func_80867BDC(struct_80867BDC_a0* arg0, PlayState* play, Vec3f* pos);
 
+RECOMP_IMPORT(".", bool rando_get_camc_enabled());
+
 RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     EnBox* this = THIS;
@@ -126,6 +143,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader;
     f32 startFrame;
     f32 endFrame;
+    u8 vanillaType = ENBOX_GET_TYPE(&this->dyna.actor);
 
     colHeader = NULL;
     startFrame = 0.0f;
@@ -137,14 +155,18 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     this->movementFlags = 0;
 
-    switch (rando_get_location_type(LOCATION_ENBOX)) {
-        case 0:
-        case 2:
-            this->type = ENBOX_TYPE_SMALL;
-            break;
-        default:
-            this->type = ENBOX_TYPE_BIG;
-            break;
+    if (rando_get_camc_enabled()) {
+        switch (rando_get_location_type(LOCATION_ENBOX)) {
+            case 0:
+            case 2:
+                this->type = ENBOX_TYPE_SMALL;
+                break;
+            default:
+                this->type = ENBOX_TYPE_BIG;
+                break;
+        }
+    } else {
+        this->type = vanillaType;
     }
 
     this->iceSmokeTimer = 0;
@@ -181,8 +203,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     }
 
     if (Flags_GetTreasure(play, ENBOX_GET_CHEST_FLAG(&this->dyna.actor)) || this->getItemId == GI_NONE) {
-        if (LOCATION_ENBOX == 0x060700)
-        {
+        if (LOCATION_ENBOX == 0x060700) {
             Actor_Kill(&this->dyna.actor);
             return;
         }
@@ -191,7 +212,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         EnBox_SetupAction(this, EnBox_Open);
         this->movementFlags |= ENBOX_MOVE_STICK_TO_GROUND;
         startFrame = endFrame;
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_SWITCH_FLAG_FALL) || (vanillaType == ENBOX_TYPE_SMALL_SWITCH_FLAG_FALL)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         if (Rand_ZeroOne() < 0.5f) {
@@ -202,7 +223,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_ROOM_CLEAR) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_ROOM_CLEAR) || (vanillaType == ENBOX_TYPE_SMALL_ROOM_CLEAR)) &&
                !Flags_GetClear(play, this->dyna.actor.room)) {
         EnBox_SetupAction(this, EnBox_AppearOnRoomClear);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -214,9 +235,9 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->alpha = 0;
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
-    } else if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SONG_SUNS)) {
+    } else if ((vanillaType == ENBOX_TYPE_BIG_SONG_ZELDAS_LULLABY) || (vanillaType == ENBOX_TYPE_BIG_SONG_SUNS)) {
 
-    } else if (((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_SWITCH_FLAG) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
+    } else if (((vanillaType == ENBOX_TYPE_BIG_SWITCH_FLAG) || (vanillaType == ENBOX_TYPE_SMALL_SWITCH_FLAG)) &&
                !Flags_GetSwitch(play, this->switchFlag)) {
         EnBox_SetupAction(this, EnBox_AppearSwitchFlag);
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
@@ -229,7 +250,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
         this->movementFlags |= ENBOX_MOVE_IMMOBILE;
         this->dyna.actor.flags |= ACTOR_FLAG_10;
     } else {
-        if ((ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_BIG_INVISIBLE) || (ENBOX_GET_TYPE(&this->dyna.actor) == ENBOX_TYPE_SMALL_INVISIBLE)) {
+        if ((vanillaType == ENBOX_TYPE_BIG_INVISIBLE) || (vanillaType == ENBOX_TYPE_SMALL_INVISIBLE)) {
             this->dyna.actor.flags |= ACTOR_FLAG_REACT_TO_LENS;
         }
         EnBox_SetupAction(this, EnBox_WaitOpen);
@@ -247,7 +268,7 @@ RECOMP_PATCH void EnBox_Init(Actor* thisx, PlayState* play) {
     SkelAnime_Init(play, &this->skelAnime, &gBoxChestSkel, &gBoxChestOpenAnim, this->jointTable, this->morphTable,
                    OBJECT_BOX_CHEST_LIMB_MAX);
     Animation_Change(&this->skelAnime, &gBoxChestOpenAnim, 1.5f, startFrame, endFrame, ANIMMODE_ONCE, 0.0f);
-    if (Actor_IsSmallChest(this)) {
+    if (EnBox_IsSmallChest(vanillaType)) {
         Actor_SetScale(&this->dyna.actor, 0.0075f);
         Actor_SetFocus(&this->dyna.actor, 20.0f);
     } else {
@@ -363,6 +384,89 @@ RECOMP_PATCH void EnBox_WaitOpen(EnBox* this, PlayState* play) {
         }
         if (Flags_GetTreasure(play, ENBOX_GET_CHEST_FLAG(&this->dyna.actor))) {
             EnBox_SetupAction(this, EnBox_Open);
+        }
+    }
+}
+
+extern Gfx gBoxChestBaseOrnateDL[];
+extern Gfx gBoxChestBaseGildedDL[];
+extern Gfx gBoxChestBaseDL[];
+
+extern Gfx gBoxChestLidOrnateDL[];
+extern Gfx gBoxChestLidGildedDL[];
+extern Gfx gBoxChestLidDL[];
+
+RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
+    s32 pad;
+    EnBox* this = THIS;
+
+    if (limbIndex == OBJECT_BOX_CHEST_LIMB_01) {
+        gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        switch (rando_get_item_id(LOCATION_ENBOX)) {
+            case GI_AP_FILLER:
+                gSPDisplayList((*gfx)++, &apJunkChestBaseDL);
+                return;
+            case GI_AP_USEFUL:
+                gSPDisplayList((*gfx)++, &apUsefulChestBaseDL);
+                return;
+            case GI_AP_PROG:
+                gSPDisplayList((*gfx)++, &apProgChestBaseDL);
+                return;
+            case GI_KEY_SMALL:
+                gSPDisplayList((*gfx)++, &keyChestBaseDL);
+                return;
+            case GI_B2:
+                gSPDisplayList((*gfx)++, &fairyChestBaseDL);
+                return;
+            case GI_HEART_PIECE:
+            case GI_HEART_CONTAINER:
+                gSPDisplayList((*gfx)++, &heartChestBaseDL);
+                return;
+            case GI_TRUE_SKULL_TOKEN:
+                gSPDisplayList((*gfx)++, &spiderChestBaseDL);
+                return;
+            case GI_KEY_BOSS:
+                gSPDisplayList((*gfx)++, &gBoxChestBaseOrnateDL);
+                return;
+        }
+        if (this->type == ENBOX_TYPE_SMALL) {
+            gSPDisplayList((*gfx)++, &gBoxChestBaseDL);
+        } else {
+            gSPDisplayList((*gfx)++, &gBoxChestBaseGildedDL);
+        }
+    } else if (limbIndex == OBJECT_BOX_CHEST_LIMB_03) {
+        gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        switch (rando_get_item_id(LOCATION_ENBOX)) {
+            case GI_AP_FILLER:
+                gSPDisplayList((*gfx)++, &apJunkChestLidDL);
+                return;
+            case GI_AP_USEFUL:
+                gSPDisplayList((*gfx)++, &apUsefulChestLidDL);
+                return;
+            case GI_AP_PROG:
+                gSPDisplayList((*gfx)++, &apProgChestLidDL);
+                return;
+            case GI_KEY_SMALL:
+                gSPDisplayList((*gfx)++, &keyChestLidDL);
+                return;
+            case GI_B2:
+                gSPDisplayList((*gfx)++, &fairyChestLidDL);
+                return;
+            case GI_HEART_PIECE:
+            case GI_HEART_CONTAINER:
+                gSPDisplayList((*gfx)++, &heartChestLidDL);
+                return;
+            case GI_TRUE_SKULL_TOKEN:
+                gSPDisplayList((*gfx)++, &spiderChestLidDL);
+                return;
+            case GI_KEY_BOSS:
+                gSPDisplayList((*gfx)++, &gBoxChestLidOrnateDL);
+                return;
+        }
+        if (this->type == ENBOX_TYPE_SMALL) {
+            gSPDisplayList((*gfx)++, &gBoxChestLidDL);
+        } else {
+            gSPDisplayList((*gfx)++, &gBoxChestLidGildedDL);
         }
     }
 }

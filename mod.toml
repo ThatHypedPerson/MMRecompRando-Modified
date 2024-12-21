@@ -8,10 +8,10 @@
 id = "mm_recomp_rando"
 
 # Version of this mod.
-version = "0.2.5"
+version = "0.8.0"
 
 # Authors of this mod.
-authors = [ "dcvz", "CelestialKitsune", "VincentsSin", "LittleCube" ]
+authors = [ "ThatHypedPerson", "dcvz", "CelestialKitsune", "VincentsSin", "LittleCube" ]
 
 # ID of the target recomp game.
 game_id = "mm"
@@ -22,7 +22,8 @@ minimum_recomp_version = "1.2.0"
 # Dependency mods. Each entry is the mod's ID and then an optional minimum version of the dependency mod.
 dependencies = [
     "owls_never_quit:1.0.0",
-    "better_double_sot:0.0.1"
+    "better_double_sot:0.0.1",
+    "mm_recomp_colors:1.0.0"
 ]
 
 # Native libraries (e.g. DLLs) and the functions they export.
@@ -34,6 +35,13 @@ native_libraries = [
                                     "rando_reset_death_link_pending",
                                     "rando_get_death_link_enabled",
                                     "rando_send_death_link",
+                                    "rando_get_camc_enabled",
+                                    "rando_get_start_with_consumables_enabled",
+                                    "rando_get_permanent_chateau_romani_enabled",
+                                    "rando_get_reset_with_inverted_time_enabled",
+                                    "rando_get_receive_filled_wallets_enabled",
+                                    "rando_get_starting_heart_locations",
+                                    "rando_get_tunic_color",
                                     "rando_skulltulas_enabled",
                                     "rando_get_location_type",
                                     "rando_get_item_id",
@@ -49,6 +57,9 @@ native_libraries = [
 
 # Input elf file to generate a mod from.
 elf_path = "build/mod.elf"
+
+# Output mod filename.
+mod_filename = "mm_recomp_rando"
 
 # Reference symbol files.
 func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"

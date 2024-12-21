@@ -2,7 +2,11 @@
 
 #include "apcommon.h"
 
+#include "z64snap.h"
+
 void Message_OpenText(PlayState* play, u16 textId);
+
+RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
 
 RECOMP_PATCH void Message_StartTextbox(PlayState* play, u16 textId, Actor* actor) {
     MessageContext* msgCtx = &play->msgCtx;
@@ -37,6 +41,19 @@ static unsigned char eoe_msg[128] = "You got the\x05 Elegy of Emptiness\x00!\xbf
 static unsigned char oto_msg[128] = "You got the\x05 Oath to Order\x00!\xbf";
 static unsigned char sht_msg[128] = "You got a\x02 Swamp Token\x00!\xbf";
 static unsigned char hp_msg[128] = "You got a\x06 Heart Piece\x00!\xbf";
+
+static unsigned char p_monkey_msg[128] = "Keep this\x01 picture of a monkey\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of a big octo\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_lulu_good_msg[128] = "Keep this\x01 good picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_lulu_bad_msg[128] = "Keep this\x01 bad picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_scarecrow_msg[128] = "Keep this\x01 picture of a scarecrow\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_tingle_msg[128] = "Keep this\x01 picture of Tingle\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_deku_king_msg[128] = "Keep this\x01 picture of the Deku King\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_pirate_good_msg[128] = "Keep this\x01 good picture of a pirate\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_pirate_bad_msg[128] = "Keep this\x01 bad picture of a pirate\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+
+static unsigned char slow_dog_msg[128] = "Hoo-whine.\x11How can any of us win against...\x10.\x0a.\x0a." "\x03" "blue dog" "\x00" "?\xbf";
+static unsigned char fast_dog_msg[128] = "\x0a\x0a\x0a\x0a\x0a\x0a.\x0a.\x0a.\x0a\x0a\x0a\x0a\xbf";
 
 void Message_FindMessage(PlayState* play, u16 textId);
 
@@ -190,6 +207,36 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         case GI_AP_USEFUL:
             msg = ap_msg;
             break;
+        case 0xF8:
+            Snap_RecordPictographedActors(play);
+            if (Snap_CheckFlag(PICTO_VALID_MONKEY)) {
+                msg = p_monkey_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_BIG_OCTO)) {
+                msg = p_big_octo_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_SCARECROW)) {
+                msg = p_scarecrow_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_TINGLE)) {
+                msg = p_tingle_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_DEKU_KING)) {
+                msg = p_deku_king_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_PIRATE_GOOD)) {
+                msg = p_pirate_good_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_PIRATE_TOO_FAR)) {
+                msg = p_pirate_bad_msg;
+            } else if (Snap_CheckFlag(PICTO_VALID_LULU_HEAD)) {
+                if (Snap_CheckFlag(PICTO_VALID_LULU_RIGHT_ARM) && Snap_CheckFlag(PICTO_VALID_LULU_LEFT_ARM)) {
+                    msg = p_lulu_good_msg;
+                } else {
+                    msg = p_lulu_bad_msg;
+                }
+            }
+            break;
+        case 0x353C:
+            msg = fast_dog_msg;
+            break;
+        case 0x3545:
+            msg = slow_dog_msg;
+            break;
     }
 
     if (msg != NULL) {
@@ -202,6 +249,12 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 break;
             }
         }
+    }
+
+    if (textId == 0xF8)
+    {
+        font->msgBuf.schar[0] = 0x06;
+        font->msgBuf.schar[1] = 0x71;
     }
 
     if (msg == sht_msg) {
@@ -246,6 +299,23 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             }
         }
     }
+
+    // for reverse-engineering text
+    //~ size_t text_i = msgCtx->msgBufPos;
+    //~ char c = font->msgBuf.schar[text_i];
+    //~ while (c != '\xbf') {
+        //~ recomp_printf("%c", c);
+        //~ text_i += 1;
+        //~ c = font->msgBuf.schar[text_i];
+    //~ }
+
+    //~ text_i = msgCtx->msgBufPos;
+    //~ c = font->msgBuf.schar[text_i];
+    //~ while (c != '\xbf') {
+        //~ recomp_printf("0x%02X ", (u8) c);
+        //~ text_i += 1;
+        //~ c = font->msgBuf.schar[text_i];
+    //~ }
 
     msgCtx->unk11F08 = font->msgBuf.schar[msgCtx->msgBufPos] << 8;
     msgCtx->unk11F08 |= font->msgBuf.schar[msgCtx->msgBufPos + 1];

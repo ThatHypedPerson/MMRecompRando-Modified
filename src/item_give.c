@@ -6,6 +6,8 @@
 
 #include "apcommon.h"
 
+RECOMP_IMPORT(".", bool rando_get_receive_filled_wallets_enabled());
+
 extern s16 sExtraItemBases[];
 extern s16 sAmmoRefillCounts[];
 extern s16 sBombchuRefillCounts[];
@@ -1851,40 +1853,45 @@ u8 randoItemGive(u32 gi) {
         return ITEM_NONE;
 
     } else if (item == ITEM_SWORD_KOKIRI) {
-        if ((STOLEN_ITEM_1 >= ITEM_SWORD_GILDED || STOLEN_ITEM_1 <= ITEM_SWORD_KOKIRI) && (STOLEN_ITEM_2 >= ITEM_SWORD_GILDED || STOLEN_ITEM_2 <= ITEM_SWORD_KOKIRI)) {
-            switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) {
-                case 0:
-                    break;
-                case 1:
-                    item = ITEM_SWORD_RAZOR;
-                    break;
-                case 2:
-                    item = ITEM_SWORD_GILDED;
-                    break;
-                default:
-                    // ...come on man, you have enough swords...
-                    return ITEM_NONE;
-            }
-            SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, item - ITEM_SWORD_KOKIRI + EQUIP_VALUE_SWORD_KOKIRI);
-            if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
-                CUR_FORM_EQUIP(EQUIP_SLOT_B) = item;
-            } else if (player->currentMask != PLAYER_MASK_FIERCE_DEITY) {
-                BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = item;
-            }
-            Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
-            if (item == ITEM_SWORD_RAZOR) {
-                gSaveContext.save.saveInfo.playerData.swordHealth = 100;
-            }
+        switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SWORD)) {
+            case 0:
+                break;
+            case 1:
+                item = ITEM_SWORD_RAZOR;
+                break;
+            case 2:
+                item = ITEM_SWORD_GILDED;
+                break;
+            default:
+                // ...come on man, you have enough swords...
+                return ITEM_SWORD_GILDED;
+        }
+        SET_EQUIP_VALUE(EQUIP_TYPE_SWORD, item - ITEM_SWORD_KOKIRI + EQUIP_VALUE_SWORD_KOKIRI);
+        if (gSaveContext.save.playerForm == PLAYER_FORM_HUMAN) {
+            CUR_FORM_EQUIP(EQUIP_SLOT_B) = item;
+        } else if (player->currentMask != PLAYER_MASK_FIERCE_DEITY) {
+            BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = item;
+        }
+        Interface_LoadItemIconImpl(play, EQUIP_SLOT_B);
+        if (item == ITEM_SWORD_RAZOR) {
+            gSaveContext.save.saveInfo.playerData.swordHealth = 100;
         }
         return ITEM_NONE;
 
-    } else if ((item >= ITEM_SHIELD_HERO) && (item <= ITEM_SHIELD_MIRROR)) {
-        if (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD) != (u16)(item - ITEM_SHIELD_HERO + EQUIP_VALUE_SHIELD_HERO)) {
-            SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, item - ITEM_SHIELD_HERO + EQUIP_VALUE_SHIELD_HERO);
-            Player_SetEquipmentData(play, player);
-            return ITEM_NONE;
+    } else if (item == ITEM_SHIELD_HERO) {
+        switch (GET_CUR_EQUIP_VALUE(EQUIP_TYPE_SHIELD)) {
+            case 0:
+                break;
+            case 1:
+                item = ITEM_SHIELD_MIRROR;
+                break;
+            case 2:
+                // you got enough shields too dude
+                return ITEM_SHIELD_MIRROR;
         }
-        return item;
+        SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, item - ITEM_SHIELD_HERO + EQUIP_VALUE_SHIELD_HERO);
+        Player_SetEquipmentData(play, player);
+        return ITEM_NONE;
 
     } else if ((item == ITEM_KEY_BOSS) || (item == ITEM_COMPASS) || (item == ITEM_DUNGEON_MAP)) {
         SET_DUNGEON_ITEM(item - ITEM_KEY_BOSS, gSaveContext.mapIndex);
@@ -1951,11 +1958,15 @@ u8 randoItemGive(u32 gi) {
             return ITEM_NONE;
         } else if (CUR_UPG_VALUE(UPG_WALLET) == 1) {
             Inventory_ChangeUpgrade(UPG_WALLET, 2);
-            Rupees_ChangeBy(500);
+            if (rando_get_receive_filled_wallets_enabled()) {
+                Rupees_ChangeBy(500);
+            }
             return ITEM_NONE;
         }
         Inventory_ChangeUpgrade(UPG_WALLET, 1);
-        Rupees_ChangeBy(200);
+        if (rando_get_receive_filled_wallets_enabled()) {
+            Rupees_ChangeBy(200);
+        }
         return ITEM_NONE;
 
     } else if (item == ITEM_DEKU_STICK_UPGRADE_20) {

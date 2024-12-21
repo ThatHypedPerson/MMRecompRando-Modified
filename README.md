@@ -39,6 +39,25 @@ Make sure you have a file named "apconnect.txt" (without the quotes) in the same
 
 Try moving your cursor to the Letter to Kafei and pressing the N64's L button. That should cycle through all quest items in that slot. That's true for the Moon's Tear item slot and the Room Key item slot as well.
 
+### I opened a chest/got a check and it always shows a grey Archipelago item, what's wrong with you?
+
+The phantom AP item means the check is not yet implemented. Please use a text client or Seto's amazing poptracker pack from step 6 to see checks that you can definitely get (though some implemented checks may be missing until the tracker is updated).
+
+Otherwise, here is a list of unimplemented checks:
+
+- Tingle
+- Oceanside Gold Skulltulas
+- Shop Items
+- Moon Children Trials Heart Pieces
+- Snowhead/Great Bay/Ikana
+
+## Credit for additional mods included
+
+Thank you to the original authors of some of the other recomp mods used!
+
+- danielryb (Better SoDT, Z-Target Fix)
+- ThatOneHypedPerson (Color Mods)
+
 ## Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
 
