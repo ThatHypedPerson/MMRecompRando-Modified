@@ -24,6 +24,8 @@
 #define GID_SONG_SOARING (GID_MASK_FIERCE_DEITY + 9)
 #define GID_SONG_STORMS (GID_MASK_FIERCE_DEITY + 10)
 
+#define GID_BAG_BOMBCHU (GID_MASK_FIERCE_DEITY + 11)
+
 #define GID_APLOGO_FILLER GID_37
 #define GID_APLOGO_PROG GID_46
 #define GID_APLOGO_USEFUL GID_4C
@@ -78,7 +80,7 @@ u8 randoItemGive(u32 gi);
 typedef struct GetItemEntry {
     /* 0x0 */ u8 itemId;
     /* 0x1 */ u8 field; // various bit-packed data
-    /* 0x2 */ s8 gid;   // defines the draw id and chest opening animation
+    /* 0x2 */ s16 gid;   // defines the draw id and chest opening animation
     /* 0x3 */ u8 textId;
     /* 0x4 */ u16 objectId;
 } GetItemEntry; // size = 0x6
@@ -87,7 +89,7 @@ bool isAP(s16 gi);
 
 u16 getObjectId(s16 gi);
 
-s8 getGid(s16 gi);
+s16 getGid(s16 gi);
 
 u8 getTextId(s16 gi);
 
