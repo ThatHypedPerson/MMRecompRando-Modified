@@ -402,32 +402,34 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
 
     if (limbIndex == OBJECT_BOX_CHEST_LIMB_01) {
         gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        switch (rando_get_item_id(LOCATION_ENBOX)) {
-            case GI_AP_FILLER:
-                gSPDisplayList((*gfx)++, &apJunkChestBaseDL);
-                return;
-            case GI_AP_USEFUL:
-                gSPDisplayList((*gfx)++, &apUsefulChestBaseDL);
-                return;
-            case GI_AP_PROG:
-                gSPDisplayList((*gfx)++, &apProgChestBaseDL);
-                return;
-            case GI_KEY_SMALL:
-                gSPDisplayList((*gfx)++, &keyChestBaseDL);
-                return;
-            case GI_B2:
-                gSPDisplayList((*gfx)++, &fairyChestBaseDL);
-                return;
-            case GI_HEART_PIECE:
-            case GI_HEART_CONTAINER:
-                gSPDisplayList((*gfx)++, &heartChestBaseDL);
-                return;
-            case GI_TRUE_SKULL_TOKEN:
-                gSPDisplayList((*gfx)++, &spiderChestBaseDL);
-                return;
-            case GI_KEY_BOSS:
-                gSPDisplayList((*gfx)++, &gBoxChestBaseOrnateDL);
-                return;
+        if (rando_get_camc_enabled()) {
+            switch (rando_get_item_id(LOCATION_ENBOX)) {
+                case GI_AP_FILLER:
+                    gSPDisplayList((*gfx)++, &apJunkChestBaseDL);
+                    return;
+                case GI_AP_USEFUL:
+                    gSPDisplayList((*gfx)++, &apUsefulChestBaseDL);
+                    return;
+                case GI_AP_PROG:
+                    gSPDisplayList((*gfx)++, &apProgChestBaseDL);
+                    return;
+                case GI_KEY_SMALL:
+                    gSPDisplayList((*gfx)++, &keyChestBaseDL);
+                    return;
+                case GI_B2:
+                    gSPDisplayList((*gfx)++, &fairyChestBaseDL);
+                    return;
+                case GI_HEART_PIECE:
+                case GI_HEART_CONTAINER:
+                    gSPDisplayList((*gfx)++, &heartChestBaseDL);
+                    return;
+                case GI_TRUE_SKULL_TOKEN:
+                    gSPDisplayList((*gfx)++, &spiderChestBaseDL);
+                    return;
+                case GI_KEY_BOSS:
+                    gSPDisplayList((*gfx)++, &gBoxChestBaseOrnateDL);
+                    return;
+            }
         }
         if (this->type == ENBOX_TYPE_SMALL) {
             gSPDisplayList((*gfx)++, &gBoxChestBaseDL);
@@ -436,32 +438,34 @@ RECOMP_PATCH void EnBox_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList
         }
     } else if (limbIndex == OBJECT_BOX_CHEST_LIMB_03) {
         gSPMatrix((*gfx)++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        switch (rando_get_item_id(LOCATION_ENBOX)) {
-            case GI_AP_FILLER:
-                gSPDisplayList((*gfx)++, &apJunkChestLidDL);
-                return;
-            case GI_AP_USEFUL:
-                gSPDisplayList((*gfx)++, &apUsefulChestLidDL);
-                return;
-            case GI_AP_PROG:
-                gSPDisplayList((*gfx)++, &apProgChestLidDL);
-                return;
-            case GI_KEY_SMALL:
-                gSPDisplayList((*gfx)++, &keyChestLidDL);
-                return;
-            case GI_B2:
-                gSPDisplayList((*gfx)++, &fairyChestLidDL);
-                return;
-            case GI_HEART_PIECE:
-            case GI_HEART_CONTAINER:
-                gSPDisplayList((*gfx)++, &heartChestLidDL);
-                return;
-            case GI_TRUE_SKULL_TOKEN:
-                gSPDisplayList((*gfx)++, &spiderChestLidDL);
-                return;
-            case GI_KEY_BOSS:
-                gSPDisplayList((*gfx)++, &gBoxChestLidOrnateDL);
-                return;
+        if (rando_get_camc_enabled()) {
+            switch (rando_get_item_id(LOCATION_ENBOX)) {
+                case GI_AP_FILLER:
+                    gSPDisplayList((*gfx)++, &apJunkChestLidDL);
+                    return;
+                case GI_AP_USEFUL:
+                    gSPDisplayList((*gfx)++, &apUsefulChestLidDL);
+                    return;
+                case GI_AP_PROG:
+                    gSPDisplayList((*gfx)++, &apProgChestLidDL);
+                    return;
+                case GI_KEY_SMALL:
+                    gSPDisplayList((*gfx)++, &keyChestLidDL);
+                    return;
+                case GI_B2:
+                    gSPDisplayList((*gfx)++, &fairyChestLidDL);
+                    return;
+                case GI_HEART_PIECE:
+                case GI_HEART_CONTAINER:
+                    gSPDisplayList((*gfx)++, &heartChestLidDL);
+                    return;
+                case GI_TRUE_SKULL_TOKEN:
+                    gSPDisplayList((*gfx)++, &spiderChestLidDL);
+                    return;
+                case GI_KEY_BOSS:
+                    gSPDisplayList((*gfx)++, &gBoxChestLidOrnateDL);
+                    return;
+            }
         }
         if (this->type == ENBOX_TYPE_SMALL) {
             gSPDisplayList((*gfx)++, &gBoxChestLidDL);
