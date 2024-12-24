@@ -373,3 +373,28 @@ RECOMP_PATCH void EnSyatekiMan_Swamp_SetupGiveReward(EnSyatekiMan* this, PlaySta
         }
     }
 }
+
+void EnSyatekiMan_Swamp_EndGame(EnSyatekiMan* this, PlayState* play);
+
+RECOMP_PATCH void EnSyatekiMan_Swamp_AddBonusPoints(EnSyatekiMan* this, PlayState* play) {
+    static s32 sBonusTimer = 0;
+    Player* player = GET_PLAYER(play);
+
+    player->stateFlags1 |= PLAYER_STATE1_20;
+    if (!play->interfaceCtx.perfectLettersOn) {
+        if (gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] == SECONDS_TO_TIMER(0)) {
+            gSaveContext.timerCurTimes[TIMER_ID_MINIGAME_1] = SECONDS_TO_TIMER(0);
+            gSaveContext.timerStates[TIMER_ID_MINIGAME_1] = TIMER_STATE_STOP;
+            this->flagsIndex = 0;
+            this->currentWave = 0;
+            this->actionFunc = EnSyatekiMan_Swamp_EndGame;
+            sBonusTimer = 0;
+        } else {
+            gSaveContext.timerStopTimes[TIMER_ID_MINIGAME_1] += SECONDS_TO_TIMER(1);
+            play->interfaceCtx.minigamePoints += SG_BONUS_POINTS_PER_SECOND;
+            this->score += SG_BONUS_POINTS_PER_SECOND;
+            Actor_PlaySfx(&this->actor, NA_SE_SY_TRE_BOX_APPEAR);
+            sBonusTimer = 0;
+        }
+    }
+}

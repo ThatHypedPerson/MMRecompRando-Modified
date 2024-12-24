@@ -6,6 +6,7 @@
 #include "apcommon.h"
 
 bool saveOpened = false;
+bool spawnedTurtle = false;
 
 RECOMP_IMPORT(".", bool rando_get_permanent_chateau_romani_enabled());
 RECOMP_IMPORT(".", bool rando_get_start_with_consumables_enabled());
@@ -85,6 +86,11 @@ void Sram_SetInitialWeekEvents(void) {
 
     // skip the princess prison cutscene
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+
+    // skip having to rewatch the great bay turtle cutscene
+    if(spawnedTurtle) {
+        SET_WEEKEVENTREG(WEEKEVENTREG_53_20);
+    }
 
     // restore chateau romani state after cycle reset
     if (drankChateau && rando_get_permanent_chateau_romani_enabled()) {
@@ -372,8 +378,9 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
         //Inventory_DeleteItem(ITEM_MASK_FIERCE_DEITY, SLOT(ITEM_MASK_FIERCE_DEITY));
     }
 
-    // persistent chateau romani state
+    // persistent flags
     drankChateau = CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+    spawnedTurtle = CHECK_WEEKEVENTREG(WEEKEVENTREG_53_20);
 
     for (i = 0; i < ARRAY_COUNT(sPersistentCycleWeekEventRegs); i++) {
         u16 isPersistentBits = sPersistentCycleWeekEventRegs[i];
