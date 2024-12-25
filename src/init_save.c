@@ -6,7 +6,6 @@
 #include "apcommon.h"
 
 bool saveOpened = false;
-bool spawnedTurtle = false;
 
 RECOMP_IMPORT(".", bool rando_get_permanent_chateau_romani_enabled());
 RECOMP_IMPORT(".", bool rando_get_start_with_consumables_enabled());
@@ -28,6 +27,7 @@ void Sram_GenerateRandomSaveFields(void);
 void Sram_ResetSave(void);
 
 bool drankChateau = false;
+bool spawnedTurtle = false;
 
 void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_15_20);
@@ -84,8 +84,9 @@ void Sram_SetInitialWeekEvents(void) {
     // moon's tear deku scrub starts out in flower
     SET_WEEKEVENTREG(PACK_WEEKEVENTREG_FLAG(73, 0x04));
 
-    // skip the princess prison cutscene
+    // skip the princess prison cutscenes
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+    SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
 
     // skip having to rewatch the great bay turtle cutscene
     if(spawnedTurtle) {
@@ -138,7 +139,6 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
 
     Sram_SetInitialWeekEvents();
 
-    // skip the *insanely long* skull kid tatl/tael backstory cutscene
     u8* save_ptr = (u8*) &gSaveContext;
     save_ptr[0x5EB] |= 0x10;
     save_ptr[0x42F3] |= 0x10;
