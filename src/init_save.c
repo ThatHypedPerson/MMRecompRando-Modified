@@ -146,6 +146,9 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
     gSaveContext.cycleSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
     gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
 
+    gSaveContext.cycleSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
+    gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
+
     gSaveContext.save.saveInfo.playerData.healthCapacity = 0x10;
     gSaveContext.save.saveInfo.playerData.health = 0x10;
 
@@ -341,6 +344,9 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
 
     sceneId = Play_GetOriginalSceneId(play->sceneId);
     Play_SaveCycleSceneFlags(&play->state);
+
+    // sPersistentCycleSceneFlags override
+    sPersistentCycleSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
 
     play->actorCtx.sceneFlags.chest &= sPersistentCycleSceneFlags[sceneId].chest;
     play->actorCtx.sceneFlags.switches[0] &= sPersistentCycleSceneFlags[sceneId].switch0;
