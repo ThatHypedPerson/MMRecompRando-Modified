@@ -67,8 +67,8 @@ You'll need to install `clang` and `make` to build rando.
 * On MacOS, these can both be installed using Homebrew, as well as `zip`. Apple clang won't work, as you need a mips target for building the mod code.
 * On Linux, install the above packages, and some additional ones: `clang`, `make`, `llvm`, `lld`, `zip`, using your distro's package manager.
 
-You'll also need to build [N64Recomp](https://github.com/N64Recomp/N64Recomp) for the `RecompModTool` and `OfflineModRecomp` utilities.
+You'll also need to build [N64Recomp](https://github.com/N64Recomp/N64Recomp) for the `RecompModTool` and `OfflineModRecomp` utilities, and copy them into your clone of rando.
 
 ## Building
-* First, run `make offline` (with an optional job count) to build the mod code itself.
-* Oops, all done.
+* First, make sure you've cloned the repo recursively `git clone https://github.com/LittleCube-hax/MMRecompRando --recurse-submodules` or you can update the submodules afterwards `git submodule update --init --recursive`.
+* Then, run `make offline` (with an optional job count) to build the mod code itself.
