@@ -3,7 +3,7 @@
 
 #include "apcommon.h"
 
-#include "overlays\actors\ovl_En_Kujiya\z_en_kujiya.h"
+#include "overlays/actors/ovl_En_Kujiya/z_en_kujiya.h"
 
 void EnKujiya_SetupFinishGivePrize(EnKujiya* this);
 
