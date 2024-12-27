@@ -27,6 +27,7 @@ void Sram_GenerateRandomSaveFields(void);
 void Sram_ResetSave(void);
 
 bool drankChateau = false;
+bool spawnedTurtle = false;
 
 void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_15_20);
@@ -83,8 +84,14 @@ void Sram_SetInitialWeekEvents(void) {
     // moon's tear deku scrub starts out in flower
     SET_WEEKEVENTREG(PACK_WEEKEVENTREG_FLAG(73, 0x04));
 
-    // skip the princess prison cutscene
+    // skip the princess prison cutscenes
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
+    SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
+
+    // skip having to rewatch the great bay turtle cutscene
+    if(spawnedTurtle) {
+        SET_WEEKEVENTREG(WEEKEVENTREG_53_20);
+    }
 
     // restore chateau romani state after cycle reset
     if (drankChateau && rando_get_permanent_chateau_romani_enabled()) {
@@ -132,13 +139,15 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
 
     Sram_SetInitialWeekEvents();
 
-    // skip the *insanely long* skull kid tatl/tael backstory cutscene
     u8* save_ptr = (u8*) &gSaveContext;
     save_ptr[0x5EB] |= 0x10;
     save_ptr[0x42F3] |= 0x10;
 
     gSaveContext.cycleSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
     gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_INSIDETOWER].switch0 = 1;
+
+    gSaveContext.cycleSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
+    gSaveContext.save.saveInfo.permanentSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
 
     gSaveContext.save.saveInfo.playerData.healthCapacity = 0x10;
     gSaveContext.save.saveInfo.playerData.health = 0x10;
@@ -336,6 +345,9 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
     sceneId = Play_GetOriginalSceneId(play->sceneId);
     Play_SaveCycleSceneFlags(&play->state);
 
+    // sPersistentCycleSceneFlags override
+    sPersistentCycleSceneFlags[SCENE_PIRATE].switch1 |= (1 << 29);
+
     play->actorCtx.sceneFlags.chest &= sPersistentCycleSceneFlags[sceneId].chest;
     play->actorCtx.sceneFlags.switches[0] &= sPersistentCycleSceneFlags[sceneId].switch0;
     play->actorCtx.sceneFlags.switches[1] &= sPersistentCycleSceneFlags[sceneId].switch1;
@@ -372,8 +384,9 @@ RECOMP_PATCH void Sram_SaveEndOfCycle(PlayState* play) {
         //Inventory_DeleteItem(ITEM_MASK_FIERCE_DEITY, SLOT(ITEM_MASK_FIERCE_DEITY));
     }
 
-    // persistent chateau romani state
+    // persistent flags
     drankChateau = CHECK_WEEKEVENTREG(WEEKEVENTREG_DRANK_CHATEAU_ROMANI);
+    spawnedTurtle = CHECK_WEEKEVENTREG(WEEKEVENTREG_53_20);
 
     for (i = 0; i < ARRAY_COUNT(sPersistentCycleWeekEventRegs); i++) {
         u16 isPersistentBits = sPersistentCycleWeekEventRegs[i];
