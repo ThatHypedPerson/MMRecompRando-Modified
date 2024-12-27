@@ -41,6 +41,7 @@ native_libraries = [
                                     "rando_get_reset_with_inverted_time_enabled",
                                     "rando_get_receive_filled_wallets_enabled",
                                     "rando_get_starting_heart_locations",
+                                    "rando_get_minimum_moon_remains",
                                     "rando_get_tunic_color",
                                     "rando_skulltulas_enabled",
                                     "rando_get_location_type",

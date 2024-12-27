@@ -113,8 +113,10 @@ RECOMP_PATCH void EnTimeTag_RooftopOath_Cutscene(EnTimeTag* this, PlayState* pla
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_END) {
         this->actionFunc = EnTimeTag_RooftopOath_Wait;
     }
-    if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
-        CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) && CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
+    // if (CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) && CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) &&
+    //     CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) && CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD)) {
+    if (((CHECK_QUEST_ITEM(QUEST_REMAINS_ODOLWA) > 0) + (CHECK_QUEST_ITEM(QUEST_REMAINS_GOHT) > 0) +
+        (CHECK_QUEST_ITEM(QUEST_REMAINS_GYORG) > 0) + (CHECK_QUEST_ITEM(QUEST_REMAINS_TWINMOLD) > 0)) >= rando_get_minimum_moon_remains()) {
         gSaveContext.timerStates[TIMER_ID_MOON_CRASH] = TIMER_STATE_OFF;
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         play->nextEntrance = ENTRANCE(THE_MOON, 0);
