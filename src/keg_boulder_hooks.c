@@ -27,6 +27,12 @@ typedef struct ObjHugebombiwa {
     /* 0x4B4 */ ObjHugebombiwaActionFunc actionFunc;
 } ObjHugebombiwa; // size = 0x4B8
 
+void func_80A53BE0(PlayState* play, Vec3f* arg1);
+void func_80A54E10(ObjHugebombiwa* this);
+
+void func_80A541F4(ObjHugebombiwa* this, PlayState* play);
+void func_80A55310(ObjHugebombiwa* this);
+
 RECOMP_PATCH void func_80A54CEC(ObjHugebombiwa* this, PlayState* play) {
     s32 pad;
 
