@@ -30,6 +30,11 @@ typedef struct BgIngate {
     /* 0x18C */ s32 timePathElapsedTime;
 } BgIngate; // size = 0x190
 
+void func_809543D4(BgIngate *this, PlayState *play);
+void func_809542A0(BgIngate *this, PlayState *play);
+void func_80953E38(PlayState *play);
+s32 func_80953BEC(BgIngate *this);
+
 RECOMP_PATCH void BgIngate_Update(Actor* thisx, PlayState* play) {
     BgIngate* this = THIS;
 
@@ -58,4 +63,52 @@ RECOMP_PATCH void func_80953B40(BgIngate* this) {
     this->timePathElapsedTime = 0;
     this->unk160 &= ~0x1;
     this->unk160 &= ~0x2;
+}
+
+RECOMP_PATCH void func_80953F9C(BgIngate* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+    Camera* mainCam = Play_GetCamera(play, CAM_ID_MAIN);
+
+    if (!CHECK_EVENTINF(EVENTINF_40)) {
+
+        if (!CHECK_EVENTINF(EVENTINF_35) && (this->unk160 & 0x10) && (this->unk16C == 0)) {
+            this->dyna.actor.textId = 0x9E3;
+            Message_StartTextbox(play, this->dyna.actor.textId, NULL);
+            this->unk160 &= ~0x10;
+        }
+
+        if (this->unk160 & 2 || (CHECK_EVENTINF(EVENTINF_35) && (gSaveContext.minigameScore >= 20))) {
+
+            if (this->timePath->additionalPathIndex != ADDITIONAL_PATH_INDEX_NONE) {
+                func_80953E38(play);
+                func_800B7298(play, &this->dyna.actor, PLAYER_CSACTION_WAIT);
+                this->dyna.actor.textId = 0x9E4;
+                Message_StartTextbox(play, this->dyna.actor.textId, NULL);
+                this->unk16C += 1;
+                SET_WEEKEVENTREG(WEEKEVENTREG_90_40);
+                this->actionFunc = func_809543D4;
+            } else {
+                if (!CHECK_EVENTINF(EVENTINF_35)) {
+                    CLEAR_EVENTINF(EVENTINF_41);
+                } else {
+                    SET_EVENTINF(EVENTINF_40);
+                }
+                this->actionFunc = func_809542A0;
+            }
+        } else if ((CutsceneManager_GetCurrentCsId() == CS_ID_NONE) && (this->timePath != NULL)) {
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_CRUISER - SFX_FLAG);
+            func_80953BEC(this);
+        }
+    }
+    if (CutsceneManager_GetCurrentCsId() != this->csId) {
+        if (CutsceneManager_GetCurrentCsId() != CS_ID_NONE) {
+            Camera_ChangeSetting(mainCam, CAM_SET_NORMAL0);
+            player->stateFlags1 |= PLAYER_STATE1_20;
+            play->actorCtx.flags &= ~ACTORCTX_FLAG_PICTO_BOX_ON;
+        } else {
+            Camera_ChangeSetting(mainCam, CAM_SET_BOAT_CRUISE);
+            player->stateFlags1 &= ~PLAYER_STATE1_20;
+        }
+    }
+    this->csId = CutsceneManager_GetCurrentCsId();
 }
