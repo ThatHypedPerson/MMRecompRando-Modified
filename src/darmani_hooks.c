@@ -128,7 +128,7 @@ extern AnimationHeader object_gg_Anim_00F578;
 void func_80B35250(EnGg* this);
 void func_80B35B24(EnGgStruct* ptr, PlayState* play);
 
-void EnGg_Init(Actor* thisx, PlayState* play) {
+RECOMP_PATCH void EnGg_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     EnGg* this = THIS;
 
