@@ -1781,9 +1781,12 @@ u8 randoItemGive(u32 gi) {
                         gSaveContext.save.saveInfo.playerData.isMagicAcquired = true;
                         gSaveContext.magicFillTarget = MAGIC_NORMAL_METER;
                     } else {
-                        // @bug double magic is currently not updated correctly and will only update after resetting or a third magic is sent
+                        // @bug double magic doesn't fill to full
                         gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = true;
                         gSaveContext.magicFillTarget = MAGIC_DOUBLE_METER;
+                        gSaveContext.save.saveInfo.playerData.magicLevel = 0;
+                        // may need to add a delay here
+                        Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
                     }
                     break;
                 case 0x01:
