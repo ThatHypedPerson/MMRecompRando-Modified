@@ -56,7 +56,7 @@ Otherwise, here is a list of unimplemented checks:
 Thank you to the original authors of some of the other recomp mods used!
 
 - danielryb (Better SoDT, Z-Target Fix)
-- ThatOneHypedPerson (Color Mods)
+- ThatHypedPerson (Color Mods)
 
 ## Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
