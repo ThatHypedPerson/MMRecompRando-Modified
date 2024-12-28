@@ -49,6 +49,7 @@ static unsigned char p_lulu_bad_msg[128] = "Keep this\x01 bad picture of Lulu\x0
 static unsigned char p_scarecrow_msg[128] = "Keep this\x01 picture of a scarecrow\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_tingle_msg[128] = "Keep this\x01 picture of Tingle\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_deku_king_msg[128] = "Keep this\x01 picture of the Deku King\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_swamp_msg[128] = "Keep this\x01 picture of the swamp\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_pirate_good_msg[128] = "Keep this\x01 good picture of a pirate\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_pirate_bad_msg[128] = "Keep this\x01 bad picture of a pirate\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 
@@ -229,6 +230,8 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 } else {
                     msg = p_lulu_bad_msg;
                 }
+            } else if (Snap_CheckFlag(PICTO_VALID_IN_SWAMP)) {
+                msg = p_swamp_msg;
             }
             break;
         case 0x353C:
