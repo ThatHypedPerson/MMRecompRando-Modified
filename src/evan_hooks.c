@@ -37,7 +37,7 @@ s32 func_80BBAF5C(EnZos* this, PlayState* play);
 void func_80BBB2C4(EnZos* this, PlayState* play);
 
 void func_80BBB354(EnZos* this, PlayState* play) {
-    // s32 getItemId;
+    s32 getItemId;
 
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
@@ -47,11 +47,12 @@ void func_80BBB354(EnZos* this, PlayState* play) {
         Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
     } else {
         // if (CHECK_WEEKEVENTREG(WEEKEVENTREG_39_20)) {
-        //     getItemId = GI_RUPEE_PURPLE;
-        // } else {
-        //     getItemId = GI_HEART_PIECE;
-        // }
-        Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 10000.0f, 50.0f);
+        if (rando_location_is_checked(LOCATION_EVAN_SONG)) {
+            getItemId = GI_RUPEE_PURPLE;
+        } else {
+            getItemId = GI_HEART_PIECE;
+        }
+        Actor_OfferGetItem(&this->actor, play, getItemId, 10000.0f, 50.0f);
     }
 }
 

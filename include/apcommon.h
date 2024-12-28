@@ -44,6 +44,7 @@
 #define LOCATION_TOWN_GALLERY_PERFECT 0x07011D
 #define LOCATION_SWAMP_GALLERY_PERFECT 0x08011D
 #define LOCATION_BEAN_DADDY 0x0800A5
+#define LOCATION_EVAN_SONG 0x070241
 
 RECOMP_IMPORT(".", bool rando_location_is_checked(u32 location_id));
 RECOMP_IMPORT(".", bool rando_get_death_link_pending());

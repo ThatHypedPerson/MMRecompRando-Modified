@@ -1494,6 +1494,9 @@ RECOMP_PATCH u8 Item_Give(PlayState* play, u8 item) {
     } else if (item == ITEM_MASK_GREAT_FAIRY) {
         rando_send_location(GI_MASK_GREAT_FAIRY);
         return ITEM_NONE;
+    } else if (item == ITEM_SWORD_GREAT_FAIRY) {
+        rando_send_location(ITEM_SWORD_GREAT_FAIRY);
+        return ITEM_NONE;
     }
 
     if (item >= ITEM_DEKU_STICKS_5) {
@@ -1774,11 +1777,21 @@ u8 randoItemGive(u32 gi) {
         case 0x020000:
             switch (gi & 0xFF) {
                 case 0x00:
-                    gSaveContext.save.saveInfo.playerData.isMagicAcquired = true;
-                    gSaveContext.magicFillTarget = MAGIC_NORMAL_METER;
+                    if (!gSaveContext.save.saveInfo.playerData.isMagicAcquired) {
+                        gSaveContext.save.saveInfo.playerData.isMagicAcquired = true;
+                        gSaveContext.magicFillTarget = MAGIC_NORMAL_METER;
+                    } else {
+                        // @bug double magic is currently not updated correctly and will only update after resetting or a third magic is sent
+                        gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = true;
+                        gSaveContext.magicFillTarget = MAGIC_DOUBLE_METER;
+                    }
                     break;
                 case 0x01:
                     SET_WEEKEVENTREG(PACK_WEEKEVENTREG_FLAG(23, 0x02));
+                    break;
+                case 0x03:
+                    gSaveContext.save.saveInfo.playerData.doubleDefense = true;
+                    gSaveContext.save.saveInfo.inventory.defenseHearts = 20;
                     break;
             }
             return ITEM_NONE;
