@@ -1781,12 +1781,10 @@ u8 randoItemGive(u32 gi) {
                         gSaveContext.save.saveInfo.playerData.isMagicAcquired = true;
                         gSaveContext.magicFillTarget = MAGIC_NORMAL_METER;
                     } else {
-                        // @bug double magic doesn't fill to full
                         gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = true;
                         gSaveContext.magicFillTarget = MAGIC_DOUBLE_METER;
                         gSaveContext.save.saveInfo.playerData.magicLevel = 0;
-                        // may need to add a delay here
-                        Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
+                        gSaveContext.save.saveInfo.playerData.magic = MAGIC_DOUBLE_METER;
                     }
                     break;
                 case 0x01:
