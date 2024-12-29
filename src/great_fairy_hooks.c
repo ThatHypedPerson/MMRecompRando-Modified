@@ -129,6 +129,16 @@ typedef enum ElfgrpSpawnedFairyTypes {
     /* 1 */ SPAWNED_STRAY_FAIRY_TYPE_RETURNING // STRAY_FAIRY_TYPE_RETURNING_TO_FOUNTAIN
 } ElfgrpSpawnedFairyTypes;
 
+bool Player_HasTransformationMask(PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (INV_HAS(ITEM_MASK_DEKU) || INV_HAS(ITEM_MASK_GORON) || INV_HAS(ITEM_MASK_ZORA) || INV_HAS(ITEM_MASK_FIERCE_DEITY)) {
+        return true;
+    }
+
+    return false;
+}
+
 s32 EnElfgrp_GetHeldFairiesCount(PlayState* play, s32 type);
 s32 EnElfgrp_GetFountainFairiesCount(PlayState* play, s32 type);
 void EnElfgrp_SpawnStrayFairies(EnElfgrp* this, PlayState* play, s32 count, s32 fairyType);
@@ -140,10 +150,12 @@ void func_80A3A8F8(EnElfgrp* this, PlayState* play);
 
 void EnElfgrp_SetCutscene(EnElfgrp* this, s32 numCutscenes);
 
+void EnElfgrp_OfferLoop(EnElfgrp* this, PlayState* play);
+void EnElfgrp_OfferTransformItem(EnElfgrp* this, PlayState* play);
+
 RECOMP_PATCH void EnElfgrp_Init(Actor* thisx, PlayState* play) {
-    s32 pad;
     EnElfgrp* this = THIS;
-    s32 numberInFountain;
+    s32 numberInFountain = EnElfgrp_GetFountainFairiesCount(play, this->type);
 
     this->type = ENELFGRP_GET_TYPE(&this->actor);
     this->unk_148 = 0;
@@ -151,217 +163,38 @@ RECOMP_PATCH void EnElfgrp_Init(Actor* thisx, PlayState* play) {
     this->actor.focus.pos.y += 40.0f;
     this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
 
-    switch (this->type) {
-        case ENELFGRP_TYPE_POWER:
-        case ENELFGRP_TYPE_WISDOM:
-        case ENELFGRP_TYPE_COURAGE:
-        case ENELFGRP_TYPE_KINDNESS:
-            this->unk_148 = this->type - 1;
-            numberInFountain = EnElfgrp_GetFountainFairiesCount(play, this->type);
-            this->talkedOnceFlag = 1 << this->type;
+    if (numberInFountain < STRAY_FAIRY_TOTAL) {
+        EnElfgrp_SpawnStrayFairies(this, play, numberInFountain, SPAWNED_STRAY_FAIRY_TYPE_PRESENT);
+    }
 
-            if (numberInFountain < STRAY_FAIRY_TOTAL) {
-                EnElfgrp_SpawnStrayFairies(this, play, numberInFountain, SPAWNED_STRAY_FAIRY_TYPE_PRESENT);
-            }
+    this->actionFunc = EnElfgrp_OfferLoop;
+}
 
-            if (numberInFountain >= STRAY_FAIRY_TOTAL) {
-                this->actionFunc = func_80A3A520;
-                EnElfgrp_SetCutscene(this, 2);
-                break;
-            }
+void EnElfgrp_OfferLoop(EnElfgrp* this, PlayState* play) {
+    s32 type = ENELFGRP_GET_TYPE(&this->actor);
+    bool hasFairies = type == ENELFGRP_TYPE_MAGIC ? rando_has_item(0x01007F) : rando_has_item(0x010000 | (type - 1)) >= 15;
 
-            if ((EnElfgrp_GetHeldFairiesCount(play, this->type) + numberInFountain) >= STRAY_FAIRY_TOTAL) {
-                this->actionFunc = func_80A3A398;
-
-                switch (this->type) {
-                    case ENELFGRP_TYPE_POWER:
-                        //if (CHECK_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK)) {
-                        if (rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
-                            EnElfgrp_SetCutscene(this, 1);
-                        } else {
-                            this->stateFlags |= ELFGRP_STATE_2;
-                        }
-                        break;
-
-                    case ENELFGRP_TYPE_WISDOM:
-                        // if (gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired == true) {
-                        if (rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
-                            EnElfgrp_SetCutscene(this, 1);
-                        }
-                        break;
-
-                    case ENELFGRP_TYPE_COURAGE:
-                        // if (gSaveContext.save.saveInfo.playerData.doubleDefense) {
-                        if (rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
-                            EnElfgrp_SetCutscene(this, 1);
-                        }
-                        break;
-
-                    case ENELFGRP_TYPE_KINDNESS:
-                        // if (INV_CONTENT(ITEM_SWORD_GREAT_FAIRY) == ITEM_SWORD_GREAT_FAIRY) {
-                        if (rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
-                            EnElfgrp_SetCutscene(this, 1);
-                        } else {
-                            this->stateFlags |= ELFGRP_STATE_4;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            } else if (EnElfgrp_GetHeldFairiesCount(play, this->type)) {
-                this->actionFunc = func_80A3A7FC;
-                this->actor.textId = (this->type * 3) + 0x581;
-            } else {
-                this->actionFunc = func_80A3A8F8;
-
-                if ((gSaveContext.save.saveInfo.weekEventReg[9] & this->talkedOnceFlag)) { // talked for first time
-                    this->actor.textId = (this->type * 3) + 0x580;
-                } else {
-                    this->actor.textId = (this->type * 3) + 0x57F;
-                }
-            }
-            break;
-
-        default: // ENELFGRP_TYPE_MAGIC
-            numberInFountain = EnElfgrp_GetFountainFairiesCount(play, ENELFGRP_TYPE_MAGIC);
-            this->talkedOnceFlag = 1 << ENELFGRP_TYPE_MAGIC;
-
-            if (numberInFountain >= STRAY_FAIRY_TOTAL) {
-                this->actionFunc = func_80A3A520;
-
-                if ((ENELFGRP_GET_SWITCHFLAG_ROT(&this->actor) != 0) &&
-                    Flags_GetSwitch(play, ENELFGRP_GET_SWITCHFLAG_ROT(&this->actor))) {
-                    this->actionFunc = EnElfgrp_DoNothing;
-                } else if (rando_location_is_checked(LOCATION_GREAT_FAIRY_HUMAN)) {
-                    EnElfgrp_SetCutscene(this, 4);
-                } else if (INV_CONTENT(ITEM_MASK_DEKU) != ITEM_MASK_DEKU && INV_CONTENT(ITEM_MASK_GORON) != ITEM_MASK_GORON && INV_CONTENT(ITEM_MASK_ZORA) != ITEM_MASK_ZORA && INV_CONTENT(ITEM_MASK_FIERCE_DEITY) != ITEM_MASK_FIERCE_DEITY) {
-                    EnElfgrp_SetCutscene(this, 5);
-                } else {
-                    this->stateFlags |= ELFGRP_STATE_1;
-                    EnElfgrp_SetCutscene(this, 6);
-                }
-            } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_08_80)) {
-                EnElfgrp_SpawnStrayFairies(this, play, STRAY_FAIRY_TOTAL - 1, SPAWNED_STRAY_FAIRY_TYPE_PRESENT);
-                this->actionFunc = func_80A3A398;
-
-                if (INV_CONTENT(ITEM_MASK_DEKU) == ITEM_MASK_DEKU || INV_CONTENT(ITEM_MASK_GORON) == ITEM_MASK_GORON || INV_CONTENT(ITEM_MASK_ZORA) == ITEM_MASK_ZORA || INV_CONTENT(ITEM_MASK_FIERCE_DEITY) == ITEM_MASK_FIERCE_DEITY) {
-                    if (rando_location_is_checked(LOCATION_GREAT_FAIRY_HUMAN)) {
-                        EnElfgrp_SetCutscene(this, 2);
-                    } else {
-                        EnElfgrp_SetCutscene(this, 3);
-                        this->stateFlags |= ELFGRP_STATE_1;
-                    }
-                } else if (rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
-                    EnElfgrp_SetCutscene(this, 1);
-                }
-            } else {
-                EnElfgrp_SpawnStrayFairies(this, play, STRAY_FAIRY_TOTAL - 1, SPAWNED_STRAY_FAIRY_TYPE_PRESENT);
-                this->actionFunc = func_80A3A8F8;
-                if ((gSaveContext.save.saveInfo.weekEventReg[9] & this->talkedOnceFlag)) {
-                    this->actor.textId = 0x580;
-                } else {
-                    this->actor.textId = 0x578;
-                }
-                this->actor.flags |= (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY);
-            }
-            break;
+    if (hasFairies && !rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
+        func_80A3A398(this, play);
+    } else if (ENELFGRP_GET_TYPE(&this->actor) == ENELFGRP_TYPE_MAGIC && Player_HasTransformationMask(play) && !rando_location_is_checked(LOCATION_GREAT_FAIRY_HUMAN)) {
+        EnElfgrp_OfferTransformItem(this, play);
     }
 }
 
-RECOMP_PATCH void func_80A0B35C(BgDyYoseizo* this, PlayState* play) {
-    BgDyYoseizo_Bob(this, play);
-    SkelAnime_Update(&this->skelAnime);
-
-    if (this->timer == 60) {
-        if (!Flags_GetSwitch(play, GREAT_FAIRY_GET_SWITCHFLAG(&this->actor))) {
-            rando_send_location(LOCATION_GREAT_FAIRY);
-            switch (GREAT_FAIRY_GET_TYPE(&this->actor)) {
-                case GREAT_FAIRY_TYPE_MAGIC:
-                    break;
-
-                case GREAT_FAIRY_TYPE_WISDOM:
-                    // if (gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired != true) {
-                    //     gSaveContext.save.saveInfo.playerData.isDoubleMagicAcquired = true;
-                    //     gSaveContext.magicFillTarget = MAGIC_DOUBLE_METER;
-                    //     gSaveContext.save.saveInfo.playerData.magicLevel = 0;
-                    // }
-                    break;
-
-                case GREAT_FAIRY_TYPE_COURAGE:
-                    // if (gSaveContext.save.saveInfo.playerData.doubleDefense != true) {
-                    //     gSaveContext.save.saveInfo.playerData.doubleDefense = true;
-                    // }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        Interface_SetHudVisibility(9);
-    }
-
-    // if ((this->timer < 50) && (GREAT_FAIRY_GET_TYPE(&this->actor) == GREAT_FAIRY_TYPE_COURAGE)) {
-    //     if (gSaveContext.save.saveInfo.inventory.defenseHearts < 20) {
-    //         gSaveContext.save.saveInfo.inventory.defenseHearts++;
-    //     }
-    // }
-
-    if (this->timer == 50) {
-        gSaveContext.healthAccumulator = 0x140;
-        Magic_Add(play, MAGIC_FILL_TO_CAPACITY);
-    }
-
-    if (this->timer == 0) {
-        this->beam->trigger = true;
-        this->actionFunc = func_80A0B290;
+void EnElfgrp_OfferTransformItem(EnElfgrp* this, PlayState* play) {
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+    } else {
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_GREAT_FAIRY_HUMAN), LOCATION_GREAT_FAIRY_HUMAN, 350.0f, 350.0f, true, true);
     }
 }
 
 void func_80A3A274(EnElfgrp* this, PlayState* play);
 
 RECOMP_PATCH void func_80A3A398(EnElfgrp* this, PlayState* play) {
-    if (CutsceneManager_IsNext(this->actor.csId)) {
-        CutsceneManager_StartWithPlayerCs(this->actor.csId, &this->actor);
-        this->actionFunc = func_80A3A274;
-        Flags_UnsetSwitch(play, ENELFGRP_GET_SWITCH_FLAG_PARAMS(&this->actor));
-
-        if (this->stateFlags & ELFGRP_STATE_1) {
-            Item_Give(play, ITEM_MASK_GREAT_FAIRY);
-        }
-
-        if (this->stateFlags & ELFGRP_STATE_2) {
-            //SET_WEEKEVENTREG(WEEKEVENTREG_OBTAINED_GREAT_SPIN_ATTACK);
-        }
-
-        if (this->stateFlags & ELFGRP_STATE_4) {
-            Item_Give(play, ITEM_SWORD_GREAT_FAIRY);
-        }
-
-        this->stateFlags &= ~ELFGRP_STATE_3;
-    } else if (this->actor.xzDistToPlayer < 350.0f) {
-        CutsceneManager_Queue(this->actor.csId);
-    }
-}
-
-void func_80A3A4AC(EnElfgrp* this, PlayState* play);
-
-RECOMP_PATCH void func_80A3A520(EnElfgrp* this, PlayState* play) {
-    if (Cutscene_IsCueInChannel(play, CS_CMD_ACTOR_CUE_103)) {
-        this->actionFunc = EnElfgrp_DoNothing;
-    } else if (CutsceneManager_IsNext(this->actor.csId)) {
-        CutsceneManager_StartWithPlayerCs(this->actor.csId, &this->actor);
-        this->actionFunc = func_80A3A4AC;
-        Flags_SetSwitch(play, ENELFGRP_GET_SWITCH_FLAG_PARAMS(&this->actor));
-
-        if (this->stateFlags & ELFGRP_STATE_1) {
-            Item_Give(play, ITEM_MASK_GREAT_FAIRY);
-        }
-
-        if (ENELFGRP_GET_SWITCHFLAG_ROT(&this->actor) != 0) {
-            Flags_SetSwitch(play, ENELFGRP_GET_SWITCHFLAG_ROT(&this->actor));
-        }
-    } else if (this->actor.xzDistToPlayer < 350.0f) {
-        CutsceneManager_Queue(this->actor.csId);
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+    } else {
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_GREAT_FAIRY), LOCATION_GREAT_FAIRY, 350.0f, 350.0f, true, true);
     }
 }
