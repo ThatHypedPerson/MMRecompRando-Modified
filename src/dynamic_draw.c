@@ -899,10 +899,10 @@ void GetItem_DrawRecompImport(PlayState* play, s16 drawId) {
 
 static void color4(u8* r, u8* g, u8* b, u8* a, u32 color)
 {
-    *r = (color >> 24) & 0xff;
-    *g = (color >> 16) & 0xff;
-    *b = (color >> 8) & 0xff;
-    *a = color & 0xff;
+    *r = (color >> 24) & 0xFF;
+    *g = (color >> 16) & 0xFF;
+    *b = (color >> 8) & 0xFF;
+    *a = color & 0xFF;
 }
 
 void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2) {

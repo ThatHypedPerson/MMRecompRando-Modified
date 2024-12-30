@@ -1584,29 +1584,31 @@ RECOMP_PATCH u8 Item_Give(PlayState* play, u8 item) {
         return ITEM_NONE;
 
     } else if (item == ITEM_BOMBCHU) {
+        u8 max_bombchus = MAX(CUR_CAPACITY(UPG_BOMB_BAG), 10);
         if (INV_CONTENT(ITEM_BOMBCHU) != ITEM_BOMBCHU) {
             INV_CONTENT(ITEM_BOMBCHU) = ITEM_BOMBCHU;
             AMMO(ITEM_BOMBCHU) = 10;
             return ITEM_NONE;
         }
-        if ((AMMO(ITEM_BOMBCHU) += 10) > CUR_CAPACITY(UPG_BOMB_BAG)) {
-            AMMO(ITEM_BOMBCHU) = CUR_CAPACITY(UPG_BOMB_BAG);
+        if ((AMMO(ITEM_BOMBCHU) += 10) > max_bombchus) {
+            AMMO(ITEM_BOMBCHU) = max_bombchus;
         }
         return ITEM_NONE;
 
     } else if ((item >= ITEM_BOMBCHUS_20) && (item <= ITEM_BOMBCHUS_5)) {
+        u8 max_bombchus = MAX(CUR_CAPACITY(UPG_BOMB_BAG), 10);
         if (gSaveContext.save.saveInfo.inventory.items[SLOT_BOMBCHU] != ITEM_BOMBCHU) {
             INV_CONTENT(ITEM_BOMBCHU) = ITEM_BOMBCHU;
             AMMO(ITEM_BOMBCHU) += sBombchuRefillCounts[item - ITEM_BOMBCHUS_20];
 
-            if (AMMO(ITEM_BOMBCHU) > CUR_CAPACITY(UPG_BOMB_BAG)) {
-                AMMO(ITEM_BOMBCHU) = CUR_CAPACITY(UPG_BOMB_BAG);
+            if (AMMO(ITEM_BOMBCHU) > max_bombchus) {
+                AMMO(ITEM_BOMBCHU) = max_bombchus;
             }
             return ITEM_NONE;
         }
 
-        if ((AMMO(ITEM_BOMBCHU) += sBombchuRefillCounts[item - ITEM_BOMBCHUS_20]) > CUR_CAPACITY(UPG_BOMB_BAG)) {
-            AMMO(ITEM_BOMBCHU) = CUR_CAPACITY(UPG_BOMB_BAG);
+        if ((AMMO(ITEM_BOMBCHU) += sBombchuRefillCounts[item - ITEM_BOMBCHUS_20]) > max_bombchus) {
+            AMMO(ITEM_BOMBCHU) = max_bombchus;
         }
         return ITEM_NONE;
 
