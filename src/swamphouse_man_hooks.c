@@ -110,3 +110,28 @@ RECOMP_PATCH void EnSth_SwampSpiderHouseGiveMask(EnSth* this, PlayState* play) {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_TRUTH, 10000.0f, 50.0f);
     }
 }
+
+void EnSth_PostOceanspiderhouseReward(EnSth* this, PlayState* play);
+
+RECOMP_PATCH void EnSth_GiveOceansideSpiderHouseReward(EnSth* this, PlayState* play) {
+    SkelAnime_Update(&this->skelAnime);
+
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        this->actionFunc = EnSth_PostOceanspiderhouseReward;
+        this->actor.flags |= ACTOR_FLAG_10000;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+        if (CURRENT_DAY == 3) {
+            EnSth_ChangeAnim(this, STH_ANIM_PLEAD);
+        } else {
+            EnSth_ChangeAnim(this, STH_ANIM_WAIT);
+        }
+    } else {
+        // Actor_OfferGetItem(&this->actor, play, STH_GI_ID(&this->actor), 10000.0f, 500.0f);
+        if (rando_location_is_checked(GI_WALLET_GIANT)) {
+            Actor_OfferGetItem(&this->actor, play, GI_RUPEE_SILVER, 10000.0f, 500.0f);
+        } else {
+            Actor_OfferGetItem(&this->actor, play, GI_WALLET_GIANT, 10000.0f, 500.0f);
+        }
+    }
+}

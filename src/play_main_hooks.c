@@ -346,6 +346,7 @@ void update_rando(PlayState* play) {
 
             gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_TRUE_SKULL_TOKEN) << 0x10;
+            gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_OCEAN_SKULL_TOKEN);
 
             gSaveContext.save.saveInfo.inventory.strayFairies[0] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_WOODFALL);
 
