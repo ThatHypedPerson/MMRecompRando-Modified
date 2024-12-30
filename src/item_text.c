@@ -39,7 +39,8 @@ static unsigned char gl_msg[128] = "You got the\x05 Goron's Lullaby\x00!\xbf";
 static unsigned char nwbn_msg[128] = "You got the\x05 New Wave Bossa Nova\x00!\xbf";
 static unsigned char eoe_msg[128] = "You got the\x05 Elegy of Emptiness\x00!\xbf";
 static unsigned char oto_msg[128] = "You got the\x05 Oath to Order\x00!\xbf";
-static unsigned char sht_msg[128] = "You got a\x02 Swamp Token\x00!\xbf";
+static unsigned char ssht_msg[128] = "You got a\x02 Swamp Token\x00!\xbf";
+static unsigned char osht_msg[128] = "You got an\x03 Ocean Token\x00!\xbf";
 static unsigned char hp_msg[128] = "You got a\x06 Heart Piece\x00!\xbf";
 
 static unsigned char p_monkey_msg[128] = "Keep this\x01 picture of a monkey\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
@@ -167,8 +168,11 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         case 0xC:
             msg = hp_msg;
             break;
+        case 0x72:
+            msg = osht_msg;
+            break;
         case 0x75:
-            msg = sht_msg;
+            msg = ssht_msg;
             break;
         case 0xA2:
             msg = sost_msg;
@@ -260,7 +264,7 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         font->msgBuf.schar[1] = 0x71;
     }
 
-    if (msg == sht_msg) {
+    if (msg == ssht_msg) {
         u8 count_str[128] = "\x11This is your \xbf";
         u8 count_done_str[128] = "\x11You've found all of them!\xbf";
         u8* count_msg = count_str;
@@ -293,6 +297,48 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                     i += 1;
                 }
                 font->msgBuf.schar[end_i + i] = (swamp_token_count % 10) + 0x30;
+                font->msgBuf.schar[end_i + i + 1] = count_suffix[0];
+                font->msgBuf.schar[end_i + i + 2] = count_suffix[1];
+                font->msgBuf.schar[end_i + i + 3] = 0x00;
+                font->msgBuf.schar[end_i + i + 4] = '.';
+                font->msgBuf.schar[end_i + i + 5] = 0xBF;
+                break;
+            }
+        }
+    }
+    else if (msg == osht_msg) {
+        u8 count_str[128] = "\x11This is your \xbf";
+        u8 count_done_str[128] = "\x11You've found all of them!\xbf";
+        u8* count_msg = count_str;
+        if (Inventory_GetSkullTokenCount(0x28) >= 30) {
+            count_msg = count_done_str;
+        }
+        u8 end_i = i + 11;
+        for (i = 0; i < 128; ++i) {
+            font->msgBuf.schar[end_i + i] = count_msg[i];
+            if (count_msg[i] == 0xBF) {
+                if (count_msg == count_done_str) {
+                    break;
+                }
+                u8 ocean_token_count = ((rando_skulltulas_enabled()) ? rando_has_item(GI_OCEAN_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x28));
+                u8 count_suffix[2] = "th";
+                if ((ocean_token_count % 10) == 1 && ocean_token_count != 11) {
+                    count_suffix[0] = 's';
+                    count_suffix[1] = 't';
+                } else if ((ocean_token_count % 10) == 2 && ocean_token_count != 12) {
+                    count_suffix[0] = 'n';
+                    count_suffix[1] = 'd';
+                } else if ((ocean_token_count % 10) == 3 && ocean_token_count != 13) {
+                    count_suffix[0] = 'r';
+                    count_suffix[1] = 'd';
+                }
+                font->msgBuf.schar[end_i + i] = 0x01;
+                i += 1;
+                if (ocean_token_count >= 10) {
+                    font->msgBuf.schar[end_i + i] = (ocean_token_count / 10) + 0x30;
+                    i += 1;
+                }
+                font->msgBuf.schar[end_i + i] = (ocean_token_count % 10) + 0x30;
                 font->msgBuf.schar[end_i + i + 1] = count_suffix[0];
                 font->msgBuf.schar[end_i + i + 2] = count_suffix[1];
                 font->msgBuf.schar[end_i + i + 3] = 0x00;

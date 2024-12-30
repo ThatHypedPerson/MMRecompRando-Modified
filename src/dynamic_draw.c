@@ -7,6 +7,7 @@
 
 #include "bombchu_bag.h"
 #include "double_defense.h"
+#include "skull_token.h"
 
 void GetItem_DrawBombchu(PlayState* play, s16 drawId);
 void GetItem_DrawPoes(PlayState* play, s16 drawId);
@@ -34,6 +35,7 @@ void GetItem_DrawRemains(PlayState* play, s16 drawId);
 
 void GetItem_DrawRecompImport(PlayState* play, s16 drawId);
 void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2);
+void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1);
 void GetItem_DrawXlu01DL(PlayState* play, void* dl0, void* dl1);
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId);
 
@@ -766,6 +768,12 @@ RECOMP_PATCH void GetItem_Draw(PlayState* play, s16 drawId) {
         case GID_DEFENSE_DOUBLE:
             GetItem_DrawXlu01DL(play, gGiDDHeartBorderDL, gGiDDHeartContainerDL);
             return;
+        case GID_SKULL_TOKEN:
+            GetItem_DrawSkullTokenDL(play, gGiSkulltulaTokenDL, gGiSkulltulaTokenSwampFlameDL);
+            return;
+        case GID_OCEAN_SKULL_TOKEN:
+            GetItem_DrawSkullTokenDL(play, gGiSkulltulaTokenDL, gGiSkulltulaTokenOceanFlameDL);
+            return;
     }
     sDrawItemTable_new[drawId].drawFunc(play, drawId);
 }
@@ -788,6 +796,14 @@ void GetItem_DrawDynamic(PlayState* play, void* objectSegment, s16 drawId) {
                 break;
             case GID_DEFENSE_DOUBLE:
                 gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_SKULL_TOKEN:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_OCEAN_SKULL_TOKEN:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
                 gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
                 break;
         }
@@ -959,6 +975,27 @@ void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2) 
     gSPDisplayList(POLY_OPA_DISP++, dl2);
 
     CLOSE_DISPS();
+}
+
+void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1) {
+    s32 pad;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_OPA_DISP++, dl0);
+
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
+
+    gSPSegment(POLY_XLU_DISP++, 0x08,
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, -(play->state.frames * 5),
+                                32, 32, 1, play->state.frames * 0, play->state.frames * 0, 32, 64));
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_XLU_DISP++, dl1);
+
+    CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void GetItem_DrawXlu01DL(PlayState* play, void* dl0, void* dl1) {
