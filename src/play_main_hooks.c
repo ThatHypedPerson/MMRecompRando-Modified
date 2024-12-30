@@ -345,7 +345,7 @@ void update_rando(PlayState* play) {
             }
 
             gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
-            gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_SKULL_TOKEN) << 0x10;
+            gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_TRUE_SKULL_TOKEN) << 0x10;
 
             gSaveContext.save.saveInfo.inventory.strayFairies[0] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_WOODFALL);
 
@@ -365,7 +365,7 @@ void update_rando(PlayState* play) {
                         case GI_SHIELD_HERO:
                         case GI_POTION_RED_BOTTLE:
                         case GI_CHATEAU_BOTTLE:
-                        case GI_SKULL_TOKEN:
+                        case GI_TRUE_SKULL_TOKEN:
                             continue;
                     }
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {

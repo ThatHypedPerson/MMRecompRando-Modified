@@ -694,11 +694,11 @@ RECOMP_PATCH void func_8082ECE0(Player* this) {
 
     gid = giEntry->gid;
     if ((~gid) >= GID_SONG_SOARING) {
-        playerExtendedGid = gid;
+        playerExtendedGid = ABS_ALT(gid);
         this->getItemDrawIdPlusOne = GID_NONE + 1 + 1;
         playerUseExtended = true;
     } else {
-        this->getItemDrawIdPlusOne = gid;
+        this->getItemDrawIdPlusOne = ABS_ALT(gid);
         playerUseExtended = false;
     }
     drawIdChosen = true;
