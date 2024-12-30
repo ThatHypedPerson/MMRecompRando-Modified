@@ -6,6 +6,7 @@
 #include "aplogo.h"
 
 #include "bombchu_bag.h"
+#include "double_defense.h"
 
 void GetItem_DrawBombchu(PlayState* play, s16 drawId);
 void GetItem_DrawPoes(PlayState* play, s16 drawId);
@@ -32,7 +33,8 @@ void GetItem_DrawWallet(PlayState* play, s16 drawId);
 void GetItem_DrawRemains(PlayState* play, s16 drawId);
 
 void GetItem_DrawRecompImport(PlayState* play, s16 drawId);
-void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2);
+void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2);
+void GetItem_DrawXlu01DL(PlayState* play, void* dl0, void* dl1);
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId);
 
 extern Gfx gGiEmptyBottleCorkDL[];
@@ -752,8 +754,17 @@ RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
  */
 RECOMP_PATCH void GetItem_Draw(PlayState* play, s16 drawId) {
     switch (drawId) {
+        case GID_SONG_SOARING:
+            GetItem_DrawXlu01DL(play, gGiSoaringColorDL, gGiSongNoteDL);
+            return;
+        case GID_SONG_STORMS:
+            GetItem_DrawXlu01DL(play, gGiStormsColorDL, gGiSongNoteDL);
+            return;
         case GID_BAG_BOMBCHU:
-            GetItem_DrawBombchuBag(play, gGiBombchu0DL, gGiBombchu1DL, gGiBombchu2DL);
+            GetItem_DrawBombchuBagDL(play, gGiBombchu0DL, gGiBombchu1DL, gGiBombchu2DL);
+            return;
+        case GID_DEFENSE_DOUBLE:
+            GetItem_DrawXlu01DL(play, gGiDDHeartBorderDL, gGiDDHeartContainerDL);
             return;
     }
     sDrawItemTable_new[drawId].drawFunc(play, drawId);
@@ -765,25 +776,42 @@ void GetItem_DrawDynamic(PlayState* play, void* objectSegment, s16 drawId) {
     u32 prevSegment = gSegments[6];
     gSegments[6] = OS_K0_TO_PHYSICAL(objectSegment);
 
-    switch (sGetObjectType[drawId]) {
-        case OPA0:
-            gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
-            break;
-        case XLU0:
-            gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
-            break;
-        case OPA01:
-            gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
-            gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
-            break;
-        case XLU01:
-            gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
-            gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
-            break;
-        case OPA0XLU1:
-            gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
-            gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
-            break;
+    if (drawId >= GID_SONG_SOARING) {
+        switch(drawId) {
+            case GID_SONG_SOARING:
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_SONG_STORMS:
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_DEFENSE_DOUBLE:
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+        }
+    } else {
+        switch (sGetObjectType[drawId]) {
+            case OPA0:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                break;
+            case XLU0:
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case OPA01:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                break;
+            case XLU01:
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case OPA0XLU1:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+        }
     }
 
     GetItem_Draw(play, drawId);
@@ -905,7 +933,7 @@ static void color4(u8* r, u8* g, u8* b, u8* a, u32 color)
     *a = color & 0xFF;
 }
 
-void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2) {
+void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2) {
     static const u32 kPrimColor = 0xBA3F3AFF;
     static const u32 kEnvColor = 0xA5231EFF;
     static const u32 kPrimColor2 = 0x1695D2FF;
@@ -931,6 +959,18 @@ void GetItem_DrawBombchuBag(PlayState* play, void* dl0, void* dl1, void* dl2) {
     gSPDisplayList(POLY_OPA_DISP++, dl2);
 
     CLOSE_DISPS();
+}
+
+void GetItem_DrawXlu01DL(PlayState* play, void* dl0, void* dl1) {
+    OPEN_DISPS(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
+
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_XLU_DISP++, dl0);
+    gSPDisplayList(POLY_XLU_DISP++, dl1);
+
+    CLOSE_DISPS(play->state.gfxCtx);
 }
 
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId) {

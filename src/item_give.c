@@ -356,7 +356,7 @@ GetItemEntry sGetItemTable_ap[GI_MAX - 1] = {
     // GI_72
     GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x72, 0, 0),
     // GI_73
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x73, 0, 0),
+    GET_ITEM(ITEM_NONE, OBJECT_GI_HEARTS, GID_DEFENSE_DOUBLE, 0x73, 0, 0),
     // GI_74
     GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x74, 0, 0),
     // GI_75
@@ -557,9 +557,9 @@ bool isAP(s16 gi) {
         case GI_AP_USEFUL:
         case GI_AP_PROG:
             return true;
-        default:
-            return false;
     }
+
+    return false;
 }
 
 u8 getItem(s16 gi) {
@@ -608,6 +608,10 @@ void Player_AnimSfx_PlayVoice(Player* this, u16 sfxId);
 void func_808475B4(Player* this);
 void func_8084748C(Player* this, f32* speed, f32 speedTarget, s16 yawTarget);
 
+bool playerObjectStatic;
+bool playerUseExtended = false;
+s16 playerExtendedGid;
+
 RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
 
 RECOMP_PATCH void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f* refPos, s32 drawIdPlusOne) {
@@ -628,21 +632,22 @@ RECOMP_PATCH void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f*
 
     gSegments[6] = OS_K0_TO_PHYSICAL(segment);
 
-    gSPSegment(POLY_OPA_DISP++, 0x06, segment);
-    gSPSegment(POLY_XLU_DISP++, 0x06, segment);
-
     Matrix_Translate((Math_SinS(player->actor.shape.rot.y) * 3.3f) + refPos->x, refPos->y + sp34,
                      (Math_CosS(player->actor.shape.rot.y) * 3.3f) + refPos->z, MTXMODE_NEW);
     Matrix_RotateZYX(0, (play->gameplayFrames * 1000), 0, MTXMODE_APPLY);
     Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
-    GetItem_Draw(play, drawIdPlusOne - 1);
+
+    if (playerObjectStatic) {
+        GetItem_Draw(play, drawIdPlusOne - 1);
+    } else {
+        GetItem_DrawDynamic(play, segment, drawIdPlusOne - 1);
+    }
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
 extern Vec3f sPlayerGetItemRefPos;
 
-// not needed anymore
 RECOMP_PATCH void Player_DrawGetItem(PlayState* play, Player* player) {
     if (!player->giObjectLoading || (osRecvMesg(&player->giObjectLoadQueue, NULL, OS_MESG_NOBLOCK) == 0)) {
         Vec3f refPos;
@@ -668,7 +673,11 @@ RECOMP_PATCH void Player_DrawGetItem(PlayState* play, Player* player) {
             Math_Vec3f_Copy(&refPos, &sPlayerGetItemRefPos);
         }
 
-        drawIdPlusOne = ABS_ALT(player->getItemDrawIdPlusOne);
+        if (playerUseExtended) {
+            drawIdPlusOne = ABS_ALT(playerExtendedGid);
+        } else {
+            drawIdPlusOne = ABS_ALT(player->getItemDrawIdPlusOne);
+        }
         Player_DrawGetItemImpl(play, player, &refPos, drawIdPlusOne);
     }
 }
@@ -676,13 +685,22 @@ RECOMP_PATCH void Player_DrawGetItem(PlayState* play, Player* player) {
 // Player_UpdateCurrentGetItemDrawId?
 RECOMP_PATCH void func_8082ECE0(Player* this) {
     GetItemEntry* giEntry;
+    s16 gid;
     if (itemWorkaround) {
         giEntry = &sGetItemTable_ap[trueGI - 1];
     } else {
         giEntry = &sGetItemTable_ap[this->getItemId - 1];
     }
 
-    this->getItemDrawIdPlusOne = ABS_ALT(giEntry->gid);
+    gid = giEntry->gid;
+    if ((~gid) >= GID_SONG_SOARING) {
+        playerExtendedGid = gid;
+        this->getItemDrawIdPlusOne = GID_NONE + 1 + 1;
+        playerUseExtended = true;
+    } else {
+        this->getItemDrawIdPlusOne = gid;
+        playerUseExtended = false;
+    }
     drawIdChosen = true;
 }
 
@@ -691,6 +709,7 @@ void* ZeldaArena_Malloc(size_t size);
 
 RECOMP_PATCH void func_80838830(Player* this, s16 objectId) {
     if (objectId != OBJECT_UNSET_0) {
+        playerObjectStatic = false;
         size_t objectSize;
         this->giObjectLoading = true;
         if (itemWorkaround) {
@@ -705,6 +724,8 @@ RECOMP_PATCH void func_80838830(Player* this, s16 objectId) {
         DmaMgr_SendRequestImpl(&this->giObjectDmaRequest, this->giObjectSegment, gObjectTable[objectId].vromStart,
                                gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart, 0,
                                &this->giObjectLoadQueue, NULL);
+    } else {
+        playerObjectStatic = true;
     }
 }
 

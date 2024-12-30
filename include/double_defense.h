@@ -7,13 +7,13 @@ extern u64 gameplay_keep_Tex_0447B0[];
 
 Gfx gGiDDHeartBorderDL[] = {
     // gsDPSetPrimColor(0, 0x80, 160, 255, 255, 255),
-    gsDPSetPrimColor(0, 0x80, 0xFF, 0xFF, 0x00, 255),
+    gsDPSetPrimColor(0, 0x80, 0xFF, 0x58, 0x00, 255),
     gsDPPipeSync(),
     gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_XLU_SURF2),
     gsDPSetCombineLERP(TEXEL0, PRIMITIVE, PRIM_LOD_FRAC, TEXEL0, 0, 0, 0, TEXEL0, PRIMITIVE, ENVIRONMENT, COMBINED,
                        ENVIRONMENT, COMBINED, 0, PRIMITIVE, 0),
     // gsDPSetEnvColor(0, 100, 255, 255),
-    gsDPSetEnvColor(0xCC, 0xCC, 0x00, 255),
+    gsDPSetEnvColor(0xFF, 0xCC, 0x00, 255),
     gsDPSetTextureLUT(G_TT_NONE),
     gsSPTexture(0x07D0, 0x07D0, 0, G_TX_RENDERTILE, G_ON),
     gsDPLoadTextureBlock(gameplay_keep_Tex_044BB0, G_IM_FMT_I, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,

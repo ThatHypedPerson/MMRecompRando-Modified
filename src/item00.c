@@ -584,12 +584,6 @@ void EnItem00_WaitForObject(EnItem00* this, PlayState* play) {
         this->getItemId = getItemId;
         objectStatic = true;
         objectLoaded = true;
-    } else if (!objectLoaded && !objectLoading && Object_IsLoaded(&play->objectCtx, objectSlot)) {
-        this->actor.objectSlot = objectSlot;
-        Actor_SetObjectDependency(play, &this->actor);
-        this->getItemId = getItemId;
-        objectStatic = true;
-        objectLoaded = true;
     } else if (!objectLoading && !objectLoaded) {
         loadObject(play, &objectSegment, &objectLoadQueue, objectId);
         objectLoading = true;
