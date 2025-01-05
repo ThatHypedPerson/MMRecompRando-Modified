@@ -88,6 +88,9 @@ void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
     SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
 
+    // skip secret shrine entrance guy text
+    SET_WEEKEVENTREG(WEEKEVENTREG_76_80);
+
     // skip having to rewatch the great bay turtle cutscene
     if(spawnedTurtle) {
         SET_WEEKEVENTREG(WEEKEVENTREG_53_20);
