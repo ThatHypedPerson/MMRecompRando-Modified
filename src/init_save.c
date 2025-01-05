@@ -84,6 +84,9 @@ void Sram_SetInitialWeekEvents(void) {
     // moon's tear deku scrub starts out in flower
     SET_WEEKEVENTREG(PACK_WEEKEVENTREG_FLAG(73, 0x04));
 
+    // skip introductory tingle text
+    SET_WEEKEVENTREG(WEEKEVENTREG_TALKED_TINGLE);
+
     // skip the princess prison cutscenes
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
     SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
