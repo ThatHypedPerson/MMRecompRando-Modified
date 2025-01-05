@@ -131,10 +131,6 @@ RECOMP_PATCH void EnSi_GiveToken(EnSi* this, PlayState* play) {
         randoItemGive(GI_TRUE_SKULL_TOKEN);
     }
 
-    if (tokenPrevGI[chestFlag] == GI_TRUE_SKULL_TOKEN) {
-        while (swamp_token_count == (rando_skulltulas_enabled() ? rando_has_item(GI_TRUE_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x27)));
-    }
-
     Message_StartTextbox(play, getTextId(tokenPrevGI[chestFlag]), NULL);
     if (Inventory_GetSkullTokenCount(0x27) >= SPIDER_HOUSE_TOKENS_REQUIRED) {
         Audio_PlayFanfare(NA_BGM_GET_ITEM | 0x900);
