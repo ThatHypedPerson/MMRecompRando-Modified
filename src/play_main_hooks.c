@@ -344,14 +344,22 @@ void update_rando(PlayState* play) {
                 randoItemGive(GI_BOMBCHUS_20);
             }
 
-            gSaveContext.save.saveInfo.skullTokenCount &= 0xFFFF;
+            gSaveContext.save.saveInfo.skullTokenCount = 0;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_TRUE_SKULL_TOKEN) << 0x10;
             gSaveContext.save.saveInfo.skullTokenCount |= rando_has_item(GI_OCEAN_SKULL_TOKEN);
 
             gSaveContext.save.saveInfo.inventory.strayFairies[0] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_WOODFALL);
+            gSaveContext.save.saveInfo.inventory.strayFairies[1] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_SNOWHEAD);
+            gSaveContext.save.saveInfo.inventory.strayFairies[2] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_GREATBAY);
+            gSaveContext.save.saveInfo.inventory.strayFairies[3] = rando_has_item(AP_ITEM_ID_STRAY_FAIRY_STONETOWER);
+
+            DUNGEON_KEY_COUNT(0) = rando_has_item(0x090078);
+            DUNGEON_KEY_COUNT(1) = rando_has_item(0x090178);
+            DUNGEON_KEY_COUNT(2) = rando_has_item(0x090278);
+            DUNGEON_KEY_COUNT(3) = rando_has_item(0x090378);
 
             for (i = old_items_size; i < new_items_size; ++i) {
-                u32 item_id = rando_get_item(i);
+                u32 item_id = rando_get_item(i) & 0xFFFFFF;
                 u8 gi = item_id & 0xFF;
                 bool is_gi = (item_id & 0xFF0000) == 0;
                 if (is_gi) {
@@ -367,13 +375,24 @@ void update_rando(PlayState* play) {
                         case GI_POTION_RED_BOTTLE:
                         case GI_CHATEAU_BOTTLE:
                         case GI_TRUE_SKULL_TOKEN:
+                        case GI_OCEAN_SKULL_TOKEN:
                             continue;
                     }
                     if (gi == GI_HEART_CONTAINER || gi == GI_HEART_PIECE) {
                         old_health = 0x140;
                     }
-                } else if (item_id == AP_ITEM_ID_STRAY_FAIRY_WOODFALL) {
-                    continue;
+                } else {
+                    switch (item_id) {
+                        case AP_ITEM_ID_STRAY_FAIRY_WOODFALL:
+                        case AP_ITEM_ID_STRAY_FAIRY_SNOWHEAD:
+                        case AP_ITEM_ID_STRAY_FAIRY_GREATBAY:
+                        case AP_ITEM_ID_STRAY_FAIRY_STONETOWER:
+                        case AP_ITEM_ID_KEY_SMALL_WOODFALL:
+                        case AP_ITEM_ID_KEY_SMALL_SNOWHEAD:
+                        case AP_ITEM_ID_KEY_SMALL_GREATBAY:
+                        case AP_ITEM_ID_KEY_SMALL_STONETOWER:
+                            continue;
+                    }
                 }
                 randoItemGive(item_id);
             }

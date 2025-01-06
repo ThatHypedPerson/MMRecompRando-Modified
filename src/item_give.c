@@ -1846,8 +1846,11 @@ u8 randoItemGive(u32 gi) {
                 return ITEM_NONE;
             }
             if (gi == GI_TRUE_SKULL_TOKEN) {
-                item = ITEM_SKULL_TOKEN;
-                break;
+                Inventory_IncrementSkullTokenCount(SCENE_KINSTA1);
+                return ITEM_NONE;
+            } else if (gi == GI_OCEAN_SKULL_TOKEN) {
+                Inventory_IncrementSkullTokenCount(SCENE_KINDAN2);
+                return ITEM_NONE;
             }
             item = giToItemId[gi & 0xFF];
             break;

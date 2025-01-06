@@ -91,6 +91,9 @@ void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
     SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
 
+    // skip secret shrine entrance guy text
+    SET_WEEKEVENTREG(WEEKEVENTREG_76_80);
+
     // skip having to rewatch the great bay turtle cutscene
     if(spawnedTurtle) {
         SET_WEEKEVENTREG(WEEKEVENTREG_53_20);
@@ -325,6 +328,9 @@ void Sram_ResetSaveCycle(PlayState* play) {
     //recomp_save_items_index(gSaveContext.fileNum, old_items_size);
 
     DUNGEON_KEY_COUNT(0) = rando_has_item(0x090078);
+    DUNGEON_KEY_COUNT(1) = rando_has_item(0x090178);
+    DUNGEON_KEY_COUNT(2) = rando_has_item(0x090278);
+    DUNGEON_KEY_COUNT(3) = rando_has_item(0x090378);
 }
 
 /**
