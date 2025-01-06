@@ -1873,8 +1873,23 @@ u8 randoItemGive(u32 gi) {
         return ITEM_NONE;
 
     } else if (item == ITEM_TINGLE_MAP) {
+        s16 purchaseMapId = (gi & 0xFF) - 0xB4;
+        Inventory_SetWorldMapCloudVisibility(purchaseMapId);
+        switch (purchaseMapId) {
+            case TINGLE_MAP_CLOCK_TOWN:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_CLOCK_TOWN);
+            case TINGLE_MAP_WOODFALL:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_WOODFALL);
+            case TINGLE_MAP_SNOWHEAD:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_SNOWHEAD);
+            case TINGLE_MAP_ROMANI_RANCH:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_ROMANI_RANCH);
+            case TINGLE_MAP_GREAT_BAY:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_GREAT_BAY);
+            case TINGLE_MAP_STONE_TOWER:
+                SET_WEEKEVENTREG(WEEKEVENTREG_TINGLE_MAP_BOUGHT_STONE_TOWER);
+        }
         return ITEM_NONE;
-
     } else if (item == ITEM_BOMBERS_NOTEBOOK) {
         SET_QUEST_ITEM(QUEST_BOMBERS_NOTEBOOK);
         return ITEM_NONE;

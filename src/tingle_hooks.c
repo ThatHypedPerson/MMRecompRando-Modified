@@ -161,7 +161,33 @@ static ColliderJntSphInit sJntSphInit = {
 
 extern FlexSkeletonHeader gTingleSkel;
 extern AnimationHeader gTingleFloatIdleAnim;
+extern AnimationHeader gTingleFallAnim;
+extern AnimationHeader gTingleLandAnim;
+extern AnimationHeader gTingleTwistAnim;
 extern AnimationHeader gTingleTalkAnim;
+extern AnimationHeader gTingleThrowConfettiAnim;
+extern AnimationHeader gTingleHappyDanceAnim;
+extern AnimationHeader gTingleIdleAnim;
+extern AnimationHeader gTingleSpinAnim;
+extern AnimationHeader gTingleFloatHideFaceAnim;
+extern AnimationHeader gTingleFloatThrowConfettiAnim;
+
+static AnimationInfo sAnimationInfo[TINGLE_ANIM_MAX] = {
+    { &gTingleFloatIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },          // TINGLE_ANIM_FLOAT_IDLE
+    { &gTingleFallAnim, 1.5f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },               // TINGLE_ANIM_FALL_LOOP
+    { &gTingleFallAnim, 1.5f, 0.0f, 0.0f, ANIMMODE_ONCE, -4.0f },               // TINGLE_ANIM_FALL_ONCE
+    { &gTingleLandAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, -4.0f },               // TINGLE_ANIM_LAND
+    { &gTingleTwistAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },              // TINGLE_ANIM_TWIST
+    { &gTingleTalkAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },               // TINGLE_ANIM_TALK
+    { &gTingleThrowConfettiAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, -8.0f },      // TINGLE_ANIM_MAGIC
+    { &gTingleHappyDanceAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },         // TINGLE_ANIM_HAPPY_DANCE_LOOP
+    { &gTingleHappyDanceAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_ONCE, -8.0f },         // TINGLE_ANIM_HAPPY_DANCE_ONCE
+    { &gTingleThrowConfettiAnim, 1.0f, 23.0f, 0.0f, ANIMMODE_ONCE, -8.0f },     // TINGLE_ANIM_MAGIC_REVERSE
+    { &gTingleIdleAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -8.0f },               // TINGLE_ANIM_IDLE
+    { &gTingleSpinAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -2.0f },               // TINGLE_ANIM_SPIN
+    { &gTingleFloatHideFaceAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -2.0f },      // TINGLE_ANIM_HIDE_FACE
+    { &gTingleFloatThrowConfettiAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -2.0f }, // TINGLE_ANIM_CONFETTI
+};
 
 void EnBal_SetMainColliderToHead(EnBal* this);
 s32 EnBal_ValidatePictograph(PlayState* play, Actor* thisx);
@@ -204,4 +230,68 @@ RECOMP_PATCH void EnBal_Init(Actor* thisx, PlayState* play) {
     this->picto.actor.world.pos.y = this->picto.actor.floorHeight;
     EnBal_SetMainColliderToHead(this);
     EnBal_SetupGroundIdle(this);
+}
+
+static s16 sBuyMapOptions[TINGLE_MAP_MAX][2] = {
+    { TINGLE_MAP_CLOCK_TOWN, TINGLE_MAP_WOODFALL },    // TINGLE_MAP_CLOCK_TOWN
+    { TINGLE_MAP_WOODFALL, TINGLE_MAP_SNOWHEAD },      // TINGLE_MAP_WOODFALL
+    { TINGLE_MAP_SNOWHEAD, TINGLE_MAP_ROMANI_RANCH },  // TINGLE_MAP_SNOWHEAD
+    { TINGLE_MAP_ROMANI_RANCH, TINGLE_MAP_GREAT_BAY }, // TINGLE_MAP_ROMANI_RANCH
+    { TINGLE_MAP_GREAT_BAY, TINGLE_MAP_STONE_TOWER },  // TINGLE_MAP_GREAT_BAY
+    { TINGLE_MAP_STONE_TOWER, TINGLE_MAP_CLOCK_TOWN }, // TINGLE_MAP_STONE_TOWER
+};
+
+void EnBal_SetupOfferGetItem(EnBal* this);
+
+RECOMP_PATCH s32 EnBal_CheckIfMapUnlocked(EnBal* this, PlayState* play) {
+    this->purchaseMapId = sBuyMapOptions[this->locationMapId][play->msgCtx.choiceIndex];
+    
+    return rando_location_is_checked(this->purchaseMapId + 0xB4);
+}
+
+RECOMP_PATCH void EnBal_TryPurchaseMap(EnBal* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+    s32 price;
+
+    if (Message_ShouldAdvance(play)) {
+        if (play->msgCtx.choiceIndex != TINGLE_MAPCHOICE_CANCEL) {
+            // Get price depending on which map player wants to buy
+            if (play->msgCtx.choiceIndex == TINGLE_MAPCHOICE_PROXIMAL) {
+                price = play->msgCtx.unk1206C;
+            } else {
+                price = play->msgCtx.unk12070;
+            }
+
+            if (gSaveContext.save.saveInfo.playerData.rupees < price) {
+                // Can't buy map because player doesn't have the money
+                Audio_PlaySfx(NA_SE_SY_ERROR);
+                Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, TINGLE_ANIM_TALK);
+                Message_StartTextbox(play, 0x1D0A, &this->picto.actor);
+                this->textId = 0x1D0A;
+            } else if (EnBal_CheckIfMapUnlocked(this, play)) {
+                // Can't buy map because player already has it
+                Audio_PlaySfx(NA_SE_SY_ERROR);
+                Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, TINGLE_ANIM_TALK);
+                Message_StartTextbox(play, 0x1D09, &this->picto.actor);
+                this->textId = 0x1D09;
+            } else {
+                // Proceed with map purchase
+                Audio_PlaySfx_MessageDecide();
+                Rupees_ChangeBy(-price);
+                Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, TINGLE_ANIM_MAGIC_REVERSE);
+                this->forceEyesShut = true;
+                Message_StartTextbox(play, 0x1D0B, &this->picto.actor);
+                this->textId = 0x1D0B;
+                // EnBal_UnlockSelectedAreaMap(this);
+                player->stateFlags1 |= PLAYER_STATE1_20;
+                EnBal_SetupOfferGetItem(this);
+            }
+        } else {
+            // Cancel
+            Audio_PlaySfx_MessageCancel();
+            Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, TINGLE_ANIM_TALK);
+            Message_StartTextbox(play, 0x1D06, &this->picto.actor);
+            this->textId = 0x1D06;
+        }
+    }
 }
