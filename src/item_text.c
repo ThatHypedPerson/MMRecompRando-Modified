@@ -41,10 +41,9 @@ static unsigned char eoe_msg[128] = "You got the\x05 Elegy of Emptiness\x00!\xbf
 static unsigned char oto_msg[128] = "You got the\x05 Oath to Order\x00!\xbf";
 static unsigned char ssht_msg[128] = "You got a\x02 Swamp Token\x00!\xbf";
 static unsigned char osht_msg[128] = "You got an\x03 Ocean Token\x00!\xbf";
-static unsigned char hp_msg[128] = "You got a\x06 Heart Piece\x00!\xbf";
 
 static unsigned char p_monkey_msg[128] = "Keep this\x01 picture of a monkey\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
-static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of a big octo\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of an Octorok\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_lulu_good_msg[128] = "Keep this\x01 good picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_lulu_bad_msg[128] = "Keep this\x01 bad picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_scarecrow_msg[128] = "Keep this\x01 picture of a scarecrow\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
@@ -94,6 +93,12 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         }
     } else if ((textId == 0x92) && (play->sceneId == SCENE_KOEPONARACE)) {
         textId = 0xCD;
+    } else if ((textId == 0xC) && ((GET_QUEST_HEART_PIECE_COUNT - 1) != 0)) {
+        textId = GET_QUEST_HEART_PIECE_COUNT - 1;
+        textId += 0xC4;
+        if (textId == 0xC3) {
+            textId = 0xC7;
+        }
     }
 
     msgCtx->currentTextId = textId;
@@ -165,9 +170,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     msgCtx->decodedTextLen = 0;
 
     switch (textId) {
-        case 0xC:
-            msg = hp_msg;
-            break;
         case 0x72:
             msg = osht_msg;
             break;
@@ -258,8 +260,7 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         }
     }
 
-    if (textId == 0xF8)
-    {
+    if (textId == 0xF8) {
         font->msgBuf.schar[0] = 0x06;
         font->msgBuf.schar[1] = 0x71;
     }
@@ -305,8 +306,7 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 break;
             }
         }
-    }
-    else if (msg == osht_msg) {
+    } else if (msg == osht_msg) {
         u8 count_str[128] = "\x11This is your \xbf";
         u8 count_done_str[128] = "\x11You've found all of them!\xbf";
         u8* count_msg = count_str;
