@@ -28,7 +28,11 @@ extern s32 sCharTexScale;
 extern s32 D_801F6B08;
 
 static unsigned char ap_msg[128] = "You got an\x01 AP item\x00!\xbf";
-static unsigned char sf_msg[128] = "You got a\x05 Stray Fairy\x00!\xbf";
+static unsigned char ctsf_msg[128] = "You found\x08 Clock Town's\x06 Stray Fairy\x00!\xbf";
+static unsigned char wfsf_msg[128] = "You found a\x02 Woodfall\x06 Stray Fairy\x00!\xbf";
+static unsigned char shsf_msg[128] = "You found a\x05 Snowhead\x06 Stray Fairy\x00!\xbf";
+static unsigned char gbsf_msg[128] = "You found a\x03 Great Bay\x06 Stray Fairy\x00!\xbf";
+static unsigned char stsf_msg[128] = "You found a\x04 Stone Tower\x06 Stray Fairy\x00!\xbf";
 static unsigned char sot_msg[128] = "You got the\x05 Song of Time\x00!\xbf";
 static unsigned char soh_msg[128] = "You got the\x05 Song of Healing\x00!\xbf";
 static unsigned char es_msg[128] = "You got\x05 Epona's Song\x00!\xbf";
@@ -219,7 +223,19 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             msg = sot_msg;
             break;
         case 0xB2:
-            msg = sf_msg;
+            msg = ctsf_msg;
+            break;
+        case 0x46:
+            msg = wfsf_msg;
+            break;
+        case 0x47:
+            msg = shsf_msg;
+            break;
+        case 0x48:
+            msg = gbsf_msg;
+            break;
+        case 0x49:
+            msg = stsf_msg;
             break;
         case GI_AP_FILLER:
         case GI_AP_PROG:
@@ -351,6 +367,47 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                     i += 1;
                 }
                 font->msgBuf.schar[end_i + i] = (ocean_token_count % 10) + 0x30;
+                font->msgBuf.schar[end_i + i + 1] = count_suffix[0];
+                font->msgBuf.schar[end_i + i + 2] = count_suffix[1];
+                font->msgBuf.schar[end_i + i + 3] = 0x00;
+                font->msgBuf.schar[end_i + i + 4] = '.';
+                font->msgBuf.schar[end_i + i + 5] = 0xBF;
+                break;
+            }
+        }
+    } else if (msg == wfsf_msg || msg == shsf_msg || msg == gbsf_msg || msg == stsf_msg) {
+        u8 count_str[128] = "\x11This is your \xbf";
+        u8 count_done_str[128] = "\x11You've found all of them!\xbf";
+        u8* count_msg = count_str;
+        if (gSaveContext.save.saveInfo.inventory.strayFairies[textId - 0x46] >= 0xF) {
+            count_msg = count_done_str;
+        }
+        u8 end_i = i + 11;
+        for (i = 0; i < 128; ++i) {
+            font->msgBuf.schar[end_i + i] = count_msg[i];
+            if (count_msg[i] == 0xBF) {
+                if (count_msg == count_done_str) {
+                    break;
+                }
+                u8 fairy_count = gSaveContext.save.saveInfo.inventory.strayFairies[textId - 0x46];
+                u8 count_suffix[2] = "th";
+                if ((fairy_count % 10) == 1 && fairy_count != 11) {
+                    count_suffix[0] = 's';
+                    count_suffix[1] = 't';
+                } else if ((fairy_count % 10) == 2 && fairy_count != 12) {
+                    count_suffix[0] = 'n';
+                    count_suffix[1] = 'd';
+                } else if ((fairy_count % 10) == 3 && fairy_count != 13) {
+                    count_suffix[0] = 'r';
+                    count_suffix[1] = 'd';
+                }
+                font->msgBuf.schar[end_i + i] = 0x01;
+                i += 1;
+                if (fairy_count >= 10) {
+                    font->msgBuf.schar[end_i + i] = (fairy_count / 10) + 0x30;
+                    i += 1;
+                }
+                font->msgBuf.schar[end_i + i] = (fairy_count % 10) + 0x30;
                 font->msgBuf.schar[end_i + i + 1] = count_suffix[0];
                 font->msgBuf.schar[end_i + i + 2] = count_suffix[1];
                 font->msgBuf.schar[end_i + i + 3] = 0x00;
