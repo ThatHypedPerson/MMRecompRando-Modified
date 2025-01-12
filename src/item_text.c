@@ -41,6 +41,8 @@ static unsigned char eoe_msg[128] = "You got the\x05 Elegy of Emptiness\x00!\xbf
 static unsigned char oto_msg[128] = "You got the\x05 Oath to Order\x00!\xbf";
 static unsigned char ssht_msg[128] = "You got a\x02 Swamp Token\x00!\xbf";
 static unsigned char osht_msg[128] = "You got an\x03 Ocean Token\x00!\xbf";
+static unsigned char sword_msg[128] = "You got the\x01 Kokiri Sword\x00!\xbf";
+static unsigned char spin_msg[128] = "You mastered the\x01 Spin Attack\x00!\xbf";
 
 static unsigned char p_monkey_msg[128] = "Keep this\x01 picture of a monkey\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of an Octorok\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
@@ -98,6 +100,10 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         textId += 0xC4;
         if (textId == 0xC3) {
             textId = 0xC7;
+        }
+    } else if (textId == 0x37) {
+        if (rando_get_unconverted_item_id(rando_get_last_location()) != 0x37) {
+            textId = 0xCA;
         }
     }
 
@@ -170,6 +176,12 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     msgCtx->decodedTextLen = 0;
 
     switch (textId) {
+        case 0x37:
+            msg = sword_msg;
+            break;
+        case 0xCA:
+            msg = spin_msg;
+            break;
         case 0x72:
             msg = osht_msg;
             break;
