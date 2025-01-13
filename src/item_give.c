@@ -1340,6 +1340,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 #define ACTOR_ID_DEKU_PLAYGROUND_WORKER 0x1C9
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
 #define ACTOR_ID_BEAN_DADDY 0x0A5
+#define ACTOR_ID_COW 0x0F3
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
 #define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
@@ -1383,7 +1384,8 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
                             (item == ITEM_HYLIAN_LOACH)) ||
                         (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
-                            (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
+                            // (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
+                            (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
                             (item == ITEM_SEAHORSE_CAUGHT))) {
                     } else {
                         itemWorkaround = true;
@@ -1421,6 +1423,11 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         // Honey and Darling Any Day
                         rando_send_location(LOCATION_HONEY_AND_DARLING_ANY_DAY);
                         trueGI = rando_get_item_id(LOCATION_HONEY_AND_DARLING_ANY_DAY);
+                    } else if (getItemId == GI_MILK && actor->id == ACTOR_ID_COW && !rando_location_is_checked(LOCATION_COW)) {
+                        // Cows
+                        recomp_printf("Actor Cow: 0x%06X\n", LOCATION_COW);
+                        rando_send_location(LOCATION_COW);
+                        trueGI = rando_get_item_id(LOCATION_COW);
                     } else if (itemShuffled) {
                         rando_send_location(getItemId);
                     }
