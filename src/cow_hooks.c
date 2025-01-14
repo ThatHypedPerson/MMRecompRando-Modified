@@ -1,0 +1,153 @@
+#include "modding.h"
+#include "global.h"
+
+#include "apcommon.h"
+
+struct EnCow;
+
+#define COW_LIMB_MAX 0x06
+
+typedef void (*EnCowActionFunc)(struct EnCow*, PlayState*);
+
+typedef struct EnCow {
+    /* 0x0000 */ Actor actor;
+    /* 0x0144 */ ColliderCylinder colliders[2];
+    /* 0x01DC */ SkelAnime skelAnime;
+    /* 0x0220 */ Vec3s jointTable[COW_LIMB_MAX];
+    /* 0x0244 */ Vec3s morphTable[COW_LIMB_MAX];
+    /* 0x0268 */ Vec3s headTilt;
+    /* 0x026E */ u16 flags;
+    /* 0x0270 */ u16 animTimer;
+    /* 0x0272 */ u16 animCycle;
+    /* 0x0274 */ EnCowActionFunc actionFunc;
+} EnCow; // size = 0x278
+
+#define EN_COW_TYPE(thisx) ((thisx)->params & 0xF)
+
+#define EN_COW_FLAG_PLAYER_HAS_APPROACHED (1 << 1)
+#define EN_COW_FLAG_WONT_GIVE_MILK (1 << 2)
+
+extern u16 grottoEntrance;
+int LOCATION_COW;
+
+// OOTMM code
+static Actor* EnCow_GetNearestCow(PlayState* play)
+{
+    Actor* cow;
+    Actor* tmp;
+    u32 count;
+    float cowDist;
+
+    cow = NULL;
+    cowDist = 0.f;
+    for (int i = 0; i < 12; ++i)
+    {
+        count = play->actorCtx.actorLists[i].length;
+        tmp = play->actorCtx.actorLists[i].first;
+        while (tmp && count)
+        {
+            if (tmp->id == ACTOR_EN_COW && tmp->params != 1 && (!cow || cowDist > tmp->xzDistToPlayer))
+            {
+                cow = tmp;
+                cowDist = tmp->xzDistToPlayer;
+            }
+            tmp = tmp->next;
+            count--;
+        }
+    }
+    return cow;
+}
+
+static int EnCow_GetCowID(Actor* cow, PlayState* play)
+{
+    s32 sceneId;
+
+    sceneId = play->sceneId;
+    if (sceneId == SCENE_KAKUSIANA)
+        sceneId = grottoEntrance;
+    switch (sceneId)
+    {
+    case SCENE_00KEIKOKU: // Termina Field
+        return cow->world.pos.z > 930.f ? 0x13 : 0x14;
+    case SCENE_30GYOSON: // Great Bay Coast
+        return cow->world.pos.z > 930.f ? 0x15 : 0x16;
+    case SCENE_OMOYA: // Ranch House
+        return cow->world.pos.x < -100.f ? 0x10 : cow->world.pos.z < -100.f ? 0x12 : 0x11;
+    case SCENE_REDEAD: // Beneath the Well
+        return 0x17;
+    }
+    return -1;
+}
+
+extern s32 gHorsePlayedEponasSong;
+
+void EnCow_Talk(EnCow* this, PlayState* play);
+void EnCow_UpdateAnimation(EnCow* this, PlayState* play);
+
+RECOMP_PATCH void EnCow_Idle(EnCow* this, PlayState* play) {
+    if ((play->msgCtx.ocarinaMode == OCARINA_MODE_NONE) || (play->msgCtx.ocarinaMode == OCARINA_MODE_END)) {
+        if (gHorsePlayedEponasSong) {
+            Actor* nearestCow = EnCow_GetNearestCow(play);
+            LOCATION_COW = 0xBEEF00 | EnCow_GetCowID(nearestCow, play);
+            if (&this->actor != nearestCow) {
+                return;
+            }
+
+            if (this->flags & EN_COW_FLAG_WONT_GIVE_MILK) {
+                this->flags &= ~EN_COW_FLAG_WONT_GIVE_MILK;
+                gHorsePlayedEponasSong = false;
+            } else if ((this->actor.xzDistToPlayer < 150.0f) &&
+                       ABS_ALT(BINANG_SUB(this->actor.yawTowardsPlayer, this->actor.shape.rot.y)) < 25000) {
+                gHorsePlayedEponasSong = false;
+                this->actionFunc = EnCow_Talk;
+                this->actor.flags |= ACTOR_FLAG_10000;
+                Actor_OfferTalk(&this->actor, play, 170.0f);
+                this->actor.textId = 0x32C8; // Text to give milk after playing Epona's Song.
+
+                EnCow_UpdateAnimation(this, play);
+                return;
+            } else {
+                this->flags |= EN_COW_FLAG_WONT_GIVE_MILK;
+            }
+        } else {
+            this->flags &= ~EN_COW_FLAG_WONT_GIVE_MILK;
+        }
+    }
+
+    // "ミルク" activation (will not give checks)
+    if (this->actor.xzDistToPlayer < 150.0f &&
+        ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) < 25000) {
+        if (func_801A5100() == 4) {
+            if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_87_01)) {
+                SET_WEEKEVENTREG(WEEKEVENTREG_87_01);
+                if (Inventory_HasEmptyBottle()) {
+                    this->actor.textId = 0x32C9; // Text to give milk.
+                } else {
+                    this->actor.textId = 0x32CA; // Text if you don't have an empty bottle.
+                }
+                this->actor.flags |= ACTOR_FLAG_10000;
+                Actor_OfferTalk(&this->actor, play, 170.0f);
+                this->actionFunc = EnCow_Talk;
+            }
+        } else {
+            CLEAR_WEEKEVENTREG(WEEKEVENTREG_87_01);
+        }
+    }
+
+    EnCow_UpdateAnimation(this, play);
+}
+
+void EnCow_GiveMilk(EnCow* this, PlayState* play);
+
+RECOMP_PATCH void EnCow_CheckForEmptyBottle(EnCow* this, PlayState* play) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        // if (Inventory_HasEmptyBottle()) {
+        Message_ContinueTextbox(play, 0x32C9); // Text to give milk.
+        this->actionFunc = EnCow_GiveMilk;
+        // } else {
+        //     Message_ContinueTextbox(play, 0x32CA); // Text if you don't have an empty bottle.
+        //     this->actionFunc = EnCow_TalkEnd;
+        // }
+    }
+}
+
