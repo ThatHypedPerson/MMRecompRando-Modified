@@ -66,6 +66,10 @@ static unsigned char p_pirate_bad_msg[128] = "Keep this\x01 bad picture of a pir
 static unsigned char slow_dog_msg[128] = "Hoo-whine.\x11How can any of us win against...\x10.\x0a.\x0a." "\x03" "blue dog" "\x00" "?\xbf";
 static unsigned char fast_dog_msg[128] = "\x0a\x0a\x0a\x0a\x0a\x0a.\x0a.\x0a.\x0a\x0a\x0a\x0a\xbf";
 
+static unsigned char shop_desc_msg[128] = "\x01Some Item: \xbf";
+static unsigned char shop_buy_msg[128] = "Some Item: \xbf";
+static unsigned char shop_oos_msg[128] = "\x01You've already purchased this item!\x1a\xbf";
+
 void Message_FindMessage(PlayState* play, u16 textId);
 
 RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
@@ -76,6 +80,8 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     uintptr_t i;
     u32 ffcount = 0;
     unsigned char* msg = NULL;
+
+    recomp_printf("text id: 0x%04X\n", textId);
 
     if (textId == 0x52) {
         textId = 0x75;
@@ -290,6 +296,15 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         case 0x3F:
             msg = compass_msg;
             break;
+        case 0x83F:
+            msg = shop_desc_msg;
+            break;
+        case 0x840:
+            msg = shop_buy_msg;
+            break;
+        case 0x841:
+            msg = shop_oos_msg;
+            break;
     }
 
     if (msg != NULL) {
@@ -307,6 +322,18 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     if (textId == 0xF8) {
         font->msgBuf.schar[0] = 0x06;
         font->msgBuf.schar[1] = 0x71;
+    }
+    if (textId == 0x83F) {
+        font->msgBuf.schar[0] = 0x06;
+        font->msgBuf.schar[1] = 0x30;
+    }
+    if (textId == 0x840) {
+        font->msgBuf.schar[0] = 0x06;
+        font->msgBuf.schar[1] = 0x31;
+    }
+    if (textId == 0x841) {
+        font->msgBuf.schar[0] = 0x06;
+        font->msgBuf.schar[1] = 0x30;
     }
 
     if (msg == sk_msg || msg == bk_msg || msg == map_msg || msg == compass_msg) {
@@ -501,6 +528,49 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 break;
             }
         }
+    } else if (msg == shop_desc_msg || msg == shop_buy_msg) {
+        u8 desc_str[128] = "\x11\x00Maybe you'll want this.\xbf";
+        u8 buy_str[128] = "\x11\x11\x02\xc2I'll buy it\x11No thanks\xbf";
+        u8 rupees_str[128] = " Rupees\xbf";
+        u8* rupees_msg = rupees_str;
+        u8* shop_msg = desc_str;
+        if (msg == shop_buy_msg) {
+            shop_msg = buy_str;
+        }
+        u8 end_i = i + 11;
+
+        s16 price = 20; // temp
+        if (price >= 100) {
+            font->msgBuf.schar[end_i] = (price / 100) + 0x30;
+            end_i += 1;
+        }
+        if (price >= 10) {
+            font->msgBuf.schar[end_i] = ((price % 100) / 10) + 0x30;
+            end_i += 1;
+        }
+        font->msgBuf.schar[end_i] = (price % 10) + 0x30;
+        end_i += 1;
+
+        for (i = 0; i < 128; ++i) {
+            if (rupees_msg[i] == 0xBF) {
+                break;
+            }
+            font->msgBuf.schar[end_i + i] = rupees_msg[i];
+        }
+
+        u8 new_end_i = end_i + i;
+        for (i = 0; i < 128; ++i) {
+            if (shop_msg[i] == 0xBF) {
+                break;
+            }
+            font->msgBuf.schar[new_end_i + i] = shop_msg[i];
+        }
+
+        if (msg == shop_desc_msg) {
+            font->msgBuf.schar[new_end_i + i] = 0x1A;
+            i += 1;
+        }
+        font->msgBuf.schar[new_end_i + i] = 0xBF;
     }
 
     // for reverse-engineering text
