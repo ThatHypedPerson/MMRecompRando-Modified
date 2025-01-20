@@ -10,7 +10,7 @@
 
 ### Mod Setup
 1. Download the latest [Visual Studio C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
-2. Download the (for now) required build of [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/499).
+2. Download the (for now) required build of [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/499) under the "Build Artifacts" section.
     - Optionally download a texture pack from the above PR.
 3. Download the [mods](https://github.com/RecompRando/MMRecompRando/releases/latest), as well as `apconnect.txt`.
 4. Place the mods within the zip into the Zelda64Recomp mods folder, as well as any texture packs you've downloaded.
