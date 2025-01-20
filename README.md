@@ -4,20 +4,16 @@
 
 ### Archipelago Setup
 1. Know [Archipelago](https://archipelago.gg/tutorial/Archipelago/setup/en).
-2. Download the [apworld](https://github.com/LittleCube-hax/MMRecompRando/releases/latest).
+2. Download the [apworld](https://github.com/RecompRando/MMRecompRando/releases/latest).
 3. Place the apworld into `Archipelago/custom_worlds/`.
 4. Generate a multiworld, and host the game either locally or on the website.
 
 ### Mod Setup
 1. Download the latest [Visual Studio C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
-2. Download the (for now) required build of Zelda64Recomp:
-    - [Zelda64Recompiled-Windows.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076238071.zip)
-    - [Zelda64Recompiled-Linux-X64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076240942.zip)
-    - [Zelda64Recompiled-Linux-ARM64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076232906.zip)
-    - [Zelda64Recompiled-AppImage-X64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076240939.zip)
-    - [Zelda64Recompiled-AppImage-ARM64.zip](https://nightly.link/Zelda64Recomp/Zelda64Recomp/actions/artifacts/2076234973.zip)
-3. Download the [mods](https://github.com/LittlestCube/MMRecompRando/releases/latest), as well as `apconnect.txt`.
-4. Place the mods within the zip into the Zelda64Recomp mods folder.
+2. Download the (for now) required build of [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/499).
+    - Optionally download a texture pack from the above PR.
+3. Download the [mods](https://github.com/RecompRando/MMRecompRando/releases/latest), as well as `apconnect.txt`.
+4. Place the mods within the zip into the Zelda64Recomp mods folder, as well as any texture packs you've downloaded.
     1. If on Windows, this is located at `%LOCALAPPDATA%\Zelda64Recompiled\mods`.
     2. If on Linux, this is located at `~/.config/Zelda64Recompiled/mods`.
 5. If you like, you can add a [texture pack](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/447#issue-2433547959).
