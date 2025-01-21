@@ -27,7 +27,6 @@ typedef struct EnCow {
 #define EN_COW_FLAG_PLAYER_HAS_APPROACHED (1 << 1)
 #define EN_COW_FLAG_WONT_GIVE_MILK (1 << 2)
 
-extern u16 grottoEntrance;
 int LOCATION_COW;
 
 // OOTMM code
@@ -64,7 +63,7 @@ static int EnCow_GetCowID(Actor* cow, PlayState* play)
 
     sceneId = play->sceneId;
     if (sceneId == SCENE_KAKUSIANA)
-        sceneId = grottoEntrance;
+        sceneId = Entrance_GetSceneIdAbsolute(((void)0, gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance));
     switch (sceneId)
     {
     case SCENE_00KEIKOKU: // Termina Field
@@ -151,3 +150,14 @@ RECOMP_PATCH void EnCow_CheckForEmptyBottle(EnCow* this, PlayState* play) {
     }
 }
 
+// Map grottos/shrines to sceneId's to be used in different regions
+// if (sceneId == SCENE_KAKUSIANA) {
+//     if (play->roomCtx.curRoom.num == 5) {
+//         sceneId = SCENE_11GORONNOSATO;
+//     } else if ((play->roomCtx.curRoom.num == 6) || (play->roomCtx.curRoom.num == 8) ||
+//                 (play->roomCtx.curRoom.num == 12)) {
+//         sceneId = SCENE_22DEKUCITY;
+//     } else {
+//         sceneId = Entrance_GetSceneIdAbsolute(((void)0, gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance));
+//     }
+// }
