@@ -1344,6 +1344,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
 #define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
+#define LOCATION_MILK ((actor->id) << 8 | GI_MILK)
 
 RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
@@ -1423,11 +1424,23 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         // Honey and Darling Any Day
                         rando_send_location(LOCATION_HONEY_AND_DARLING_ANY_DAY);
                         trueGI = rando_get_item_id(LOCATION_HONEY_AND_DARLING_ANY_DAY);
-                    } else if (getItemId == GI_MILK && actor->id == ACTOR_ID_COW && !rando_location_is_checked(LOCATION_COW)) {
+                    } else if (getItemId == GI_MILK) {
                         // Cows
-                        recomp_printf("Actor Cow: 0x%06X\n", LOCATION_COW);
-                        rando_send_location(LOCATION_COW);
-                        trueGI = rando_get_item_id(LOCATION_COW);
+                        if (actor->id == ACTOR_ID_COW && !rando_location_is_checked(LOCATION_COW)) {
+                            recomp_printf("Actor Cow: 0x%06X\n", LOCATION_COW);
+                            rando_send_location(LOCATION_COW);
+                            trueGI = rando_get_item_id(LOCATION_COW);
+                        // Not Cows
+                        } else if (actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK)) {
+                            recomp_printf("Milkman Location: 0x%06X\n", LOCATION_MILK);
+                            rando_send_location(LOCATION_MILK);
+                            trueGI = rando_get_item_id(LOCATION_MILK);
+                        }
+                        else {
+                            itemWorkaround = false;
+                            itemShuffled = false;
+                            trueGI = GI_MILK;
+                        }
                     } else if (itemShuffled) {
                         rando_send_location(getItemId);
                     }
