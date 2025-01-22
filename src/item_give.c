@@ -1385,8 +1385,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
                             (item == ITEM_HYLIAN_LOACH)) ||
                         (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
-                            // (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
-                            (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
+                            (item == ITEM_MILK) || (item == ITEM_GOLD_DUST_2) || (item == ITEM_HYLIAN_LOACH_2) ||
                             (item == ITEM_SEAHORSE_CAUGHT))) {
                     } else {
                         itemWorkaround = true;
@@ -1411,6 +1410,13 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         itemShuffled = true;
                         trueGI = rando_get_item_id(LOCATION_QUEST_BOTTLE);
                         rando_send_location(LOCATION_QUEST_BOTTLE);
+                    } else if (getItemId == GI_MILK && actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK)) {
+                        // Milk Purchases
+                        recomp_printf("Milkman Location: 0x%06X\n", LOCATION_MILK);
+                        itemWorkaround = true;
+                        itemShuffled = true;
+                        rando_send_location(LOCATION_MILK);
+                        trueGI = rando_get_item_id(LOCATION_MILK);
                     } else if (getItemId == GI_MAGIC_BEANS && actor->id == ACTOR_ID_BEAN_DADDY) {
                         itemWorkaround = true;
                         itemShuffled = true;
@@ -1424,23 +1430,6 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         // Honey and Darling Any Day
                         rando_send_location(LOCATION_HONEY_AND_DARLING_ANY_DAY);
                         trueGI = rando_get_item_id(LOCATION_HONEY_AND_DARLING_ANY_DAY);
-                    } else if (getItemId == GI_MILK) {
-                        // Cows
-                        if (actor->id == ACTOR_ID_COW && !rando_location_is_checked(LOCATION_COW)) {
-                            recomp_printf("Actor Cow: 0x%06X\n", LOCATION_COW);
-                            rando_send_location(LOCATION_COW);
-                            trueGI = rando_get_item_id(LOCATION_COW);
-                        // Not Cows
-                        } else if (actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK)) {
-                            recomp_printf("Milkman Location: 0x%06X\n", LOCATION_MILK);
-                            rando_send_location(LOCATION_MILK);
-                            trueGI = rando_get_item_id(LOCATION_MILK);
-                        }
-                        else {
-                            itemWorkaround = false;
-                            itemShuffled = false;
-                            trueGI = GI_MILK;
-                        }
                     } else if (itemShuffled) {
                         rando_send_location(getItemId);
                     }
