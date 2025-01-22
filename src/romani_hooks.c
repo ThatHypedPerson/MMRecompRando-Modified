@@ -1,6 +1,8 @@
 #include "modding.h"
 #include "global.h"
 
+#include "apcommon.h"
+
 typedef enum RomaniLimb {
     /* 0x00 */ ROMANI_LIMB_NONE,
     /* 0x01 */ ROMANI_LIMB_ROOT,
@@ -79,6 +81,7 @@ void EnMa4_SetupBeginEponasSongCs(EnMa4* this);
 void EnMa4_BeginEponasSongCs(EnMa4* this, PlayState* play);
 void EnMa4_SetupBeginHorsebackGame(EnMa4* this);
 void EnMa4_SetupBeginDescribeThemCs(EnMa4* this);
+void EnMa4_Wait(EnMa4* this, PlayState* play);
 
 RECOMP_PATCH void EnMa4_StartDialogue(EnMa4* this, PlayState* play) {
     s32 pad;
@@ -214,6 +217,15 @@ RECOMP_PATCH void EnMa4_StartDialogue(EnMa4* this, PlayState* play) {
     }
 }
 
+void EnMa4_OfferMilkItem(EnMa4* this, PlayState* play) {
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        this->actionFunc = EnMa4_Wait;
+    } else {
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_MILK_BOTTLE), GI_MILK_BOTTLE, 300.0f, 300.0f, true, true);
+    }
+}
+
 RECOMP_PATCH void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 aux;
@@ -322,14 +334,16 @@ RECOMP_PATCH void EnMa4_ChooseNextDialogue(EnMa4* this, PlayState* play) {
                 // TODO: handle check and cutscene skip
 
                 // Check if player has Epona's song
-                if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                //~ if (CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+                if (rando_location_is_checked(GI_MILK_BOTTLE)) {
                     Message_StartTextbox(play, 0x334C, &this->actor);
                     this->textId = 0x334C;
                 } else {
                     Message_CloseTextbox(play);
-                    player->stateFlags1 |= PLAYER_STATE1_20;
-                    EnMa4_SetupBeginEponasSongCs(this);
-                    EnMa4_BeginEponasSongCs(this, play);
+                    this->actionFunc = EnMa4_OfferMilkItem;
+                    //~ player->stateFlags1 |= PLAYER_STATE1_20;
+                    //~ EnMa4_SetupBeginEponasSongCs(this);
+                    //~ EnMa4_BeginEponasSongCs(this, play);
                 }
                 break;
 
