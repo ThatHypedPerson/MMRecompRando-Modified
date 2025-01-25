@@ -68,6 +68,8 @@ RECOMP_IMPORT(".", bool rando_get_death_link_pending());
 RECOMP_IMPORT(".", bool rando_reset_death_link_pending());
 RECOMP_IMPORT(".", bool rando_get_death_link_enabled());
 RECOMP_IMPORT(".", bool rando_send_death_link());
+RECOMP_IMPORT(".", u32 rando_damage_multiplier());
+RECOMP_IMPORT(".", u32 rando_death_behavior());
 RECOMP_IMPORT(".", bool rando_skulltulas_enabled());
 RECOMP_IMPORT(".", bool rando_shopsanity_enabled());
 RECOMP_IMPORT(".", bool rando_get_location_type(u32 location_id));
@@ -77,8 +79,6 @@ RECOMP_IMPORT(".", void rando_complete_goal());
 RECOMP_IMPORT(".", u32 rando_has_item(u32 item_id));
 RECOMP_IMPORT(".", u32 rando_get_items_size());
 RECOMP_IMPORT(".", u32 rando_get_item(u32 items_i));
-RECOMP_IMPORT(".", u32 rando_get_unconverted_item_id(u32 location_id));
-RECOMP_IMPORT(".", u32 rando_get_last_location());
 
 // WEEKEVENTREG_17_80: we have given the Moon's Tear to the scrub
 // WEEKEVENTREG_74_80: the Moon's Tear has fallen

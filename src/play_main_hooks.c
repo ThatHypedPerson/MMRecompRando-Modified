@@ -250,6 +250,19 @@ RECOMP_PATCH s32 Health_ChangeBy(PlayState* play, s16 healthChange) {
         healthChange >>= 1;
     }
 
+    if (healthChange < 0) {
+        s16 damageMult = rando_damage_multiplier();
+        if (damageMult == 0xF) {
+            gSaveContext.save.saveInfo.playerData.health = 0;
+        }
+
+        if (damageMult == 0) {
+            healthChange *= 0.5;
+        } else {
+            healthChange *= damageMult;
+        }
+    }
+
     gSaveContext.save.saveInfo.playerData.health += healthChange;
 
     if (((void)0, gSaveContext.save.saveInfo.playerData.health) >
@@ -259,7 +272,9 @@ RECOMP_PATCH s32 Health_ChangeBy(PlayState* play, s16 healthChange) {
 
     if (gSaveContext.save.saveInfo.playerData.health <= 0) {
         gSaveContext.save.saveInfo.playerData.health = 0;
-        if (rando_get_death_link_enabled()) {
+        if (rando_death_behavior() == 2) {
+            Interface_StartMoonCrash(play);
+        } else if (rando_get_death_link_enabled()) {
             rando_send_death_link();
         }
         return false;
