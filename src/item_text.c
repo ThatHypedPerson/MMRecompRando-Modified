@@ -81,7 +81,7 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     u32 ffcount = 0;
     unsigned char* msg = NULL;
 
-    recomp_printf("text id: 0x%04X\n", textId);
+    // recomp_printf("text id: 0x%04X\n", textId);
 
     if (textId == 0x52) {
         textId = 0x75;
@@ -297,13 +297,19 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             msg = compass_msg;
             break;
         case 0x83F:
-            msg = shop_desc_msg;
+            if (rando_shopsanity_enabled()) {
+                msg = shop_desc_msg;
+            }
             break;
         case 0x840:
-            msg = shop_buy_msg;
+            if (rando_shopsanity_enabled()) {
+                msg = shop_buy_msg;
+            }
             break;
         case 0x841:
-            msg = shop_oos_msg;
+            if (rando_shopsanity_enabled()) {
+                msg = shop_oos_msg;
+            }
             break;
     }
 
