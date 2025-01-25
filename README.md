@@ -1,4 +1,4 @@
-# MMRecomp Randomizer
+# MMRecompRando
 
 ## Setup
 
@@ -12,18 +12,17 @@
 1. Download the latest [Visual Studio C++ Redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version).
 2. Download the (for now) required build of [Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/499) under the "Build Artifacts" section.
     - Optionally download a texture pack from the above PR.
+        1. Download both `.7z` files from one of the `.rtz` links farther down in the PR.
+        2. Unzip the file ending in .001, and place the resulting `.rtz` in your mods folder.
 3. Download the [mods](https://github.com/RecompRando/MMRecompRando/releases/latest), as well as `apconnect.txt`.
 4. Place the mods within the zip into the Zelda64Recomp mods folder, as well as any texture packs you've downloaded.
     1. If on Windows, this is located at `%LOCALAPPDATA%\Zelda64Recompiled\mods`.
     2. If on Linux, this is located at `~/.config/Zelda64Recompiled/mods`.
-5. If you like, you can add a [texture pack](https://github.com/Zelda64Recomp/Zelda64Recomp/pull/447#issue-2433547959).
-    1. Download both `.7z` files from one of the `.rtz` links in Darío's PR.
-    2. Unzip the file ending in .001, and place the resulting `.rtz` in your mods folder.
-6. You can also download [poptracker](https://github.com/black-sliver/PopTracker/releases/latest) along with Seto's [pack](https://github.com/seto10987/Majoras-Mask-AP-PopTracker-Pack/releases/latest)
-7. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
+5. You can also download [poptracker](https://github.com/black-sliver/PopTracker/releases/latest) along with Seto's [pack](https://github.com/seto10987/Majoras-Mask-AP-PopTracker-Pack/releases/latest)
+6. Place `apconnect.txt` next to `Zelda64Recompiled.exe`, and fill it out with your server connection information.
     - MAKE SURE it is NOT named `apconnect.txt.txt`.
-8. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
-9. Go nuts.
+7. Open `Zelda64Recompiled.exe`, select your ROM, and hit Start Game.
+8. Go nuts.
 
 ## FAQ
 
