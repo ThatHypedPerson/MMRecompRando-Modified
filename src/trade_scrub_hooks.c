@@ -88,7 +88,11 @@ RECOMP_PATCH void func_80BEF360(EnAkindonuts* this, PlayState* play) {
             this->unk_32C &= ~0x40;
             this->actionFunc = func_80BEF450;
         } else {
-            Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_SCRUB_SHOP), LOCATION_SCRUB_SHOP, 300.0f, 300.0f, true, true);
+            if (rando_scrubs_enabled()) {
+                Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_SCRUB_SHOP), LOCATION_SCRUB_SHOP, 300.0f, 300.0f, true, true);
+            } else {
+                Actor_OfferGetItem(&this->actor, play, func_80BED034(this), 300.0f, 300.0f);
+            }
             // @bug: this function is called multiple times for some reason so the below doesn't work
             // if (rando_location_is_checked(LOCATION_SCRUB_SHOP)) {
             //     Actor_OfferGetItem(&this->actor, play, func_80BED034(this), 300.0f, 300.0f);
@@ -105,16 +109,18 @@ RECOMP_PATCH void func_80BEF360(EnAkindonuts* this, PlayState* play) {
 }
 
 RECOMP_PATCH s32 func_80BED208(EnAkindonuts* this) {
-    if ((u32)INV_CONTENT(ITEM_MAGIC_BEANS) != ITEM_MAGIC_BEANS) {
-        return 0;
+    if (!rando_scrubs_enabled()) {
+        if ((u32)INV_CONTENT(ITEM_MAGIC_BEANS) != ITEM_MAGIC_BEANS) {
+            return 0;
+        }
+
+        if (AMMO(ITEM_MAGIC_BEANS) >= 20) {
+            return 2;
+        }
     }
 
     if (gSaveContext.save.saveInfo.playerData.rupees < 10) {
         return 1;
-    }
-
-    if (AMMO(ITEM_MAGIC_BEANS) >= 20) {
-        return 2;
     }
 
     this->unk_364 = -10;
@@ -123,13 +129,15 @@ RECOMP_PATCH s32 func_80BED208(EnAkindonuts* this) {
 }
 
 RECOMP_PATCH s32 func_80BED27C(EnAkindonuts* this) {
-    // if (GET_CUR_UPG_VALUE(UPG_BOMB_BAG) == 3) {
-    //     return 2;
-    // }
+    if (!rando_scrubs_enabled()) {
+        if (GET_CUR_UPG_VALUE(UPG_BOMB_BAG) == 3) {
+            return 2;
+        }
 
-    // if (GET_CUR_UPG_VALUE(UPG_BOMB_BAG) < 2) {
-    //     return 0;
-    // }
+        if (GET_CUR_UPG_VALUE(UPG_BOMB_BAG) < 2) {
+            return 0;
+        }
+    }
 
     if (gSaveContext.save.saveInfo.playerData.rupees < 200) {
         return 1;
@@ -141,7 +149,7 @@ RECOMP_PATCH s32 func_80BED27C(EnAkindonuts* this) {
 }
 
 RECOMP_PATCH s32 func_80BED2FC(EnAkindonuts* this) {
-    if (!Inventory_HasEmptyBottle()) {
+    if (!Inventory_HasEmptyBottle() && !rando_scrubs_enabled()) {
         return 2;
     }
 
@@ -155,7 +163,7 @@ RECOMP_PATCH s32 func_80BED2FC(EnAkindonuts* this) {
 }
 
 RECOMP_PATCH s32 func_80BED35C(EnAkindonuts* this) {
-    if (!Inventory_HasEmptyBottle()) {
+    if (!Inventory_HasEmptyBottle() && !rando_scrubs_enabled()) {
         return 2;
     }
 

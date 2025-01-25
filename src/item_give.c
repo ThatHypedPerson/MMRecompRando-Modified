@@ -1410,7 +1410,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         itemShuffled = true;
                         trueGI = rando_get_item_id(LOCATION_QUEST_BOTTLE);
                         rando_send_location(LOCATION_QUEST_BOTTLE);
-                    } else if (getItemId == GI_MILK && actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK)) {
+                    } else if (getItemId == GI_MILK && actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK) && rando_shopsanity_enabled()) {
                         // Milk Purchases
                         recomp_printf("Milkman Location: 0x%06X\n", LOCATION_MILK);
                         itemWorkaround = true;

@@ -44,6 +44,8 @@ native_libraries = [
                                     "rando_get_tunic_color",
                                     "rando_skulltulas_enabled",
                                     "rando_shopsanity_enabled",
+                                    "rando_scrubs_enabled",
+                                    "rando_cows_enabled",
                                     "rando_damage_multiplier",
                                     "rando_death_behavior",
                                     "rando_get_location_type",

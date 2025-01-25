@@ -112,7 +112,7 @@ RECOMP_PATCH void EnCow_Idle(EnCow* this, PlayState* play) {
         }
     }
 
-    // "ミルク" activation (will not give checks)
+    // "ミルク" activation
     if (this->actor.xzDistToPlayer < 150.0f &&
         ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) < 25000) {
         if (func_801A5100() == 4) {
@@ -163,14 +163,16 @@ RECOMP_PATCH void EnCow_GiveMilk(EnCow* this, PlayState* play) {
     }
 }
 
+void EnCow_TalkEnd(EnCow* this, PlayState* play);
+
 RECOMP_PATCH void EnCow_CheckForEmptyBottle(EnCow* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        // if (Inventory_HasEmptyBottle()) {
-        Message_ContinueTextbox(play, 0x32C9); // Text to give milk.
-        this->actionFunc = EnCow_GiveMilk;
-        // } else {
-        //     Message_ContinueTextbox(play, 0x32CA); // Text if you don't have an empty bottle.
-        //     this->actionFunc = EnCow_TalkEnd;
-        // }
+        if (Inventory_HasEmptyBottle() || rando_cows_enabled()) {
+            Message_ContinueTextbox(play, 0x32C9); // Text to give milk.
+            this->actionFunc = EnCow_GiveMilk;
+        } else {
+            Message_ContinueTextbox(play, 0x32CA); // Text if you don't have an empty bottle.
+            this->actionFunc = EnCow_TalkEnd;
+        }
     }
 }
