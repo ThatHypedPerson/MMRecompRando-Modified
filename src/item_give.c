@@ -59,7 +59,7 @@ void func_8082DB90(PlayState* play, Player* this, PlayerAnimationHeader* anim);
  */
 #define GIFIELD(flags, dropType) ((flags) | (dropType))
 
-GetItemEntry sGetItemTable_ap[GI_MAX - 1] = {
+GetItemEntry sGetItemTable_ap[] = {
     // GI_RUPEE_GREEN
     GET_ITEM(ITEM_RUPEE_GREEN, OBJECT_GI_RUPY, GID_RUPEE_GREEN, 0xC4, GIFIELD(0, ITEM00_RUPEE_GREEN), CHEST_ANIM_SHORT),
     // GI_RUPEE_BLUE
@@ -549,6 +549,9 @@ GetItemEntry sGetItemTable_ap[GI_MAX - 1] = {
     // GI_TINGLE_MAP_STONE_TOWER
     GET_ITEM(ITEM_TINGLE_MAP, OBJECT_GI_FIELDMAP, GID_TINGLE_MAP, 0xB9, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
              CHEST_ANIM_LONG),
+    // GI_MAX
+    // don't edit
+    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0xBA, 0, 0),
 };
 
 bool isAP(s16 gi) {
@@ -1225,7 +1228,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 
         if (interactRangeActor != NULL) {
             if (this->getItemId > GI_NONE) {
-                if (this->getItemId < GI_MAX) {
+                if (this->getItemId < GI_MAX || this->getItemId > GI_MAX) {
                     GetItemEntry* giEntry = &sGetItemTable_ap[this->getItemId - 1];
                     interactRangeActor->parent = &this->actor;
                     if ((Item_CheckObtainability(giEntry->itemId) == ITEM_NONE) ||
@@ -1357,7 +1360,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
             if (((getItemId == GI_MASK_CIRCUS_LEADER) || (getItemId == GI_PENDANT_OF_MEMORIES) ||
                  (getItemId == GI_DEED_LAND) ||
                  (((player->heldActor != NULL) || (actor == player->talkActor)) &&
-                  ((getItemId > GI_NONE) && (getItemId < GI_MAX)))) ||
+                  (((getItemId > GI_NONE) && (getItemId < GI_MAX)) || getItemId > GI_MAX))) ||
                 !(player->stateFlags1 & (PLAYER_STATE1_800 | PLAYER_STATE1_20000000))) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS_ALT(yawDiff);
@@ -1432,7 +1435,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                     player->interactRangeActor = actor;
                     player->getItemDirection = absYawDiff;
 
-                    if ((getItemId > GI_NONE) && (getItemId < GI_MAX)) {
+                    if (((getItemId > GI_NONE) && (getItemId < GI_MAX)) || (getItemId > GI_MAX)) {
                         CutsceneManager_Queue(play->playerCsIds[PLAYER_CS_ID_ITEM_GET]);
                     }
 
@@ -1456,7 +1459,7 @@ s32 Actor_OfferGetItemHook(Actor* actor, PlayState* play, GetItemId getItemId, u
             if (((getItemId == GI_MASK_CIRCUS_LEADER) || (getItemId == GI_PENDANT_OF_MEMORIES) ||
                  (getItemId == GI_DEED_LAND) ||
                  (((player->heldActor != NULL) || (actor == player->talkActor)) &&
-                  ((getItemId > GI_NONE) && (getItemId < GI_MAX)))) ||
+                  (((getItemId > GI_NONE) && (getItemId < GI_MAX)) || (getItemId > GI_MAX)))) ||
                 !(player->stateFlags1 & (PLAYER_STATE1_800 | PLAYER_STATE1_20000000))) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS_ALT(yawDiff);
@@ -1478,7 +1481,7 @@ s32 Actor_OfferGetItemHook(Actor* actor, PlayState* play, GetItemId getItemId, u
                     player->interactRangeActor = actor;
                     player->getItemDirection = absYawDiff;
 
-                    if ((getItemId > GI_NONE) && (getItemId < GI_MAX)) {
+                    if (((getItemId > GI_NONE) && (getItemId < GI_MAX)) || getItemId > GI_MAX) {
                         CutsceneManager_Queue(play->playerCsIds[PLAYER_CS_ID_ITEM_GET]);
                     }
 
