@@ -137,9 +137,9 @@ void EnJg_OfferLullabyIntro(EnJg* this, PlayState* play) {
 }
 
 RECOMP_PATCH void EnJg_SetupTalk(EnJg* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
     switch (this->textId) {
         case 0xDAC: // What was I doing?
-            Player* player = GET_PLAYER(play);
             if (!rando_location_is_checked(GI_AD) && player->transformation == PLAYER_FORM_GORON && CHECK_WEEKEVENTREG(WEEKEVENTREG_24_80)) {
                 Message_CloseTextbox(play);
                 this->actionFunc = EnJg_OfferLullabyIntro;
