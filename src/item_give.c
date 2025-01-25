@@ -250,13 +250,13 @@ GetItemEntry sGetItemTable_ap[] = {
     GET_ITEM(ITEM_RECOVERY_HEART, OBJECT_GI_HEART, GID_RECOVERY_HEART, 0x45, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0),
              CHEST_ANIM_LONG),
     // GI_46
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x46, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOTTLE_04, GID_FAIRY, 0x46, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_47
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x47, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOTTLE_04, GID_FAIRY, 0x47, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_48
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x48, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOTTLE_04, GID_FAIRY, 0x48, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_49
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x49, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOTTLE_04, GID_FAIRY, 0x49, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_4A
     GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x4A, 0, 0),
     // GI_4B
@@ -1343,9 +1343,11 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 #define ACTOR_ID_DEKU_PLAYGROUND_WORKER 0x1C9
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
 #define ACTOR_ID_BEAN_DADDY 0x0A5
+#define ACTOR_ID_COW 0x0F3
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
 #define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
+#define LOCATION_MILK ((actor->id) << 8 | GI_MILK)
 
 RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId getItemId, f32 xzRange, f32 yRange) {
     Player* player = GET_PLAYER(play);
@@ -1411,6 +1413,13 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         itemShuffled = true;
                         trueGI = rando_get_item_id(LOCATION_QUEST_BOTTLE);
                         rando_send_location(LOCATION_QUEST_BOTTLE);
+                    } else if (getItemId == GI_MILK && actor->id != ACTOR_ID_COW && !rando_location_is_checked(LOCATION_MILK) && rando_shopsanity_enabled()) {
+                        // Milk Purchases
+                        recomp_printf("Milkman Location: 0x%06X\n", LOCATION_MILK);
+                        itemWorkaround = true;
+                        itemShuffled = true;
+                        rando_send_location(LOCATION_MILK);
+                        trueGI = rando_get_item_id(LOCATION_MILK);
                     } else if (getItemId == GI_MAGIC_BEANS && actor->id == ACTOR_ID_BEAN_DADDY) {
                         itemWorkaround = true;
                         itemShuffled = true;

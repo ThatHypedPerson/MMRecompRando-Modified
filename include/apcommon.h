@@ -38,6 +38,11 @@
 #define GID_DEFENSE_DOUBLE (GID_MASK_FIERCE_DEITY + 12)
 #define GID_OCEAN_SKULL_TOKEN (GID_MASK_FIERCE_DEITY + 13)
 
+#define GID_SF_WOODFALL (GID_MASK_FIERCE_DEITY + 14)
+#define GID_SF_SNOWHEAD (GID_MASK_FIERCE_DEITY + 15)
+#define GID_SF_GREATBAY (GID_MASK_FIERCE_DEITY + 16)
+#define GID_SF_STONETOWER (GID_MASK_FIERCE_DEITY + 17)
+
 #define GID_APLOGO_FILLER GID_37
 #define GID_APLOGO_PROG GID_46
 #define GID_APLOGO_USEFUL GID_4C
@@ -63,7 +68,12 @@ RECOMP_IMPORT(".", bool rando_get_death_link_pending());
 RECOMP_IMPORT(".", bool rando_reset_death_link_pending());
 RECOMP_IMPORT(".", bool rando_get_death_link_enabled());
 RECOMP_IMPORT(".", bool rando_send_death_link());
+RECOMP_IMPORT(".", u32 rando_damage_multiplier());
+RECOMP_IMPORT(".", u32 rando_death_behavior());
 RECOMP_IMPORT(".", bool rando_skulltulas_enabled());
+RECOMP_IMPORT(".", bool rando_shopsanity_enabled());
+RECOMP_IMPORT(".", bool rando_scrubs_enabled());
+RECOMP_IMPORT(".", bool rando_cows_enabled());
 RECOMP_IMPORT(".", bool rando_get_location_type(u32 location_id));
 RECOMP_IMPORT(".", bool rando_get_item_id(u32 location_id));
 RECOMP_IMPORT(".", void rando_send_location(u32 location_id));
