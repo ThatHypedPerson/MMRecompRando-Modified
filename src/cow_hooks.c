@@ -112,7 +112,7 @@ RECOMP_PATCH void EnCow_Idle(EnCow* this, PlayState* play) {
         }
     }
 
-    // "ミルク" activation (will not give checks)
+    // "ミルク" activation
     if (this->actor.xzDistToPlayer < 150.0f &&
         ABS_ALT((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) < 25000) {
         if (func_801A5100() == 4) {
@@ -142,7 +142,7 @@ RECOMP_PATCH void EnCow_GiveMilkWait(EnCow* this, PlayState* play) {
         this->actor.parent = NULL;
         this->actionFunc = EnCow_GiveMilkEnd;
     } else {
-        if (rando_location_is_checked(LOCATION_COW)) {
+        if (rando_location_is_checked(LOCATION_COW) && rando_cows_enabled()) {
             Actor_OfferGetItem(&this->actor, play, GI_MILK, 10000.0f, 100.0f);
         } else {
             Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_COW), LOCATION_COW, 300.0f, 300.0f, true, true);
@@ -155,7 +155,7 @@ RECOMP_PATCH void EnCow_GiveMilk(EnCow* this, PlayState* play) {
         this->actor.flags &= ~ACTOR_FLAG_10000;
         Message_CloseTextbox(play);
         this->actionFunc = EnCow_GiveMilkWait;
-        if (rando_location_is_checked(LOCATION_COW)) {
+        if (rando_location_is_checked(LOCATION_COW) && rando_cows_enabled()) {
             Actor_OfferGetItem(&this->actor, play, GI_MILK, 10000.0f, 100.0f);
         } else {
             Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_COW), LOCATION_COW, 300.0f, 300.0f, true, true);
@@ -163,14 +163,16 @@ RECOMP_PATCH void EnCow_GiveMilk(EnCow* this, PlayState* play) {
     }
 }
 
+void EnCow_TalkEnd(EnCow* this, PlayState* play);
+
 RECOMP_PATCH void EnCow_CheckForEmptyBottle(EnCow* this, PlayState* play) {
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
-        // if (Inventory_HasEmptyBottle()) {
-        Message_ContinueTextbox(play, 0x32C9); // Text to give milk.
-        this->actionFunc = EnCow_GiveMilk;
-        // } else {
-        //     Message_ContinueTextbox(play, 0x32CA); // Text if you don't have an empty bottle.
-        //     this->actionFunc = EnCow_TalkEnd;
-        // }
+        if (Inventory_HasEmptyBottle() || rando_cows_enabled()) {
+            Message_ContinueTextbox(play, 0x32C9); // Text to give milk.
+            this->actionFunc = EnCow_GiveMilk;
+        } else {
+            Message_ContinueTextbox(play, 0x32CA); // Text if you don't have an empty bottle.
+            this->actionFunc = EnCow_TalkEnd;
+        }
     }
 }
