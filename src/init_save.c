@@ -9,7 +9,7 @@ bool saveOpened = false;
 
 RECOMP_IMPORT(".", bool rando_get_permanent_chateau_romani_enabled());
 RECOMP_IMPORT(".", bool rando_get_start_with_consumables_enabled());
-RECOMP_IMPORT(".", bool rando_get_reset_with_inverted_time_enabled());
+RECOMP_IMPORT(".", bool rando_get_start_with_inverted_time_enabled());
 
 RECOMP_CALLBACK("*", recomp_on_load_save)
 void rando_on_load_save(FileSelectState* fileSelect, SramContext* sramCtx) {
@@ -128,7 +128,7 @@ RECOMP_PATCH void Sram_InitDebugSave(void) {
         gSaveContext.save.saveInfo.inventory.ammo[SLOT_DEKU_NUT] = 20;
     }
 
-    if (rando_get_reset_with_inverted_time_enabled()) {
+    if (rando_get_start_with_inverted_time_enabled()) {
         gSaveContext.save.timeSpeedOffset = -2;
     }
 

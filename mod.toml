@@ -38,7 +38,7 @@ native_libraries = [
                                     "rando_get_camc_enabled",
                                     "rando_get_start_with_consumables_enabled",
                                     "rando_get_permanent_chateau_romani_enabled",
-                                    "rando_get_reset_with_inverted_time_enabled",
+                                    "rando_get_start_with_inverted_time_enabled",
                                     "rando_get_receive_filled_wallets_enabled",
                                     "rando_get_starting_heart_locations",
                                     "rando_get_tunic_color",
