@@ -388,6 +388,9 @@ RECOMP_PATCH void EnSob1_SetupBuyItemWithFanfare(PlayState* play, EnSob1* this) 
 // Kotake
 void EnTrt_SetupItemGiven(EnTrt* this, PlayState* play);
 
+#define ENTRT_CUTSCENESTATE_STOPPED 0x0
+#define ENTRT_CUTSCENESTATE_PLAYING 0x3
+
 RECOMP_PATCH void EnTrt_BuyItemWithFanfare(EnTrt* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
         this->actor.parent = NULL;
@@ -410,4 +413,53 @@ RECOMP_PATCH void EnTrt_SetupBuyItemWithFanfare(PlayState* play, EnTrt* this) {
     Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
     this->drawCursor = 0;
     this->actionFunc = EnTrt_BuyItemWithFanfare;
+}
+
+s32 EnTrt_TakeItemOffShelf(EnTrt *this);
+u16 EnTrt_GetItemTextId(EnTrt *this);
+s32 EnTrt_TestCancelOption(EnTrt *this, PlayState *play, Input *input);
+void EnTrt_SetupCannotBuy(PlayState *play, EnTrt *this, u16 textId);
+void EnTrt_HandleCanBuyItem(PlayState *play, EnTrt *this);
+
+RECOMP_PATCH void EnTrt_SelectItem(EnTrt* this, PlayState* play) {
+    EnGirlA* item = this->items[this->cursorIndex];
+    u8 talkState = Message_GetState(&play->msgCtx);
+
+    if (EnTrt_TakeItemOffShelf(this)) {
+        if (talkState == TEXT_STATE_CHOICE) {
+            func_8011552C(play, DO_ACTION_DECIDE);
+            if (!EnTrt_TestCancelOption(this, play, CONTROLLER1(&play->state)) && Message_ShouldAdvance(play)) {
+                switch (play->msgCtx.choiceIndex) {
+                    case 0:
+                        EnTrt_HandleCanBuyItem(play, this);
+                        break;
+
+                    case 1:
+                        Audio_PlaySfx_MessageCancel();
+                        this->actionFunc = this->prevActionFunc;
+                        Message_ContinueTextbox(play, EnTrt_GetItemTextId(this));
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        } else if ((talkState == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+            // if (!Inventory_HasEmptyBottle()) {
+            if (!Inventory_HasEmptyBottle() && !rando_shopsanity_enabled()) {
+                Audio_PlaySfx(NA_SE_SY_ERROR);
+                EnTrt_SetupCannotBuy(play, this, 0x846);
+            } else {
+                if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING) {
+                    CutsceneManager_Stop(this->csId);
+                    this->cutsceneState = ENTRT_CUTSCENESTATE_STOPPED;
+                }
+                EnTrt_SetupBuyItemWithFanfare(play, this);
+                this->drawCursor = 0;
+                this->shopItemSelectedTween = 0.0f;
+                item->boughtFunc(play, item);
+                SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_FREE_BLUE_POTION);
+            }
+        }
+    }
 }
