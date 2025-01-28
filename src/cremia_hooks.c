@@ -39,11 +39,20 @@ typedef enum {
     /* 4 */ MA_YTO_TYPE_4  // HugCutscene? Doesn't seem to work properly in-game
 } EnMaYtoType;
 
-void EnMaYto_SetupPostMilkRunExplainReward(EnMaYto* this);
 
+void EnMaYto_SetupDefaultWait(EnMaYto *this);
+void EnMaYto_SetupDinnerWait(EnMaYto *this);
+void EnMaYto_SetupBarnWait(EnMaYto *this);
+void EnMaYto_SetupAfterMilkRunInit(EnMaYto *this);
+void EnMaYto_SetupBeginWarmFuzzyFeelingCs(EnMaYto *this);
+void EnMaYto_SetupWarmFuzzyFeelingCs(EnMaYto *this);
+
+// @ap cremia always hugs after escort
+// TODO: fix dialog repeating
 RECOMP_PATCH void EnMaYto_PostMilkRunGiveReward(EnMaYto* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
-        EnMaYto_SetupPostMilkRunExplainReward(this);
+        // EnMaYto_SetupPostMilkRunExplainReward(this);
+		EnMaYto_SetupBeginWarmFuzzyFeelingCs(this);
     // } else if (INV_CONTENT(ITEM_MASK_ROMANI) == ITEM_MASK_ROMANI) {
     } else if (rando_location_is_checked(GI_MASK_ROMANI)) {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_HUGE, 500.0f, 100.0f);
@@ -54,14 +63,6 @@ RECOMP_PATCH void EnMaYto_PostMilkRunGiveReward(EnMaYto* this, PlayState* play) 
     }
 }
 
-void EnMaYto_SetupDefaultWait(EnMaYto *this);
-void EnMaYto_SetupDinnerWait(EnMaYto *this);
-void EnMaYto_SetupBarnWait(EnMaYto *this);
-void EnMaYto_SetupAfterMilkRunInit(EnMaYto *this);
-void EnMaYto_SetupBeginWarmFuzzyFeelingCs(EnMaYto *this);
-void EnMaYto_SetupWarmFuzzyFeelingCs(EnMaYto *this);
-
-// @ap cremia always hugs after escort
 RECOMP_PATCH void EnMaYto_ChooseAction(EnMaYto* this, PlayState* play) {
     switch (this->type) {
         case MA_YTO_TYPE_DEFAULT:
@@ -81,11 +82,10 @@ RECOMP_PATCH void EnMaYto_ChooseAction(EnMaYto* this, PlayState* play) {
             this->unk310 = 0;
             // if ((INV_CONTENT(ITEM_MASK_ROMANI) == ITEM_MASK_ROMANI) &&
             //     CHECK_WEEKEVENTREG(WEEKEVENTREG_ESCORTED_CREMIA) && (Rand_Next() & 0x80)) {
-			if (CHECK_WEEKEVENTREG(WEEKEVENTREG_ESCORTED_CREMIA)) {
-                EnMaYto_SetupBeginWarmFuzzyFeelingCs(this);
-            } else {
+            //     EnMaYto_SetupBeginWarmFuzzyFeelingCs(this);
+            // } else {
                 EnMaYto_SetupAfterMilkRunInit(this);
-            }
+            // }
             break;
 
         case MA_YTO_TYPE_4:
