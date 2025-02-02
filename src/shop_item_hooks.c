@@ -585,7 +585,7 @@ void EnGirlA_Restock(PlayState* play, EnGirlA* this);
 RECOMP_PATCH void EnGirlA_InitalUpdate(EnGirlA* this, PlayState* play) {
     s16 params = this->actor.params;
     if (rando_shopsanity_enabled()
-        && (this->actor.params == SI_BOTTLE ||
+        && !(this->actor.params == SI_BOTTLE ||
             this->actor.params == SI_SWORD_GREAT_FAIRY ||
             this->actor.params == SI_SWORD_KOKIRI ||
             this->actor.params == SI_SWORD_RAZOR ||
