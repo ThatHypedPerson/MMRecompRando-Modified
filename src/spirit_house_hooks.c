@@ -38,7 +38,6 @@ void func_80B0FD8C(EnGb2 *this, PlayState *play);
 void func_80B0FE7C(PlayState *play);
 void func_80B10240(EnGb2 *this, PlayState *play);
 
-// @bug triggers twice before item is displayed?
 RECOMP_PATCH void func_80B10924(EnGb2* this, PlayState* play) {
     s32 getItemId;
 
