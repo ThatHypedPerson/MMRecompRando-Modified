@@ -48,15 +48,9 @@ void EnMaYto_SetupBeginWarmFuzzyFeelingCs(EnMaYto *this);
 void EnMaYto_SetupWarmFuzzyFeelingCs(EnMaYto *this);
 
 // @ap cremia always hugs after escort
-// TODO: fix dialog repeating
-RECOMP_PATCH void EnMaYto_PostMilkRunGiveReward(EnMaYto* this, PlayState* play) {
+void EnMaYto_PostMilkRunGiveRandoReward(EnMaYto* this, PlayState* play) {
     if (Actor_HasParent(&this->actor, play)) {
-        // EnMaYto_SetupPostMilkRunExplainReward(this);
 		EnMaYto_SetupBeginWarmFuzzyFeelingCs(this);
-    // } else if (INV_CONTENT(ITEM_MASK_ROMANI) == ITEM_MASK_ROMANI) {
-    } else if (rando_location_is_checked(GI_MASK_ROMANI)) {
-        Actor_OfferGetItem(&this->actor, play, GI_RUPEE_HUGE, 500.0f, 100.0f);
-        this->unk310 = 2;
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_MASK_ROMANI, 500.0f, 100.0f);
         this->unk310 = 1;
@@ -84,8 +78,10 @@ RECOMP_PATCH void EnMaYto_ChooseAction(EnMaYto* this, PlayState* play) {
             //     CHECK_WEEKEVENTREG(WEEKEVENTREG_ESCORTED_CREMIA) && (Rand_Next() & 0x80)) {
             //     EnMaYto_SetupBeginWarmFuzzyFeelingCs(this);
             // } else {
-                EnMaYto_SetupAfterMilkRunInit(this);
+            //     EnMaYto_SetupAfterMilkRunInit(this);
             // }
+            // EnMaYto_PostMilkRunGiveRandoReward(this, play);
+            this->actionFunc = EnMaYto_PostMilkRunGiveRandoReward;
             break;
 
         case MA_YTO_TYPE_4:

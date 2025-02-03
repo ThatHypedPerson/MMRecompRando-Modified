@@ -115,9 +115,6 @@ RECOMP_PATCH s32 func_80B795A0(PlayState* play, ObjUm* this, s32 arg2) {
                 gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE;
                 play->transitionTrigger = TRANS_TRIGGER_START;
                 phi_v1 = true;
-				this->flags |= OBJ_UM_FLAG_0100;
-				this->flags |= OBJ_UM_FLAG_0004;
-				player->stateFlags1 |= PLAYER_STATE1_20;
             } else {
                 Actor_ContinueText(play, &this->dyna.actor, 0x33B5);
                 Audio_PlaySfx_MessageCancel();
