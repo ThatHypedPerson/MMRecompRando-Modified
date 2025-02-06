@@ -97,6 +97,9 @@ void Sram_SetInitialWeekEvents(void) {
     // skip secret shrine entrance guy text
     SET_WEEKEVENTREG(WEEKEVENTREG_76_80);
 
+    // skip initial ikana canyon sharp cs
+    SET_WEEKEVENTREG(WEEKEVENTREG_14_02);
+
     // skip having to rewatch the great bay turtle cutscene
     if(spawnedTurtle) {
         SET_WEEKEVENTREG(WEEKEVENTREG_53_20);
