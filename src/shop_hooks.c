@@ -5,7 +5,7 @@
 #include "overlays/actors/ovl_En_GirlA/z_en_girla.h"
 
 #define LOCATION_SHOP_ITEM (0x090000 | this->items[this->cursorIndex]->itemParams)
-s16 shopItemID;
+#define LOCATION_FSN_RUPEE (0x070000 | (this->actor.id) << 8 | this->getItemId)
 
 #define FSN_LIMB_MAX 0x12
 #define ENFSN_LIMB_MAX FSN_LIMB_MAX + 1 // Note: adding 1 to FSN_LIMB_MAX due to bug in the skeleton, see bug in object_fsn.xml
@@ -272,7 +272,9 @@ RECOMP_PATCH void EnFsn_GiveItem(EnFsn* this, PlayState* play) {
         // Actor_OfferGetItem(&this->actor, play, this->items[this->cursorIndex]->getItemId, 300.0f, 300.0f);
         Actor_OfferGetItemHook(&this->actor, play, this->items[this->cursorIndex]->getItemId, LOCATION_SHOP_ITEM, 300.0f, 300.0f, true, true);
     } else {
-        Actor_OfferGetItem(&this->actor, play, this->getItemId, 300.0f, 300.0f);
+        // note: this gets hit 4 times so i don't think vanilla rewards can work here
+        // Actor_OfferGetItem(&this->actor, play, this->getItemId, 300.0f, 300.0f);
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_FSN_RUPEE), LOCATION_FSN_RUPEE, 300.0f, 300.0f, true, true);
     }
 }
 

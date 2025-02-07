@@ -134,10 +134,27 @@ RECOMP_PATCH void DmChar08_SetupAppearCs(DmChar08* this, PlayState* play) {
     }
 }
 
+RECOMP_PATCH void func_80AAF8F4(DmChar08* this, PlayState* play) {
+    s32 pad;
+    f32 yOffset;
+
+    if (fabsf(this->dyna.actor.xzDistToPlayer) < 200.0f) {
+        Audio_PlaySfx(NA_SE_OC_SECRET_WARP_OUT);
+        this->actionFunc = func_80AAFA18;
+    }
+    this->unk_1FA += 200;
+    yOffset = 50.0f;
+    yOffset *= Math_SinS(this->unk_1FA);
+    Math_SmoothStepToF(&this->dyna.actor.world.pos.x, -6400.0f, 0.2f, 2.0f, 0.1f);
+    Math_SmoothStepToF(&this->targetYPos, -180.0f + yOffset, 0.5f, 5.0f, 0.1f);
+    Math_SmoothStepToF(&this->dyna.actor.world.pos.z, 1750.0f, 0.5f, 20.0f, 0.1f);
+    Math_SmoothStepToS(&this->dyna.actor.world.rot.y, -0x7234, 0xA, 0xDC, 1);
+    Math_SmoothStepToS(&this->dyna.actor.shape.rot.y, -0x7234, 0xA, 0xDC, 1);
+}
+
 RECOMP_PATCH void func_80AAFA18(DmChar08* this, PlayState* play) {
     play->nextEntrance = ENTRANCE(GREAT_BAY_TEMPLE, 0);
-    play->transitionType = TRANS_TYPE_FADE_WHITE_FAST;
-    gSaveContext.nextTransitionType = TRANS_TYPE_FADE_WHITE_FAST;
+    play->transitionType = TRANS_TYPE_FADE_BLUE;
+    gSaveContext.nextTransitionType = TRANS_TYPE_FADE_BLUE;
     play->transitionTrigger = TRANS_TRIGGER_START;
-    Audio_PlaySfx(NA_SE_SY_WHITE_OUT_T);
 }
