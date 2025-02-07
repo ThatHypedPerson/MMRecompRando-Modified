@@ -9,6 +9,8 @@ struct DmChar02;
 
 #define THIS ((DmChar02*)thisx)
 
+#define LOCATION_SOT 0x040067
+
 typedef void (*DmChar02ActionFunc)(struct DmChar02*, PlayState*);
 
 typedef struct DmChar02 {
@@ -56,7 +58,7 @@ RECOMP_PATCH void DmChar02_Init(Actor* thisx, PlayState* play) {
     objectSegment = ZeldaArena_Malloc(0x2000);
 
     //if (gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] == ITEM_NONE) {
-    if (!rando_location_is_checked(GI_OCARINA_OF_TIME) || !rando_location_is_checked(0x040067)) {
+    if (!rando_location_is_checked(GI_OCARINA_OF_TIME) || !rando_location_is_checked(LOCATION_SOT)) {
         this->animIndex = DMCHAR02_ANIM_HIT_GROUND;
         this->actor.targetArrowOffset = 3000.0f;
         ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 24.0f);
@@ -92,10 +94,14 @@ RECOMP_PATCH void DmChar02_Update(Actor* thisx, PlayState* play) {
     this->unk_2F0 = this->unk_2F0;
     this->actionFunc(this, play);
     if ((this->actor.xzDistToPlayer <= 30.0f) && (fabsf(this->actor.playerHeightRel) <= fabsf(80.0f))) {
-        Audio_PlayFanfare(NA_BGM_GET_SMALL_ITEM);
-        rando_send_location(GI_OCARINA_OF_TIME);
-        rando_send_location(0x040067);
-        Actor_Kill(thisx);
+        // Audio_PlayFanfare(NA_BGM_GET_SMALL_ITEM);
+        if (!rando_location_is_checked(GI_OCARINA_OF_TIME)) {
+            Actor_OfferGetItem(&this->actor, play, GI_OCARINA_OF_TIME, 300.0f, 300.0f);
+        } else if (!rando_location_is_checked(LOCATION_SOT)) {
+            Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_SOT), LOCATION_SOT, 300.0f, 300.0f, true, true);
+        } else {
+            Actor_Kill(thisx);
+        }
     }
     /*if (ocarinaCheckState == 0 && !Actor_HasParent(&this->actor, play)) {
         //Actor_OfferGetItem(&this->actor, play, GI_OCARINA_OF_TIME, 30.0f, 80.0f);
