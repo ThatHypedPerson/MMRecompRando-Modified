@@ -26,6 +26,7 @@ typedef struct EnZos {
 } EnZos; // size = 0x2C4
 
 #define EN_ZOS_ANIM_LEAN_ON_KEYBOARD 0x00
+#define EN_ZOS_ANIM_TALK_HANDS_ON_HIPS 0x06
 
 void EnZos_ChangeAnim(EnZos* this, s16 animIndex, u8 animMode);
 void func_80BBBB84(EnZos* this, PlayState* play);
@@ -74,6 +75,7 @@ RECOMP_PATCH void func_80BBBDE0(EnZos* this, PlayState* play) {
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_PLAYED_FULL_EVAN_SONG) {
         play->msgCtx.ocarinaMode = OCARINA_MODE_END;
         this->actionFunc = func_80BBB354;
+        EnZos_ChangeAnim(this, EN_ZOS_ANIM_TALK_HANDS_ON_HIPS, ANIMMODE_LOOP);
         // this->actionFunc = func_80BBBB84;
         // this->actor.flags |= ACTOR_FLAG_10000;
         // Actor_OfferTalk(&this->actor, play, 120.0f);

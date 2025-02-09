@@ -37,6 +37,8 @@ struct EnOsn;
 
 #define FLAGS (ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_10)
 
+#define LOCATION_HEALING 0x040068
+
 #define THIS ((EnOsn*)thisx)
 
 typedef void (*EnOsnActionFunc)(struct EnOsn*, PlayState*);
@@ -255,20 +257,26 @@ RECOMP_PATCH void EnOsn_Init(Actor* thisx, PlayState* play) {
     }
 }
 
+void EnOsn_GiveRandoItem(EnOsn* this, PlayState* play) {
+    if (!rando_location_is_checked(LOCATION_HEALING)) {
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_HEALING), LOCATION_HEALING, 300.0f, 300.0f, true, true);
+    } else {
+        Actor_OfferGetItem(&this->actor, play, GI_MASK_DEKU, 300.0f, 300.0f);
+    }
+}
+
 RECOMP_PATCH void EnOsn_Idle(EnOsn* this, PlayState* play) {
     s16 yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
 
     //if ((gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
     //    !CHECK_QUEST_ITEM(QUEST_SONG_HEALING)) {
     if ((gSaveContext.save.saveInfo.inventory.items[SLOT_OCARINA] != ITEM_NONE) &&
-        (!rando_location_is_checked(0x040068) || !rando_location_is_checked(GI_MASK_DEKU))) {
+        (!rando_location_is_checked(LOCATION_HEALING) || !rando_location_is_checked(GI_MASK_DEKU))) {
         if ((this->actor.xzDistToPlayer <= 60.0f) && (fabsf(this->actor.playerHeightRel) <= fabsf(80.0f))) {
             //shouldSetForm = true;
             //prevForm = gSaveContext.save.playerForm;
             //this->actionFunc = EnOsn_StartCutscene;
-            Audio_PlayFanfare(NA_BGM_GET_SMALL_ITEM);
-            rando_send_location(0x040068);
-            rando_send_location(GI_MASK_DEKU);
+            EnOsn_GiveRandoItem(this, play);
         }
     }/* else if (Actor_ProcessTalkRequest(&this->actor, &play->state)) {
         this->textId = EnOsn_GetInitialText(this, play);

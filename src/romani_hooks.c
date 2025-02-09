@@ -3,6 +3,8 @@
 
 #include "apcommon.h"
 
+#define GI_EPONAS_SONG GI_A5
+
 typedef enum RomaniLimb {
     /* 0x00 */ ROMANI_LIMB_NONE,
     /* 0x01 */ ROMANI_LIMB_ROOT,
@@ -222,7 +224,7 @@ void EnMa4_OfferMilkItem(EnMa4* this, PlayState* play) {
         this->actor.parent = NULL;
         this->actionFunc = EnMa4_Wait;
     } else {
-        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_MILK_BOTTLE), GI_MILK_BOTTLE, 300.0f, 300.0f, true, true);
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_EPONAS_SONG), GI_EPONAS_SONG, 300.0f, 300.0f, true, true);
     }
 }
 

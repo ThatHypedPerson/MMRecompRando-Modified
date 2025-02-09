@@ -442,6 +442,9 @@ void update_rando(PlayState* play) {
         if (play->pauseCtx.state == 0 && rando_get_death_link_enabled() && rando_get_death_link_pending()) {
             Play_KillPlayer();
             rando_reset_death_link_pending();
+            if (rando_death_behavior() == 2) {
+                Interface_StartMoonCrash(play);
+            }
         }
     }
 }

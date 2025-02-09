@@ -91,8 +91,14 @@ void Sram_SetInitialWeekEvents(void) {
     SET_WEEKEVENTREG(WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON);
     SET_WEEKEVENTREG(WEEKEVENTREG_29_40);
 
+    // skip feeding fish in marine lab
+    SET_WEEKEVENTREG(WEEKEVENTREG_81_40);
+
     // skip secret shrine entrance guy text
     SET_WEEKEVENTREG(WEEKEVENTREG_76_80);
+
+    // skip initial ikana canyon sharp cs
+    SET_WEEKEVENTREG(WEEKEVENTREG_14_02);
 
     // skip having to rewatch the great bay turtle cutscene
     if(spawnedTurtle) {
