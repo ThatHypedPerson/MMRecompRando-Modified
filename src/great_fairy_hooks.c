@@ -132,11 +132,7 @@ typedef enum ElfgrpSpawnedFairyTypes {
 bool Player_HasTransformationMask(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if (INV_HAS(ITEM_MASK_DEKU) || INV_HAS(ITEM_MASK_GORON) || INV_HAS(ITEM_MASK_ZORA) || INV_HAS(ITEM_MASK_FIERCE_DEITY)) {
-        return true;
-    }
-
-    return false;
+    return INV_HAS(ITEM_MASK_DEKU) || INV_HAS(ITEM_MASK_GORON) || INV_HAS(ITEM_MASK_ZORA) || INV_HAS(ITEM_MASK_FIERCE_DEITY);
 }
 
 s32 EnElfgrp_GetHeldFairiesCount(PlayState* play, s32 type);
@@ -176,7 +172,7 @@ void EnElfgrp_OfferLoop(EnElfgrp* this, PlayState* play) {
 
     if (hasFairies && !rando_location_is_checked(LOCATION_GREAT_FAIRY)) {
         func_80A3A398(this, play);
-    } else if (ENELFGRP_GET_TYPE(&this->actor) == ENELFGRP_TYPE_MAGIC && Player_HasTransformationMask(play) && !rando_location_is_checked(LOCATION_GREAT_FAIRY_HUMAN)) {
+    } else if (type == ENELFGRP_TYPE_MAGIC && Player_HasTransformationMask(play) && !rando_location_is_checked(LOCATION_GREAT_FAIRY_HUMAN)) {
         EnElfgrp_OfferTransformItem(this, play);
     }
 }
