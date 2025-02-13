@@ -1479,7 +1479,10 @@ s32 Actor_OfferGetItemHook(Actor* actor, PlayState* play, GetItemId getItemId, u
                     itemShuffled = item_is_shuffled;
                     drawIdChosen = false;
                     if (itemWorkaround) {
-                        rando_send_location(location);
+                        if (location != 0)
+                        {
+                            rando_send_location(location);
+                        }
                         player->getItemId = GI_DEED_LAND;
                     } else {
                         player->getItemId = getItemId;
