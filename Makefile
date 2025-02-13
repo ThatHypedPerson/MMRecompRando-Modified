@@ -3,8 +3,8 @@ LIB_DIRS := lib
 OUTPUT_NAME := mm_recomp_rando
 MOD_TOML := mod.toml
 
-CC      ?= clang
-LD      ?= ld.lld
+CC      := clang
+LD      := ld.lld
 MOD_TOOL := ./RecompModTool
 OFFLINE_RECOMP := ./OfflineModRecomp
 TARGET  := $(BUILD_DIR)/mod.elf
