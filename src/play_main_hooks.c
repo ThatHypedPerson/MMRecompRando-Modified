@@ -18,7 +18,7 @@ RECOMP_IMPORT(".", void rando_init());
 RECOMP_IMPORT(".", int rando_get_starting_heart_locations());
 RECOMP_IMPORT(".", int rando_get_tunic_color());
 
-RECOMP_IMPORT("better_double_sot", void dsot_set_skip_dsot_cutscene(bool new_val));
+RECOMP_IMPORT("mm_recomp_better_double_sot", void dsot_set_skip_dsot_cutscene(bool new_val));
 
 RECOMP_IMPORT("mm_recomp_colors", void colors_set_human_tunic(u8 r, u8 g, u8 b));
 

@@ -67,6 +67,24 @@ typedef enum {
 
 void EnTrt_GivenRedPotionForKoume(EnTrt* this, PlayState* play);
 
+RECOMP_IMPORT("*", int recomp_printf(const char* fmt, ...));
+
+void EnTrt_OfferItem(EnTrt* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
+            SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE);
+        }
+        SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
+        player->stateFlags2 &= ~PLAYER_STATE2_20000000;
+        this->actionFunc = EnTrt_GivenRedPotionForKoume;
+    } else {
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_POTION_RED_BOTTLE), GI_POTION_RED_BOTTLE, 300.0f, 300.0f, true, true);
+    }
+}
+
 RECOMP_PATCH void EnTrt_GiveRedPotionForKoume(EnTrt* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
@@ -78,10 +96,65 @@ RECOMP_PATCH void EnTrt_GiveRedPotionForKoume(EnTrt* this, PlayState* play) {
         SET_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_RED_POTION_FOR_KOUME);
         player->stateFlags2 &= ~PLAYER_STATE2_20000000;
         this->actionFunc = EnTrt_GivenRedPotionForKoume;
-    } else if (rando_location_is_checked(GI_POTION_RED_BOTTLE)) {
-        Actor_OfferGetItemHook(&this->actor, play, GI_POTION_RED, 0, 300.0f, 300.0f, true, false);
     } else {
-        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(GI_POTION_RED_BOTTLE), GI_POTION_RED_BOTTLE, 300.0f, 300.0f, true, true);
+        Actor_OfferGetItemHook(&this->actor, play, GI_POTION_RED, 0, 300.0f, 300.0f, true, false);
+    }
+}
+
+void EnTrt_SetupOffer(EnTrt* this) {
+    if (rando_location_is_checked(GI_POTION_RED_BOTTLE)) {
+        this->actionFunc = EnTrt_GiveRedPotionForKoume;
+    } else {
+        this->actionFunc = EnTrt_OfferItem;
+    }
+}
+
+void EnTrt_Blink(EnTrt* this);
+void EnTrt_EndConversation(EnTrt* this, PlayState* play);
+
+RECOMP_PATCH void EnTrt_TryToGiveRedPotionAfterSurprised(EnTrt* this, PlayState* play) {
+    u8 talkState = Message_GetState(&play->msgCtx);
+
+    this->blinkFunc = EnTrt_Blink;
+    if ((talkState == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
+        if (Inventory_HasEmptyBottle() || !CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_KOTAKE_BOTTLE)) {
+            if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING) {
+                CutsceneManager_Stop(this->csId);
+                this->cutsceneState = ENTRT_CUTSCENESTATE_STOPPED;
+            }
+            EnTrt_SetupOffer(this);
+        } else {
+            this->prevTextId = this->textId;
+            this->textId = 0x88E;
+            SET_WEEKEVENTREG(WEEKEVENTREG_FAILED_RECEIVED_RED_POTION_FOR_KOUME_SHOP);
+            Message_StartTextbox(play, this->textId, &this->actor);
+            this->actionFunc = EnTrt_EndConversation;
+        }
+    }
+}
+
+RECOMP_PATCH void EnTrt_TryToGiveRedPotion(EnTrt* this, PlayState* play) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_5) && Message_ShouldAdvance(play)) {
+        if (this->textId == 0x83C) {
+            if (Inventory_HasEmptyBottle()) {
+                if (this->cutsceneState == ENTRT_CUTSCENESTATE_PLAYING) {
+                    CutsceneManager_Stop(this->csId);
+                    this->cutsceneState = ENTRT_CUTSCENESTATE_STOPPED;
+                }
+                play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
+                play->msgCtx.stateTimer = 4;
+                EnTrt_SetupOffer(this);
+            } else {
+                this->prevTextId = this->textId;
+                this->textId = 0x88E;
+                SET_WEEKEVENTREG(WEEKEVENTREG_FAILED_RECEIVED_RED_POTION_FOR_KOUME_SHOP);
+                Message_StartTextbox(play, this->textId, &this->actor);
+                this->actionFunc = EnTrt_EndConversation;
+            }
+        } else {
+            this->textId = 0x83C;
+            Message_StartTextbox(play, this->textId, &this->actor);
+        }
     }
 }
 
@@ -101,7 +174,7 @@ RECOMP_PATCH void EnTrt_StartRedPotionConversation(EnTrt* this, PlayState* play)
                 }
                 play->msgCtx.msgMode = MSGMODE_TEXT_CLOSING;
                 play->msgCtx.stateTimer = 4;
-                this->actionFunc = EnTrt_GiveRedPotionForKoume;
+                EnTrt_SetupOffer(this);
             } else {
                 this->prevTextId = this->textId;
                 this->textId = 0x88E;

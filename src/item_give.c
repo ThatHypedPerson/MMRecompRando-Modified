@@ -1062,17 +1062,10 @@ RECOMP_PATCH u8 Item_CheckObtainabilityImpl(u8 item) {
 
     } else if ((item == ITEM_OCARINA_OF_TIME) || (item == ITEM_BOMBCHU) || (item == ITEM_HOOKSHOT) ||
                (item == ITEM_LENS_OF_TRUTH) || (item == ITEM_SWORD_GREAT_FAIRY)) {
-        if (INV_CONTENT(item) == ITEM_NONE) {
-            return ITEM_NONE;
-        }
-        return INV_CONTENT(item);
+        return ITEM_NONE;
 
     } else if (item == ITEM_PICTOGRAPH_BOX) {
-        if (rando_location_is_checked(GI_PICTOGRAPH_BOX)) {
-            return ITEM_PICTOGRAPH_BOX;
-        } else {
-            return ITEM_NONE;
-        }
+        return ITEM_NONE;
 
     } else if ((item >= ITEM_BOMBS_5) && (item == ITEM_BOMBS_30)) {
         //! @bug: Should be a range check: (item <= ITEM_BOMBS_30)
@@ -1529,7 +1522,10 @@ s32 Actor_OfferGetItemHook(Actor* actor, PlayState* play, GetItemId getItemId, u
                     itemShuffled = item_is_shuffled;
                     drawIdChosen = false;
                     if (itemWorkaround) {
-                        rando_send_location(location);
+                        if (location != 0)
+                        {
+                            rando_send_location(location);
+                        }
                         player->getItemId = GI_DEED_LAND;
                     } else {
                         player->getItemId = getItemId;
