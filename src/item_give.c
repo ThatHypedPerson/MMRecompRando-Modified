@@ -358,7 +358,7 @@ GetItemEntry sGetItemTable_ap[] = {
     // GI_73
     GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_HEARTS, GID_DEFENSE_DOUBLE, 0xCB, 0, 0),
     // GI_74
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x74, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_RUPY, GID_RUPOOR, 0x74, 0, 0),
     // GI_75
     GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_SUTARU, GID_SKULL_TOKEN, 0x75, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_ICE_TRAP
@@ -1908,6 +1908,13 @@ u8 randoItemGive(u32 gi) {
                     break;
             }
             return ITEM_NONE;
+        // traps go here idfk
+        // case 0x690000:
+        //     item = gi & 0xFF;
+        //     switch (item) {
+        //         case ITEM_RUPOOR:
+        //             Rupees_ChangeBy(-10);
+        //     }
         default:
             if (gi == 0) {
                 return ITEM_NONE;
@@ -2084,6 +2091,7 @@ u8 randoItemGive(u32 gi) {
     } else if (item == ITEM_WALLET_ADULT) {
         if (CUR_UPG_VALUE(UPG_WALLET) == 2) {
             // stop sending yourself wallets you freaks
+            Rupees_ChangeBy(500); // you can get money though
             return ITEM_NONE;
         } else if (CUR_UPG_VALUE(UPG_WALLET) == 1) {
             Inventory_ChangeUpgrade(UPG_WALLET, 2);

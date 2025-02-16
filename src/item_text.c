@@ -66,6 +66,8 @@ static unsigned char p_pirate_bad_msg[128] = "Keep this\x01 bad picture of a pir
 static unsigned char slow_dog_msg[128] = "Hoo-whine.\x11How can any of us win against...\x10.\x0a.\x0a." "\x03" "blue dog" "\x00" "?\xbf";
 static unsigned char fast_dog_msg[128] = "\x0a\x0a\x0a\x0a\x0a\x0a.\x0a.\x0a.\x0a\x0a\x0a\x0a\xbf";
 
+static unsigned char fool_msg[128] = "You are a\x01 FOOL!\xbf";
+
 static unsigned char shop_desc_msg[128] = "\x01Some Item: \xbf";
 static unsigned char shop_buy_msg[128] = "Some Item: \xbf";
 static unsigned char shop_oos_msg[128] = "\x01You've already purchased this item!\x1a\xbf";
@@ -252,7 +254,7 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             if (!CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
                 Snap_RecordPictographedActors(play);
             }
-            
+
             if (Snap_CheckFlag(PICTO_VALID_MONKEY)) {
                 msg = p_monkey_msg;
             } else if (Snap_CheckFlag(PICTO_VALID_BIG_OCTO)) {
@@ -294,6 +296,9 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             break;
         case 0x3F:
             msg = compass_msg;
+            break;
+        case 0x74:
+            msg = fool_msg;
             break;
         case 0x83F:
             if (rando_shopsanity_enabled()) {

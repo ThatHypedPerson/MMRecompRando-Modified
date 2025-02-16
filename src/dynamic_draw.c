@@ -9,6 +9,7 @@
 #include "double_defense.h"
 #include "skull_token.h"
 #include "dungeon_items.h"
+#include "rupoor.h"
 
 void GetItem_DrawBombchu(PlayState* play, s16 drawId);
 void GetItem_DrawPoes(PlayState* play, s16 drawId);
@@ -37,6 +38,7 @@ void GetItem_DrawRemains(PlayState* play, s16 drawId);
 void GetItem_DrawRecompImport(PlayState* play, s16 drawId);
 void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2);
 void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1);
+void GetItem_DrawRupeeDL(PlayState* play, void* dl0, void* dl1, void* dl2, void* dl3);
 void GetItem_DrawDungeonOpa0(PlayState* play, void* dl0, s16 drawId);
 void GetItem_DrawBossKeyRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId);
 void GetItem_DrawCompassRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId);
@@ -804,6 +806,9 @@ RECOMP_PATCH void GetItem_Draw(PlayState* play, s16 drawId) {
         case GID_COMPASS_STONETOWER:
             GetItem_DrawCompassRecolor(play, gGiCompassModDL, gGiCompassGlassDL, drawId);
             return;
+        case GID_RUPOOR:
+            GetItem_DrawRupeeDL(play, gGiRupeeInnerDL, gGiRupoorInnerColorDL, gGiRupeeOuterDL, gGiRupoorOuterColorDL);
+            return;
     }
     sDrawItemTable_new[drawId].drawFunc(play, drawId);
 }
@@ -859,6 +864,10 @@ void GetItem_DrawDynamic(PlayState* play, void* objectSegment, s16 drawId) {
             case GID_COMPASS_SNOWHEAD:
             case GID_COMPASS_GREATBAY:
             case GID_COMPASS_STONETOWER:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_RUPOOR:
                 gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
                 gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
                 break;
@@ -1050,6 +1059,26 @@ void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1) {
                                 32, 32, 1, play->state.frames * 0, play->state.frames * 0, 32, 64));
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_XLU_DISP++, dl1);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void GetItem_DrawRupeeDL(PlayState* play, void* dl0, void* dl1, void* dl2, void* dl3) {
+    s32 pad;
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_OPA_DISP++, dl1);
+    gSPDisplayList(POLY_OPA_DISP++, dl0);
+
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
+
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_XLU_DISP++, dl3);
+    gSPDisplayList(POLY_XLU_DISP++, dl2);
 
     CLOSE_DISPS(play->state.gfxCtx);
 }
