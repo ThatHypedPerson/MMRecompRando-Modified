@@ -53,7 +53,7 @@ static unsigned char map_msg[128] = "You found a\x01 Map\x00! \xbf";
 static unsigned char compass_msg[128] = "You found a\x01 Compass\x00! \xbf";
 
 static unsigned char p_monkey_msg[128] = "Keep this\x01 picture of a monkey\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
-static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of an Octorok\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
+static unsigned char p_big_octo_msg[128] = "Keep this\x01 picture of a Big Octo\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_lulu_good_msg[128] = "Keep this\x01 good picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_lulu_bad_msg[128] = "Keep this\x01 bad picture of Lulu\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
 static unsigned char p_scarecrow_msg[128] = "Keep this\x01 picture of a scarecrow\x00?\x02\x11\x11\xc2Yes\x11No\xbf";
@@ -249,7 +249,10 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
             msg = ap_msg;
             break;
         case 0xF8:
-            Snap_RecordPictographedActors(play);
+            if (!CHECK_QUEST_ITEM(QUEST_PICTOGRAPH)) {
+                Snap_RecordPictographedActors(play);
+            }
+            
             if (Snap_CheckFlag(PICTO_VALID_MONKEY)) {
                 msg = p_monkey_msg;
             } else if (Snap_CheckFlag(PICTO_VALID_BIG_OCTO)) {
@@ -280,18 +283,18 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         case 0x3545:
             msg = slow_dog_msg;
             break;
-        // case 0x3C:
-        //     msg = sk_msg;
-        //     break;
-        // case 0x3D:
-        //     msg = bk_msg;
-        //     break;
-        // case 0x3E:
-        //     msg = map_msg;
-        //     break;
-        // case 0x3F:
-        //     msg = compass_msg;
-        //     break;
+        case 0x3C:
+            msg = sk_msg;
+            break;
+        case 0x3D:
+            msg = bk_msg;
+            break;
+        case 0x3E:
+            msg = map_msg;
+            break;
+        case 0x3F:
+            msg = compass_msg;
+            break;
         case 0x83F:
             if (rando_shopsanity_enabled()) {
                 msg = shop_desc_msg;

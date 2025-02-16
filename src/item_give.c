@@ -1387,6 +1387,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
 #define ACTOR_ID_BEAN_DADDY 0x0A5
 #define ACTOR_ID_COW 0x0F3
+#define ACTOR_ID_SWAMP_GUIDE 0x1C5
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
 #define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
@@ -1427,7 +1428,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         ((item >= ITEM_ARROWS_10) && (item <= ITEM_ARROWS_50)) ||
                         (item == ITEM_MAGIC_JAR_SMALL) ||
                         (item == ITEM_MAGIC_JAR_BIG) ||
-                        ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING)) ||
+                        ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING) && (actor->id != ACTOR_ID_SWAMP_GUIDE)) ||
                         ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
                             (item == ITEM_HYLIAN_LOACH)) ||
                         (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
@@ -1476,6 +1477,14 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         // Honey and Darling Any Day
                         rando_send_location(LOCATION_HONEY_AND_DARLING_ANY_DAY);
                         trueGI = rando_get_item_id(LOCATION_HONEY_AND_DARLING_ANY_DAY);
+                    } else if (getItemId == GI_RUPEE_RED && actor->id == ACTOR_ID_SWAMP_GUIDE) { // && !rando_location_is_checked(LOCATION_SWAMP_GUIDE_GOOD)) {
+                        // Swamp Pictograph Contest Good Picture
+                        rando_send_location(LOCATION_SWAMP_GUIDE_GOOD);
+                        trueGI = rando_get_item_id(LOCATION_SWAMP_GUIDE_GOOD);
+                    } else if (getItemId == GI_RUPEE_BLUE && actor->id == ACTOR_ID_SWAMP_GUIDE) { // && !rando_location_is_checked(LOCATION_SWAMP_GUIDE_OKAY)) {
+                        // Swamp Pictograph Contest Okay Picture
+                        rando_send_location(LOCATION_SWAMP_GUIDE_OKAY);
+                        trueGI = rando_get_item_id(LOCATION_SWAMP_GUIDE_OKAY);
                     } else if (itemShuffled) {
                         rando_send_location(getItemId);
                     }
