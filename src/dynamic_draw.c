@@ -8,6 +8,7 @@
 #include "bombchu_bag.h"
 #include "double_defense.h"
 #include "skull_token.h"
+#include "dungeon_items.h"
 
 void GetItem_DrawBombchu(PlayState* play, s16 drawId);
 void GetItem_DrawPoes(PlayState* play, s16 drawId);
@@ -36,6 +37,9 @@ void GetItem_DrawRemains(PlayState* play, s16 drawId);
 void GetItem_DrawRecompImport(PlayState* play, s16 drawId);
 void GetItem_DrawBombchuBagDL(PlayState* play, void* dl0, void* dl1, void* dl2);
 void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1);
+void GetItem_DrawDungeonOpa0(PlayState* play, void* dl0, s16 drawId);
+void GetItem_DrawBossKeyRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId);
+void GetItem_DrawCompassRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId);
 void GetItem_DrawXlu01DL(PlayState* play, void* dl0, void* dl1);
 void GetItem_DrawAPFiller(PlayState* play, s16 drawId);
 
@@ -774,6 +778,32 @@ RECOMP_PATCH void GetItem_Draw(PlayState* play, s16 drawId) {
         case GID_OCEAN_SKULL_TOKEN:
             GetItem_DrawSkullTokenDL(play, gGiSkulltulaTokenDL, gGiSkulltulaTokenOceanFlameDL);
             return;
+        case GID_KEY_BOSS_WOODFALL:
+        case GID_KEY_BOSS_SNOWHEAD:
+        case GID_KEY_BOSS_GREATBAY:
+        case GID_KEY_BOSS_STONETOWER:
+            // remove "Mod" to revert back to vanilla (make this into an option?)
+            GetItem_DrawBossKeyRecolor(play, gGiBossKeyDL, gGiBossKeyGemModDL, drawId);
+            // GetItem_DrawBossKeyRecolor(play, gGiBossKeyModDL, gGiBossKeyGemModDL, drawId);
+            return;
+        case GID_KEY_SMALL_WOODFALL:
+        case GID_KEY_SMALL_SNOWHEAD:
+        case GID_KEY_SMALL_GREATBAY:
+        case GID_KEY_SMALL_STONETOWER:
+            GetItem_DrawDungeonOpa0(play, gGiSmallKeyModDL, drawId);
+            return;
+        case GID_MAP_WOODFALL:
+        case GID_MAP_SNOWHEAD:
+        case GID_MAP_GREATBAY:
+        case GID_MAP_STONETOWER:
+            GetItem_DrawDungeonOpa0(play, gGiDungeonMapModDL, drawId);
+            return;
+        case GID_COMPASS_WOODFALL:
+        case GID_COMPASS_SNOWHEAD:
+        case GID_COMPASS_GREATBAY:
+        case GID_COMPASS_STONETOWER:
+            GetItem_DrawCompassRecolor(play, gGiCompassModDL, gGiCompassGlassDL, drawId);
+            return;
     }
     sDrawItemTable_new[drawId].drawFunc(play, drawId);
 }
@@ -803,6 +833,32 @@ void GetItem_DrawDynamic(PlayState* play, void* objectSegment, s16 drawId) {
                 gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
                 break;
             case GID_OCEAN_SKULL_TOKEN:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_KEY_BOSS_WOODFALL:
+            case GID_KEY_BOSS_SNOWHEAD:
+            case GID_KEY_BOSS_GREATBAY:
+            case GID_KEY_BOSS_STONETOWER:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
+                break;
+            case GID_KEY_SMALL_WOODFALL:
+            case GID_KEY_SMALL_SNOWHEAD:
+            case GID_KEY_SMALL_GREATBAY:
+            case GID_KEY_SMALL_STONETOWER:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                break;
+            case GID_MAP_WOODFALL:
+            case GID_MAP_SNOWHEAD:
+            case GID_MAP_GREATBAY:
+            case GID_MAP_STONETOWER:
+                gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+                break;
+            case GID_COMPASS_WOODFALL:
+            case GID_COMPASS_SNOWHEAD:
+            case GID_COMPASS_GREATBAY:
+            case GID_COMPASS_STONETOWER:
                 gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
                 gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
                 break;
@@ -992,6 +1048,75 @@ void GetItem_DrawSkullTokenDL(PlayState* play, void* dl0, void* dl1) {
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->state.frames * 0, -(play->state.frames * 5),
                                 32, 32, 1, play->state.frames * 0, play->state.frames * 0, 32, 64));
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPDisplayList(POLY_XLU_DISP++, dl1);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void GetItem_DrawDungeonOpa0(PlayState* play, void* dl0, s16 drawId) {
+    s32 pad;
+    u8 dungeon = (drawId - GID_KEY_BOSS_WOODFALL) / 4;
+    Color_RGB8 colorPrim = dungeonColorsPrim[dungeon];
+    Color_RGB8 colorEnv = dungeonColorsEnv[dungeon];
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, colorPrim.r, colorPrim.g, colorPrim.b, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, colorEnv.r, colorEnv.g, colorEnv.b, 255);
+    gSPDisplayList(POLY_OPA_DISP++, dl0);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void GetItem_DrawBossKeyRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId) {
+    s32 pad;
+    u8 dungeon = (drawId - GID_KEY_BOSS_WOODFALL) / 4;
+    Color_RGB8 colorPrim = dungeonColorsPrim[dungeon];
+    Color_RGB8 colorEnv = dungeonColorsEnv[dungeon];
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    // main key recolor
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x80, colorPrim.r, colorPrim.g, colorPrim.b, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, colorEnv.r, colorEnv.g, colorEnv.b, 255);
+    gSPDisplayList(POLY_OPA_DISP++, dl0);
+
+    // gem recolor
+    Gfx_SetupDL25_Xlu(play->state.gfxCtx);
+
+    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, colorPrim.r, colorPrim.g, colorPrim.b, 255);
+    gDPSetEnvColor(POLY_XLU_DISP++, colorEnv.r, colorEnv.g, colorEnv.b, 255);
+    // gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, colorPrim.r, colorPrim.g, colorPrim.b, 0x20); // used for alternate boss key gem combiner
+    gSPDisplayList(POLY_XLU_DISP++, dl1);
+
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+void GetItem_DrawCompassRecolor(PlayState* play, void* dl0, void* dl1, s16 drawId) {
+    s32 pad;
+    u8 dungeon = ((drawId - GID_KEY_BOSS_WOODFALL) / 4);
+    Color_RGB8 colorPrim = dungeonColorsPrim[dungeon];
+    Color_RGB8 colorEnv = dungeonColorsEnv[dungeon];
+
+    OPEN_DISPS(play->state.gfxCtx);
+
+    Gfx_SetupDL25_Opa(play->state.gfxCtx);
+
+    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x80, colorPrim.r, colorPrim.g, colorPrim.b, 255);
+    gDPSetEnvColor(POLY_OPA_DISP++, colorEnv.r, colorEnv.g, colorEnv.b, 255);
+    gSPDisplayList(POLY_OPA_DISP++, dl0);
+
+    POLY_XLU_DISP = Gfx_SetupDL(POLY_XLU_DISP, SETUPDL_5);
+
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_XLU_DISP++, dl1);
 

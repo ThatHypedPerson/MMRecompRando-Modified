@@ -115,10 +115,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         if (textId == 0xC3) {
             textId = 0xC7;
         }
-    } else if (textId == 0x37) {
-        // if (rando_get_unconverted_item_id(rando_get_last_location()) != 0x37) {
-        //     textId = 0xCA;
-        // }
     }
 
     msgCtx->currentTextId = textId;
@@ -284,18 +280,18 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         case 0x3545:
             msg = slow_dog_msg;
             break;
-        case 0x3C:
-            msg = sk_msg;
-            break;
-        case 0x3D:
-            msg = bk_msg;
-            break;
-        case 0x3E:
-            msg = map_msg;
-            break;
-        case 0x3F:
-            msg = compass_msg;
-            break;
+        // case 0x3C:
+        //     msg = sk_msg;
+        //     break;
+        // case 0x3D:
+        //     msg = bk_msg;
+        //     break;
+        // case 0x3E:
+        //     msg = map_msg;
+        //     break;
+        // case 0x3F:
+        //     msg = compass_msg;
+        //     break;
         case 0x83F:
             if (rando_shopsanity_enabled()) {
                 msg = shop_desc_msg;
@@ -349,18 +345,19 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
     //     u8 gb_str[128] = "\x03(Great Bay)\x00\xbf";
     //     u8 st_str[128] = "\x04(Stone Tower)\x00\xbf";
 
-    //     s16 dungeonId = rando_get_unconverted_item_id(rando_get_last_location()) & 0xF00;
+    //     // TODO: figure out dungeon from text
+    //     s16 dungeonId = (textId - GI_MAX) / 4;
     //     switch (dungeonId) {
-    //         case 0x000:
+    //         case 0:
     //             dungeon_msg = wf_str;
     //             break;
-    //         case 0x100:
+    //         case 1:
     //             dungeon_msg = sh_str;
     //             break;
-    //         case 0x200:
+    //         case 2:
     //             dungeon_msg = gb_str;
     //             break;
-    //         case 0x300:
+    //         case 3:
     //             dungeon_msg = st_str;
     //             break;
     //     }
