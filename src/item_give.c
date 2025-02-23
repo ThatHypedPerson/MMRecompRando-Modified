@@ -683,14 +683,13 @@ RECOMP_PATCH void Player_DrawGetItemImpl(PlayState* play, Player* player, Vec3f*
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSegments[6] = OS_K0_TO_PHYSICAL(segment);
-
     Matrix_Translate((Math_SinS(player->actor.shape.rot.y) * 3.3f) + refPos->x, refPos->y + sp34,
                      (Math_CosS(player->actor.shape.rot.y) * 3.3f) + refPos->z, MTXMODE_NEW);
     Matrix_RotateZYX(0, (play->gameplayFrames * 1000), 0, MTXMODE_APPLY);
     Matrix_Scale(0.2f, 0.2f, 0.2f, MTXMODE_APPLY);
 
     if (playerObjectStatic) {
+        gSegments[6] = OS_K0_TO_PHYSICAL(segment);
         GetItem_Draw(play, drawIdPlusOne - 1);
     } else {
         GetItem_DrawDynamic(play, segment, drawIdPlusOne - 1);
@@ -733,6 +732,14 @@ RECOMP_PATCH void Player_DrawGetItem(PlayState* play, Player* player) {
         }
         Player_DrawGetItemImpl(play, player, &refPos, drawIdPlusOne);
     }
+}
+
+RECOMP_PATCH void func_80848250(PlayState* play, Player* this) {
+    this->getItemDrawIdPlusOne = GID_NONE + 1;
+    playerUseExtended = false;
+    this->stateFlags1 &= ~(PLAYER_STATE1_400 | PLAYER_STATE1_800);
+    this->getItemId = GI_NONE;
+    func_800E0238(Play_GetCamera(play, CAM_ID_MAIN));
 }
 
 // Player_UpdateCurrentGetItemDrawId?
