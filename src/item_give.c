@@ -352,13 +352,13 @@ GetItemEntry sGetItemTable_ap[] = {
     // GI_HYLIAN_LOACH
     GET_ITEM(ITEM_BOTTLE, OBJECT_GI_BOTTLE, GID_BOTTLE, 0x70, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_LONG),
     // GI_71
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x71, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_SWORD_1, GID_SWORD_KOKIRI, 0xCA, 0, 0),
     // GI_72
     GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_SUTARU, GID_OCEAN_SKULL_TOKEN, 0x72, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_73
     GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_HEARTS, GID_DEFENSE_DOUBLE, 0xCB, 0, 0),
     // GI_74
-    GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0x74, 0, 0),
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_RUPY, GID_RUPOOR, 0x74, 0, 0),
     // GI_75
     GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_SUTARU, GID_SKULL_TOKEN, 0x75, GIFIELD(GIFIELD_NO_COLLECTIBLE, 0), CHEST_ANIM_SHORT),
     // GI_ICE_TRAP
@@ -552,6 +552,56 @@ GetItemEntry sGetItemTable_ap[] = {
     // GI_MAX
     // don't edit
     GET_ITEM(ITEM_NONE, OBJECT_UNSET_0, GID_NONE, 0xBA, 0, 0),
+    
+    // EXTENDED TABLE START
+    // GI_KEY_BOSS_WOODFALL
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOSSKEY, GID_KEY_BOSS_WOODFALL, 0x3D, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_SMALL_WOODFALL
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_KEY, GID_KEY_SMALL_WOODFALL, 0x3C, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_SHORT),
+    // GI_MAP_WOODFALL
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_MAP, GID_MAP_WOODFALL, 0x3E, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_COMPASS_WOODFALL
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_COMPASS, GID_COMPASS_WOODFALL, 0x3F, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_BOSS_SNOWHEAD
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOSSKEY, GID_KEY_BOSS_SNOWHEAD, 0x3D, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_SMALL_SNOWHEAD
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_KEY, GID_KEY_SMALL_SNOWHEAD, 0x3C, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_SHORT),
+    // GI_MAP_SNOWHEAD
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_MAP, GID_MAP_SNOWHEAD, 0x3E, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_COMPASS_SNOWHEAD
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_COMPASS, GID_COMPASS_SNOWHEAD, 0x3F, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_BOSS_GREATBAY
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOSSKEY, GID_KEY_BOSS_GREATBAY, 0x3D, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_SMALL_GREATBAY
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_KEY, GID_KEY_SMALL_GREATBAY, 0x3C, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_SHORT),
+    // GI_MAP_GREATBAY
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_MAP, GID_MAP_GREATBAY, 0x3E, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_COMPASS_GREATBAY
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_COMPASS, GID_COMPASS_GREATBAY, 0x3F, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_BOSS_STONETOWER
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_BOSSKEY, GID_KEY_BOSS_STONETOWER, 0x3D, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_KEY_SMALL_STONETOWER
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_KEY, GID_KEY_SMALL_STONETOWER, 0x3C, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_SHORT),
+    // GI_MAP_STONETOWER
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_MAP, GID_MAP_STONETOWER, 0x3E, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
+    // GI_COMPASS_STONETOWER
+    GET_ITEM(ITEM_DEED_LAND, OBJECT_GI_COMPASS, GID_COMPASS_STONETOWER, 0x3F, GIFIELD(GIFIELD_20 | GIFIELD_NO_COLLECTIBLE, 0),
+             CHEST_ANIM_LONG),
 };
 
 bool isAP(s16 gi) {
@@ -1337,6 +1387,7 @@ RECOMP_PATCH s32 Player_ActionChange_2(Player* this, PlayState* play) {
 #define ACTOR_ID_HONEY_AND_DARLING 0x0B5
 #define ACTOR_ID_BEAN_DADDY 0x0A5
 #define ACTOR_ID_COW 0x0F3
+#define ACTOR_ID_SWAMP_GUIDE 0x1C5
 
 #define LOCATION_QUEST_HEART_PIECE (0x070000 | (actor->id))
 #define LOCATION_QUEST_BOTTLE (0x090000 | (actor->id))
@@ -1377,7 +1428,7 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         ((item >= ITEM_ARROWS_10) && (item <= ITEM_ARROWS_50)) ||
                         (item == ITEM_MAGIC_JAR_SMALL) ||
                         (item == ITEM_MAGIC_JAR_BIG) ||
-                        ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING)) ||
+                        ((item >= ITEM_RUPEE_GREEN) && (item <= ITEM_RUPEE_HUGE) && (actor->id != ACTOR_ID_DEKU_PLAYGROUND_WORKER) && (actor->id != ACTOR_ID_HONEY_AND_DARLING) && (actor->id != ACTOR_ID_SWAMP_GUIDE)) ||
                         ((item == ITEM_POE) || (item == ITEM_GOLD_DUST) ||
                             (item == ITEM_HYLIAN_LOACH)) ||
                         (((item >= ITEM_POTION_RED) && (item <= ITEM_OBABA_DRINK) && (item != ITEM_CHATEAU) && (item != ITEM_CHATEAU_2)) ||
@@ -1426,6 +1477,14 @@ RECOMP_PATCH s32 Actor_OfferGetItem(Actor* actor, PlayState* play, GetItemId get
                         // Honey and Darling Any Day
                         rando_send_location(LOCATION_HONEY_AND_DARLING_ANY_DAY);
                         trueGI = rando_get_item_id(LOCATION_HONEY_AND_DARLING_ANY_DAY);
+                    } else if (getItemId == GI_RUPEE_RED && actor->id == ACTOR_ID_SWAMP_GUIDE) { // && !rando_location_is_checked(LOCATION_SWAMP_GUIDE_GOOD)) {
+                        // Swamp Pictograph Contest Good Picture
+                        rando_send_location(LOCATION_SWAMP_GUIDE_GOOD);
+                        trueGI = rando_get_item_id(LOCATION_SWAMP_GUIDE_GOOD);
+                    } else if (getItemId == GI_RUPEE_BLUE && actor->id == ACTOR_ID_SWAMP_GUIDE) { // && !rando_location_is_checked(LOCATION_SWAMP_GUIDE_OKAY)) {
+                        // Swamp Pictograph Contest Okay Picture
+                        rando_send_location(LOCATION_SWAMP_GUIDE_OKAY);
+                        trueGI = rando_get_item_id(LOCATION_SWAMP_GUIDE_OKAY);
                     } else if (itemShuffled) {
                         rando_send_location(getItemId);
                     }
@@ -1849,6 +1908,13 @@ u8 randoItemGive(u32 gi) {
                     break;
             }
             return ITEM_NONE;
+        // traps go here idfk
+        // case 0x690000:
+        //     item = gi & 0xFF;
+        //     switch (item) {
+        //         case ITEM_RUPOOR:
+        //             Rupees_ChangeBy(-10);
+        //     }
         default:
             if (gi == 0) {
                 return ITEM_NONE;
@@ -2025,6 +2091,7 @@ u8 randoItemGive(u32 gi) {
     } else if (item == ITEM_WALLET_ADULT) {
         if (CUR_UPG_VALUE(UPG_WALLET) == 2) {
             // stop sending yourself wallets you freaks
+            Rupees_ChangeBy(500); // you can get money though
             return ITEM_NONE;
         } else if (CUR_UPG_VALUE(UPG_WALLET) == 1) {
             Inventory_ChangeUpgrade(UPG_WALLET, 2);

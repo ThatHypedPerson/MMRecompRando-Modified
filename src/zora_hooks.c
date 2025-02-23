@@ -4,9 +4,11 @@
 #include "apcommon.h"
 
 #include "overlays/actors/ovl_En_Zot/z_en_zot.h"
+#include "z64actor.h"
 
 #define LOCATION_ZORA_TORCHES (0x070000 | (this->actor.id) << 8 | GI_RUPEE_BLUE)
 #define LOCATION_ZORA_JAR_GAME (0x070000 | (this->actor.id) << 8 | GI_RUPEE_SILVER)
+#define LOCATION_ZORA_PICTOGRAPH (0x080000 | (this->actor.id) << 4 | this->unk_2D4)
 
 void func_80B97708(EnZot *this, PlayState *play);
 void func_80B965D0(EnZot *this, PlayState *play);
@@ -103,5 +105,22 @@ RECOMP_PATCH void func_80B98F30(EnZot* this, PlayState* play) {
     } else {
         // Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 10000.0f, 50.0f);
         Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_ZORA_TORCHES), LOCATION_ZORA_TORCHES, 10000.0f, 50.0f, true, true);
+    }
+}
+
+void func_80B98348(EnZot* this, PlayState* play);
+void func_80B9849C(EnZot* this, PlayState* play);
+
+RECOMP_PATCH void func_80B9854C(EnZot* this, PlayState* play) {
+    func_80B98348(this, play);
+    if (Actor_HasParent(&this->actor, play)) {
+        this->actor.parent = NULL;
+        this->actionFunc = func_80B9849C;
+        // this->actor.flags |= ACTOR_FLAG_TALK_OFFER_AUTO_ACCEPTED;
+        this->actor.flags |= ACTOR_FLAG_10000;
+        Actor_OfferTalkExchange(&this->actor, play, 1000.0f, 1000.0f, PLAYER_IA_MINUS1);
+    } else {
+        // Actor_OfferGetItem(&this->actor, play, this->unk_2D4, 10000.0f, 50.0f);
+        Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_ZORA_PICTOGRAPH), LOCATION_ZORA_PICTOGRAPH, 10000.0f, 50.0f, true, true);
     }
 }
