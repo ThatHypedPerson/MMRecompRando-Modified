@@ -420,7 +420,8 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         u8 count_str[128] = "\x11This is your \xbf";
         u8 count_done_str[128] = "\x11You've found all of them!\xbf";
         u8* count_msg = count_str;
-        if (Inventory_GetSkullTokenCount(0x27) >= 30) {
+        u8 swamp_token_count = ((rando_skulltulas_enabled()) ? rando_has_item(GI_TRUE_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x27));
+        if (swamp_token_count >= 30) {
             count_msg = count_done_str;
         }
         u8 end_i = i + 11;
@@ -430,7 +431,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 if (count_msg == count_done_str) {
                     break;
                 }
-                u8 swamp_token_count = ((rando_skulltulas_enabled()) ? rando_has_item(GI_TRUE_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x27));
                 u8 count_suffix[2] = "th";
                 if ((swamp_token_count % 10) == 1 && swamp_token_count != 11) {
                     count_suffix[0] = 's';
@@ -461,7 +461,8 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         u8 count_str[128] = "\x11This is your \xbf";
         u8 count_done_str[128] = "\x11You've found all of them!\xbf";
         u8* count_msg = count_str;
-        if (Inventory_GetSkullTokenCount(0x28) >= 30) {
+        u8 ocean_token_count = ((rando_skulltulas_enabled()) ? rando_has_item(GI_OCEAN_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x28));
+        if (ocean_token_count >= 30) {
             count_msg = count_done_str;
         }
         u8 end_i = i + 11;
@@ -471,7 +472,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 if (count_msg == count_done_str) {
                     break;
                 }
-                u8 ocean_token_count = ((rando_skulltulas_enabled()) ? rando_has_item(GI_OCEAN_SKULL_TOKEN) : Inventory_GetSkullTokenCount(0x28));
                 u8 count_suffix[2] = "th";
                 if ((ocean_token_count % 10) == 1 && ocean_token_count != 11) {
                     count_suffix[0] = 's';
@@ -502,7 +502,9 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
         u8 count_str[128] = "\x11This is your \xbf";
         u8 count_done_str[128] = "\x11You've found all of them!\xbf";
         u8* count_msg = count_str;
-        if (gSaveContext.save.saveInfo.inventory.strayFairies[textId - 0x46] >= 0xF) {
+        recomp_printf("fairy type: %d\n", textId - 0x46);
+        u8 fairy_count = rando_has_item(0x010000 | (textId - 0x46));
+        if (fairy_count >= 0xF) {
             count_msg = count_done_str;
         }
         u8 end_i = i + 11;
@@ -512,7 +514,6 @@ RECOMP_PATCH void Message_OpenText(PlayState* play, u16 textId) {
                 if (count_msg == count_done_str) {
                     break;
                 }
-                u8 fairy_count = gSaveContext.save.saveInfo.inventory.strayFairies[textId - 0x46];
                 u8 count_suffix[2] = "th";
                 if ((fairy_count % 10) == 1 && fairy_count != 11) {
                     count_suffix[0] = 's';
