@@ -75,6 +75,8 @@ static AnimationInfo sAnimationInfo[GINKO_ANIM_MAX] = {
     { &object_boj_Anim_004A7C, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP, -4.0f }, // GINKO_ANIM_ADVERTISING
 };
 
+bool awardChecked;
+
 // action func: non-input dialogue
 RECOMP_PATCH void EnGinkoMan_DepositDialogue(EnGinkoMan* this, PlayState* play) {
     if (!Message_ShouldAdvance(play)) {
@@ -107,23 +109,14 @@ RECOMP_PATCH void EnGinkoMan_DepositDialogue(EnGinkoMan* this, PlayState* play) 
         case 0x453: // you deposited a tiny amount
         case 0x454: // you deposited a normal amount
         case 0x455: // you deposited a lot
-            if (this->isNewAccount == true) {
-                this->isNewAccount = false;
-                if (this->curTextId != 0x453) {
-                    Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, GINKO_ANIM_SITTING);
-                }
-
-                Message_StartTextbox(play, 0x461, &this->actor);
-                this->curTextId = 0x461;
-            } else {
-                if (this->curTextId == 0x453) {
-                    Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, GINKO_ANIM_LEGSMACKING);
-                }
-
-                play->msgCtx.bankRupees = HS_GET_BANK_RUPEES();
-                Message_StartTextbox(play, 0x45A, &this->actor);
-                this->curTextId = 0x45A;
+            this->isNewAccount = false;
+            if (this->curTextId == 0x453) {
+                Actor_ChangeAnimationByInfo(&this->skelAnime, sAnimationInfo, GINKO_ANIM_LEGSMACKING);
             }
+
+            play->msgCtx.bankRupees = HS_GET_BANK_RUPEES();
+            Message_StartTextbox(play, 0x45A, &this->actor);
+            this->curTextId = 0x45A;
             break;
 
         case 0x456:
@@ -170,6 +163,27 @@ RECOMP_PATCH void EnGinkoMan_DepositDialogue(EnGinkoMan* this, PlayState* play) 
             this->isStampChecked = false;
             Message_CloseTextbox(play);
             EnGinkoMan_SetupBankAward(this);
+
+            if (this->curTextId == 0x45B) {
+                if (rando_location_is_checked(LOCATION_BANK_200_REWARD)) {
+                    awardChecked = true;
+                } else {
+                    awardChecked = false;
+                }
+            } else if (this->curTextId == 0x45C) {
+                if (rando_location_is_checked(LOCATION_BANK_500_REWARD)) {
+                    awardChecked = true;
+                } else {
+                    awardChecked = false;
+                }
+            } else {
+                if (rando_location_is_checked(LOCATION_BANK_1000_REWARD)) {
+                    awardChecked = true;
+                } else {
+                    awardChecked = false;
+                }
+            }
+
             EnGinkoMan_BankAward(this, play);
             break;
 
@@ -300,19 +314,19 @@ RECOMP_PATCH void EnGinkoMan_BankAward(EnGinkoMan* this, PlayState* play) {
         EnGinkoMan_SetupBankAward2(this);
     } else if (this->curTextId == 0x45B) {
         //if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_WALLET_UPGRADE)) {
-        if (rando_location_is_checked(GI_WALLET_ADULT)) {
+        if (awardChecked) {
             Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);
         } else {
             Actor_OfferGetItem(&this->actor, play, GI_WALLET_ADULT, 500.0f, 100.0f);
         }
     } else if (this->curTextId == 0x45C) {
-        if (rando_location_is_checked(LOCATION_BANK_500_REWARD)) {
+        if (awardChecked) {
             Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);
         } else {
             Actor_OfferGetItemHook(&this->actor, play, rando_get_item_id(LOCATION_BANK_500_REWARD), LOCATION_BANK_500_REWARD, 500.0f, 100.0f, true, true);
         }
     //} else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_RECEIVED_BANK_HEART_PIECE)) {
-    } else if (rando_location_is_checked(LOCATION_BANK_1000_REWARD)) {
+    } else if (awardChecked) {
         Actor_OfferGetItem(&this->actor, play, GI_RUPEE_BLUE, 500.0f, 100.0f);
     } else {
         Actor_OfferGetItem(&this->actor, play, GI_HEART_PIECE, 500.0f, 100.0f);
